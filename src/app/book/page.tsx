@@ -1,181 +1,215 @@
-import React from 'react';
-import AirplaneCard from '@/components/airplane_card'; // Ensure this path is correct
-import { FaPlaneDeparture, FaPlaneArrival, FaCalendarAlt, FaPlane, FaFilter } from 'react-icons/fa';
+"use client";
 
-// Sample flight data
-const flights = [
-  {
-    id: 'FL123',
-    airline: 'Delta',
-    dateofJourney: '2023-04-15',
-    source: 'JFK',
-    destination: 'LAX',
-    depTime: '14:30',
-    arrivalTime: '17:45',
-    duration: '3h 15m',
-    totalStops: 0,
-    additionalInfo: 'Meal included',
-    price: '$250',
-  },
-  {
-    id: 'FL124',
-    airline: 'United',
-    dateofJourney: '2023-04-16',
-    source: 'SFO',
-    destination: 'ORD',
-    depTime: '09:00',
-    arrivalTime: '15:30',
-    duration: '4h 30m',
-    totalStops: 1,
-    additionalInfo: 'Free Wi-Fi',
-    price: '$320',
-  },
-];
+import React, { useState } from 'react';
+import { Calendar, MapPin, Plane, Filter, ArrowRight } from 'lucide-react';
+import Button from '@/components/button';
+import ModernHeroSection from '@/components/hero';
 
-// Hero Section
-const HeroSection: React.FC = () => (
-  <div className="relative bg-gradient-to-br from-primary via-secondary to-bluelight text-white py-28 overflow-hidden">
-    {/* Background Overlay */}
-    <div className="absolute inset-0 bg-black opacity-15" />
-    <svg
-      className="absolute bottom-0 left-0 w-full h-32 text-background"
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 1440 320"
-      preserveAspectRatio="none"
-    >
-      <path
-        fill="currentColor"
-        d="M0,224L60,213.3C120,203,240,181,360,186.7C480,192,600,224,720,213.3C840,203,960,149,1080,149.3C1200,149,1320,203,1380,229.3L1440,256L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z"
-      />
-    </svg>
+const flights = [{
+  id: 'FL123',
+  airline: 'Delta',
+  dateofJourney: '2023-04-15',
+  source: 'JFK',
+  destination: 'LAX',
+  depTime: '14:30',
+  arrivalTime: '17:45',
+  duration: '3h 15m',
+  totalStops: 0,
+  additionalInfo: 'Meal included',
+  price: '$250',
+}];
 
-    {/* Main Content */}
-    <div className="container mx-auto px-4 relative z-10">
-      <div className="text-center">
-        {/* Headline */}
-        <h1 className="text-5xl md:text-7xl font-bold font-sans leading-tight mb-6">
-          <span className="block text-white">Your</span>
-          <span className="block text-bluethin bg-white bg-opacity-20 px-4 py-2 rounded-lg inline-block transform -rotate-2">
-            Journey
-          </span>
-          <span className="block text-white">Begins Now</span>
-        </h1>
-
-        {/* Tagline */}
-        <p className="text-xl md:text-2xl font-sans text-bluethin mb-10 max-w-2xl mx-auto">
-          Soar to your next adventure with seamless booking and unbeatable deals.
-        </p>
-
-        {/* CTA Buttons */}
-        <div className="flex justify-center gap-4 flex-col sm:flex-row">
-          <button className="relative bg-white text-primary px-8 py-4 rounded-full font-semibold font-sans shadow-lg hover:bg-bluelight hover:shadow-xl transition duration-300 ease-in-out group">
-            <span className="relative z-10">Book Now</span>
-            <span className="absolute bottom-0 left-1/2 h-1 w-0 bg-secondary transform -translate-x-1/2 group-hover:w-3/4 transition-all duration-300 ease-in-out" />
-          </button>
-          <button className="bg-transparent border-2 border-bluelight text-white px-6 py-3 rounded-full font-semibold font-sans hover:bg-bluelight hover:text-primary transition duration-300 ease-in-out">
-            Explore Destinations
-          </button>
-        </div>
-      </div>
-
-      {/* Creative Element: Floating Plane */}
-      <div className="absolute top-10 right-10 hidden md:block">
-        <FaPlane className="text-bluethin text-5xl opacity-50 transform rotate-45" />
-      </div>
-    </div>
-
-    {/* Decorative Line */}
-    <div className="absolute top-1/4 left-0 w-1/3 h-1 bg-bluelight opacity-30 transform -skew-y-12" />
-  </div>
-);
-
-// Search and Filter
-const SearchFilter: React.FC = () => (
-  <div className="container mx-auto px-4 -mt-16 relative z-20">
-    <div className="bg-white p-6 rounded-xl shadow-xl border border-bluelight">
-      <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div className="relative">
-          <FaPlaneDeparture className="absolute top-1/2 left-3 transform -translate-y-1/2 text-secondary" />
-          <input
-            type="text"
-            placeholder="From"
-            className="w-full pl-10 p-3 border border-bluelight rounded-lg text-text font-sans focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition duration-200 ease-in-out"
-          />
-        </div>
-        <div className="relative">
-          <FaPlaneArrival className="absolute top-1/2 left-3 transform -translate-y-1/2 text-secondary" />
-          <input
-            type="text"
-            placeholder="To"
-            className="w-full pl-10 p-3 border border-bluelight rounded-lg text-text font-sans focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition duration-200 ease-in-out"
-          />
-        </div>
-        <div className="relative">
-          <FaCalendarAlt className="absolute top-1/2 left-3 transform -translate-y-1/2 text-secondary" />
-          <input
-            type="date"
-            className="w-full pl-10 p-3 border border-bluelight rounded-lg text-text font-sans focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition duration-200 ease-in-out"
-          />
-        </div>
-        <div className="relative">
-          <FaCalendarAlt className="absolute top-1/2 left-3 transform -translate-y-1/2 text-secondary" />
-          <input
-            type="date"
-            className="w-full pl-10 p-3 border border-bluelight rounded-lg text-text font-sans focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition duration-200 ease-in-out"
-          />
-        </div>
-        <button className="bg-primary text-white px-6 py-3 rounded-lg font-semibold font-sans hover:bg-secondary hover:shadow-md transition duration-300 ease-in-out">
-          Search Flights
-        </button>
-      </div>
-      <div className="mt-6 flex flex-col md:flex-row gap-4">
-        <select className="p-3 border border-bluelight rounded-lg text-text font-sans focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition duration-200 ease-in-out">
-          <option>Price: Low to High</option>
-          <option>Price: High to Low</option>
-        </select>
-        <select className="p-3 border border-bluelight rounded-lg text-text font-sans focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition duration-200 ease-in-out">
-          <option>Stops: Any</option>
-          <option>Stops: Non-stop</option>
-          <option>Stops: 1 Stop</option>
-        </select>
-        <select className="p-3 border border-bluelight rounded-lg text-text font-sans focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent transition duration-200 ease-in-out">
-          <option>Airlines: All</option>
-          <option>Airlines: Delta</option>
-          <option>Airlines: United</option>
-        </select>
-      </div>
-    </div>
-  </div>
-);
-
-// Flight Listings
-const FlightListings: React.FC = () => (
-  <div className="container mx-auto px-4 py-12">
-    <h2 className="text-3xl font-bold text-text mb-8 font-sans text-center">
-      Available Flights
-    </h2>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {flights.map((flight) => (
-        <div
-          key={flight.id}
-          className="bg-gradient-to-br from-white to-bluethin p-1 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-1 transition duration-300 ease-in-out"
-        >
-          <AirplaneCard {...flight} />
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
-// Main Booking Page
-const BookingPage: React.FC = () => {
+const HeroSection = () => {
+  const [activeTab, setActiveTab] = useState('roundtrip');
+  
   return (
-    <div className="font-sans bg-background min-h-screen">
-      <HeroSection />
-      <SearchFilter />
-      <FlightListings />
+    <div className="relative min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+      {/* Decorative Elements */}
+      <div className="absolute top-0 right-0 w-1/3 h-screen overflow-hidden">
+        <div className="absolute top-0 right-0 w-full h-full">
+          <div className="absolute top-10 right-10 w-64 h-64 bg-blue-200 rounded-full opacity-20 blur-3xl" />
+          <div className="absolute top-40 right-40 w-96 h-96 bg-indigo-200 rounded-full opacity-20 blur-3xl" />
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 pt-20 pb-32 relative z-10">
+        <div className="max-w-4xl mx-auto">
+          {/* Hero Content */}
+          <div className="text-center mb-12">
+            <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              Discover Your Next Adventure
+            </h1>
+            <p className="text-gray-600 text-xl max-w-2xl mx-auto">
+              Seamless booking experience for your journey to anywhere in the world
+            </p>
+          </div>
+
+          {/* Search Card */}
+          <div className="bg-white rounded-3xl shadow-2xl p-8 backdrop-blur-lg backdrop-filter">
+            {/* Flight Type Tabs */}
+            <div className="flex gap-4 mb-8">
+              {['roundtrip', 'oneway', 'multicity'].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab)}
+                  className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                    activeTab === tab
+                      ? 'bg-blue-600 text-white shadow-lg shadow-blue-200'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                </button>
+              ))}
+            </div>
+
+            {/* Search Form */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-600">From</label>
+                <div className="relative">
+                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-600 w-5 h-5" />
+                  <input
+                    type="text"
+                    placeholder="Departure City"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring focus:ring-blue-100 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-600">To</label>
+                <div className="relative">
+                  <Plane className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-600 w-5 h-5" />
+                  <input
+                    type="text"
+                    placeholder="Arrival City"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring focus:ring-blue-100 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-600">Departure</label>
+                <div className="relative">
+                  <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-600 w-5 h-5" />
+                  <input
+                    type="date"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring focus:ring-blue-100 transition-all"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-gray-600">Return</label>
+                <div className="relative">
+                  <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-blue-600 w-5 h-5" />
+                  <input
+                    type="date"
+                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:border-blue-400 focus:ring focus:ring-blue-100 transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 flex justify-center">
+              <Button text="Search Flights" showArrow />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
+
+const FlightCard = ({ flight }) => (
+  <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all">
+    <div className="flex justify-between items-start mb-4">
+      <div>
+        <h3 className="text-lg font-semibold">{flight.airline}</h3>
+        <p className="text-gray-500 text-sm">Flight {flight.id}</p>
+      </div>
+      <div className="text-right">
+        <p className="text-2xl font-bold text-blue-600">{flight.price}</p>
+        <p className="text-gray-500 text-sm">per person</p>
+      </div>
+    </div>
+
+    <div className="flex items-center gap-4 mb-6">
+      <div className="flex-1">
+        <p className="text-2xl font-bold">{flight.source}</p>
+        <p className="text-gray-500">{flight.depTime}</p>
+      </div>
+      
+      <div className="flex-1 text-center">
+        <div className="relative">
+          <div className="border-t-2 border-gray-300 w-full absolute top-1/2 -translate-y-1/2" />
+          <Plane className="w-6 h-6 text-blue-600 mx-auto relative" />
+          <p className="text-sm text-gray-500 mt-1">{flight.duration}</p>
+        </div>
+      </div>
+
+      <div className="flex-1 text-right">
+        <p className="text-2xl font-bold">{flight.destination}</p>
+        <p className="text-gray-500">{flight.arrivalTime}</p>
+      </div>
+    </div>
+
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-sm">
+          {flight.totalStops === 0 ? 'Direct' : `${flight.totalStops} Stop`}
+        </span>
+        <span className="text-sm text-gray-500">{flight.additionalInfo}</span>
+      </div>
+      <Button text="Book"/>
+    </div>
+  </div>
+);
+
+const FlightListings = () => (
+  <div className="bg-gray-50 py-16">
+    <div className="container mx-auto px-4">
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Filters */}
+        <div className="lg:w-1/4">
+          <div className="bg-white rounded-2xl p-6 shadow-lg sticky top-4">
+            <div className="flex items-center gap-2 mb-6">
+              <Filter className="w-5 h-5 text-blue-600" />
+              <h2 className="text-lg font-semibold">Filters</h2>
+            </div>
+
+            <div className="space-y-4">
+              {['Price Range', 'Stops', 'Airlines', 'Duration'].map((filter) => (
+                <div key={filter} className="border-b border-gray-100 pb-4">
+                  <h3 className="text-sm font-medium mb-3">{filter}</h3>
+                  <select className="w-full p-2 rounded-lg border border-gray-200 text-sm">
+                    <option>All {filter}</option>
+                  </select>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Flight List */}
+        <div className="lg:w-3/4">
+          <div className="space-y-6">
+            {flights.map((flight) => (
+              <FlightCard key={flight.id} flight={flight} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const BookingPage = () => (
+  <div className="min-h-screen bg-gray-50">
+    <ModernHeroSection />
+    <FlightListings />
+  </div>
+);
 
 export default BookingPage;

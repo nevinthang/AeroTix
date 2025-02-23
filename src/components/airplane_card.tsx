@@ -97,7 +97,7 @@ const AirplaneCard: React.FC<AirplaneCardProps> = ({ id, airline, dateofJourney,
           <FaDollarSign className="text-primary text-lg" aria-hidden="true" />
           <p className="text-xl font-bold text-primary font-sans">{price}</p>
         </div>
-        <Button>Book Now</Button>
+        <Button text="Book"/>
       </div>
     </div>
   );
