@@ -1,6 +1,6 @@
 import React from "react";
 import { FaPlane, FaClock, FaInfoCircle, FaDollarSign, FaArrowDown } from "react-icons/fa";
-import Button from "@/components/button";
+import Button from "@/components/ui/button";
 
 interface AirplaneCardProps {
   id: string;
@@ -97,7 +97,7 @@ const AirplaneCard: React.FC<AirplaneCardProps> = ({ id, airline, dateofJourney,
           <FaDollarSign className="text-primary text-lg" aria-hidden="true" />
           <p className="text-xl font-bold text-primary font-sans">{price}</p>
         </div>
-        <Button text="Book"/>
+        <Button text="Book" />
       </div>
     </div>
   );

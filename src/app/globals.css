@@ -18,3 +18,12 @@ body {
   font-family: var(--font-poppins), sans-serif;
 }
 
+.card-box {
+  @apply bg-white rounded-3xl shadow-2xl p-8 backdrop-blur-lg backdrop-filter;
+}
+
+.bg-gradient-main {
+  @apply bg-gradient-to-br from-blue-50 to-indigo-50;
+}
+
+
