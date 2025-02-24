@@ -22,7 +22,7 @@ const Navbar = () => {
             {/* Logo */}
             <div className="flex-shrink-0">
               <span className="text-2xl font-bold text-gray-800 hover:scale-105 transition-transform duration-200 inline-block">
-                Logo
+              <img src="/logo1.png" alt="AR PLANE Logo" className="w-24 md:w-32 h-auto" />
               </span>
             </div>
 

@@ -159,48 +159,6 @@ const Homepage = () => {
 
   return (
     <div className="w-full min-h-screen bg-white">
-      {/* Navigation Bar */}
-      <nav className="w-full px-4 md:px-6 py-4 flex items-center justify-between relative">
-        <div className="flex items-center space-x-2">
-          <img src="/logo1.png" alt="AR PLANE Logo" className="w-24 md:w-32 h-auto" />
-        </div>
-        
-        {/* Mobile Menu Button */}
-        <button 
-          className="md:hidden p-2"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-        >
-          <Menu className="w-6 h-6" />
-        </button>
-
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex items-center space-x-8">
-          <a href="#" className="text-blue-600">Home</a>
-          <a href="/book" className="text-gray-500 hover:text-gray-700">Book Ticket</a>
-          <a href="#" className="text-gray-500 hover:text-gray-700">Check In</a>
-          <a href="#" className="text-gray-500 hover:text-gray-700">Rewards</a>
-          <a href="#" className="text-gray-500 hover:text-gray-700">Support</a>
-          <button className="px-6 py-2 rounded-full border border-gray-300 hover:bg-gray-50">
-            Login
-          </button>
-        </div>
-
-        {/* Mobile Navigation */}
-        {mobileMenuOpen && (
-          <div className="absolute top-full left-0 right-0 bg-white shadow-lg rounded-b-lg p-4 md:hidden z-50">
-            <div className="flex flex-col space-y-4">
-              <a href="#" className="text-blue-600">Home</a>
-              <a href="/book" className="text-gray-500">Book Ticket</a>
-              <a href="#" className="text-gray-500">Check In</a>
-              <a href="#" className="text-gray-500">Rewards</a>
-              <a href="#" className="text-gray-500">Support</a>
-              <button className="px-6 py-2 rounded-full border border-gray-300 text-center">
-                Login
-              </button>
-            </div>
-          </div>
-        )}
-      </nav>
       {/* Hero Section with Animation */}
       <div className="absolute inset-0 z-0 h-[480px] max-h-screen">
           <img 
