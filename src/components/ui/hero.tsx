@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plane, MapPin, Calendar, ArrowRight } from 'lucide-react';
+import Button from './button';
 
 const ModernHeroSection = () => {
   const [activeTab, setActiveTab] = useState('roundtrip');
@@ -144,13 +145,7 @@ const ModernHeroSection = () => {
 
               {/* Search Button */}
               <div className="mt-8 flex justify-center">
-                <button className="group relative px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full font-medium text-white hover:shadow-lg hover:shadow-blue-200/50 transition-all duration-300">
-                  <span className="flex items-center gap-2">
-                    Search Flights
-                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 blur opacity-0 group-hover:opacity-50 transition-opacity" />
-                </button>
+                <Button text="Search Flight" showArrow />
               </div>
             </div>
           </div>

@@ -1,11 +1,11 @@
-import React from "react";
-import { FaPlane, FaClock, FaInfoCircle, FaDollarSign, FaArrowDown } from "react-icons/fa";
-import Button from "@/components/ui/button";
+"use client";
 
-interface AirplaneCardProps {
+import React from 'react';
+import { Plane, Clock, Info } from 'lucide-react';
+
+interface Flight {
   id: string;
   airline: string;
-  dateofJourney: string;
   source: string;
   destination: string;
   depTime: string;
@@ -14,93 +14,107 @@ interface AirplaneCardProps {
   totalStops: number;
   additionalInfo?: string;
   price: string;
+  date: string;
+  logoUrl?: string;
 }
 
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-};
+interface FlightCardProps {
+  flight: Flight;
+}
 
-const formatTime = (timeString: string): string => {
-  const [hour, minute] = timeString.split(":");
-  const date = new Date();
-  date.setHours(parseInt(hour, 10));
-  date.setMinutes(parseInt(minute, 10));
-  return date.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-};
-
-const AirplaneCard: React.FC<AirplaneCardProps> = ({ id, airline, dateofJourney, source, destination, depTime, arrivalTime, duration, totalStops, additionalInfo, price }) => {
-  const formattedDate = formatDate(dateofJourney);
-  const formattedDepTime = formatTime(depTime);
-  const formattedArrivalTime = formatTime(arrivalTime);
-
+const FlightCard: React.FC<FlightCardProps> = ({ flight }) => {
   return (
-    <div className="bg-background rounded-xl shadow-md p-8 hover:shadow-lg hover:-translate-y-1 transition duration-300 ease-in-out">
-      {/* Header: Airline and ID */}
-      <div className="flex justify-between items-center mb-6">
+    <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+      {/* Header with Airline and Price */}
+      <div className="flex justify-between items-start mb-8">
         <div className="flex items-center gap-3">
-          <FaPlane className="text-primary text-xl" aria-hidden="true" />
-          <h2 className="text-xl font-bold text-primary font-sans">{airline}</h2>
+          {flight.logoUrl ? (
+            <img 
+              src={flight.logoUrl} 
+              alt={`${flight.airline} logo`}
+              className="w-10 h-10 rounded-lg object-cover"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+              <Plane className="w-6 h-6 text-blue-600" />
+            </div>
+          )}
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+              {flight.airline}
+            </h3>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="text-sm text-gray-500">Flight {flight.id}</span>
+              <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+              <span className="text-sm text-gray-500">{flight.date}</span>
+            </div>
+          </div>
         </div>
-        <span className="text-text text-sm bg-secondary bg-opacity-20 px-2 py-1 rounded-full">#{id}</span>
+        <div className="text-right">
+          <p className="text-2xl font-bold text-blue-600 group-hover:scale-105 transition-transform">
+            {flight.price}
+          </p>
+          <p className="text-sm text-gray-500">per person</p>
+        </div>
       </div>
 
-      {/* Journey Details */}
-      <div className="relative flex flex-col gap-6">
-        {/* Timeline Path */}
-        <div className="absolute left-1 top-6 bottom-6 w-px bg-secondary opacity-30 dashed-line" />
-        <div className="absolute left-3 top-1/2 transform -translate-y-1/2"></div>
-
-        {/* Source */}
-        <div className="flex items-center gap-4">
-          <div className="w-2 h-2 bg-primary rounded-full" />
-          <div>
-            <p className="text-text font-semibold text-base font-sans">{source}</p>
-            <p className="text-text text-sm opacity-60">{formattedDepTime}</p>
+      {/* Flight Route Visualization */}
+      <div className="flex items-center gap-4 mb-8">
+        <div className="flex-1">
+          <p className="text-2xl font-bold text-gray-900">{flight.source}</p>
+          <div className="flex items-center gap-2 mt-1">
+            <Clock className="w-4 h-4 text-gray-400" />
+            <p className="text-sm text-gray-500">{flight.depTime}</p>
           </div>
         </div>
 
-        {/* Destination */}
-        <div className="flex items-center gap-4">
-          <div className="w-2 h-2 bg-primary rounded-full" />
-          <div>
-            <p className="text-text font-semibold text-base font-sans">{destination}</p>
-            <p className="text-text text-sm opacity-60">{formattedArrivalTime}</p>
+        <div className="flex-1 relative px-4">
+          <div className="relative flex items-center justify-center">
+            <div className="absolute w-full border-t-2 border-dashed border-gray-200" />
+            <div className="bg-white px-2 py-1 rounded-full border border-gray-100 shadow-sm relative">
+              <Plane 
+                className="w-5 h-5 text-blue-600 transform rotate-90 group-hover:translate-x-2 transition-transform" 
+              />
+            </div>
+          </div>
+          <p className="text-sm text-gray-500 text-center mt-2">{flight.duration}</p>
+        </div>
+
+        <div className="flex-1 text-right">
+          <p className="text-2xl font-bold text-gray-900">{flight.destination}</p>
+          <div className="flex items-center gap-2 justify-end mt-1">
+            <Clock className="w-4 h-4 text-gray-400" />
+            <p className="text-sm text-gray-500">{flight.arrivalTime}</p>
           </div>
         </div>
       </div>
 
-      {/* Flight Info */}
-      <div className="mt-6 flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <FaClock className="text-primary text-base" aria-hidden="true" />
-            <p className="text-text font-medium font-sans">{duration}</p>
-          </div>
-          <span className={`px-2 py-1 rounded-full text-xs font-sans font-semibold ${totalStops === 0 ? "bg-secondary text-white" : "bg-primary text-white"}`}>
-            {totalStops === 0 ? "Non-stop" : `${totalStops} stop${totalStops > 1 ? "s" : ""}`}
+      {/* Footer with Additional Info and Action */}
+      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+        <div className="flex items-center gap-3">
+          <span className={`
+            px-3 py-1 rounded-full text-sm font-medium
+            ${flight.totalStops === 0 
+              ? 'bg-green-50 text-green-600' 
+              : 'bg-blue-50 text-blue-600'}
+          `}>
+            {flight.totalStops === 0 ? "Direct Flight" : `${flight.totalStops} Stop`}
           </span>
+          {flight.additionalInfo && (
+            <div className="flex items-center gap-1 text-sm text-gray-500">
+              <Info className="w-4 h-4" />
+              <span>{flight.additionalInfo}</span>
+            </div>
+          )}
         </div>
-
-        {/* Additional Info */}
-        {additionalInfo && (
-          <div className="flex items-center gap-2 bg-secondary bg-opacity-10 p-2 rounded-md">
-            <FaInfoCircle className="text-primary text-sm" aria-hidden="true" />
-            <p className="text-text text-sm font-sans">{additionalInfo}</p>
-          </div>
-        )}
-      </div>
-
-      {/* Price and Button */}
-      <div className="mt-6 flex justify-between items-center border-t border-secondary border-opacity-20 pt-4">
-        <div className="flex items-center gap-2">
-          <FaDollarSign className="text-primary text-lg" aria-hidden="true" />
-          <p className="text-xl font-bold text-primary font-sans">{price}</p>
-        </div>
-        <Button text="Book" />
+        <button className="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium 
+          hover:bg-blue-700 transition-colors duration-200 
+          focus:outline-none focus:ring-4 focus:ring-blue-200">
+          Book Now
+        </button>
       </div>
     </div>
   );
 };
 
-export default AirplaneCard;
+export default FlightCard;

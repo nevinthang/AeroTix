@@ -2,6 +2,9 @@ import BlurCircle from "@/components/ui/blur_circle";
 import Button from "@/components/ui/button";
 import DestinationCard from "@/components/card/destination_card";
 import FAQDropdown from "@/components/card/dropdown_card";
+import TextInput from "@/components/forms/textbox";
+import DateInput from "@/components/forms/dateinput";
+import TextArea from "@/components/forms/textarea";
 
 export default function Support() {
   const destinations = [
@@ -52,6 +55,23 @@ export default function Support() {
       {faqs.map((faq, index) => (
         <FAQDropdown key={index} faq={faq} />
       ))}
+      <form>
+      <TextInput
+        label="Full Name"
+        placeholder="Enter your full name"
+        helperText="As it appears on your passport"
+      />
+      
+      <TextArea
+        label="Special Requests"
+        placeholder="Any special requirements..."
+      />
+      
+      <DateInput
+        label="Check-in Date"
+        helperText="Check-in time starts from 3 PM"
+      />
+    </form>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Calendar, MapPin, Plane, Filter, ArrowRight } from "lucide-react";
 import Button from "@/components/ui/button";
 import ModernHeroSection from "@/components/ui/hero";
+import FlightCard from "@/components/card/airplane_card";
 
 const flights = [
   {
@@ -101,49 +102,6 @@ const HeroSection = () => {
     </div>
   );
 };
-
-const FlightCard = ({ flight }) => (
-  <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all">
-    <div className="flex justify-between items-start mb-4">
-      <div>
-        <h3 className="text-lg font-semibold">{flight.airline}</h3>
-        <p className="text-gray-500 text-sm">Flight {flight.id}</p>
-      </div>
-      <div className="text-right">
-        <p className="text-2xl font-bold text-blue-600">{flight.price}</p>
-        <p className="text-gray-500 text-sm">per person</p>
-      </div>
-    </div>
-
-    <div className="flex items-center gap-4 mb-6">
-      <div className="flex-1">
-        <p className="text-2xl font-bold">{flight.source}</p>
-        <p className="text-gray-500">{flight.depTime}</p>
-      </div>
-
-      <div className="flex-1 text-center">
-        <div className="relative">
-          <div className="border-t-2 border-gray-300 w-full absolute top-1/2 -translate-y-1/2" />
-          <Plane className="w-6 h-6 text-blue-600 mx-auto relative" />
-          <p className="text-sm text-gray-500 mt-1">{flight.duration}</p>
-        </div>
-      </div>
-
-      <div className="flex-1 text-right">
-        <p className="text-2xl font-bold">{flight.destination}</p>
-        <p className="text-gray-500">{flight.arrivalTime}</p>
-      </div>
-    </div>
-
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-2">
-        <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-600 text-sm">{flight.totalStops === 0 ? "Direct" : `${flight.totalStops} Stop`}</span>
-        <span className="text-sm text-gray-500">{flight.additionalInfo}</span>
-      </div>
-      <Button text="Book" />
-    </div>
-  </div>
-);
 
 const FlightListings = () => (
   <div className="bg-gray-50 py-16">
