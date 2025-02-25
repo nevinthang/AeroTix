@@ -8,6 +8,7 @@ interface Flight {
   airline: string;
   source: string;
   destination: string;
+  route: string;
   depTime: string;
   arrivalTime: string;
   duration: string;
