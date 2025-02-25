@@ -23,7 +23,7 @@ interface FlightCardProps {
   flight: Flight;
 }
 
-const FlightCard: React.FC<FlightCardProps> = ({ flight }) => {
+const FlightCard: React.FC<FlightCardProps> = ({ flight = {}}) => {
   return (
     <div className="group bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
       {/* Header with Airline and Price */}

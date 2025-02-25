@@ -19,6 +19,8 @@ const flights = [
     totalStops: 0,
     additionalInfo: "Meal included",
     price: "$250",
+    route: "CGK-DPS", // Properti yang hilang ditambahkan
+    date: "2025-03-01T08:00:00Z" //
   },
 ];
 
