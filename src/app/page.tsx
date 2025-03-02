@@ -158,9 +158,9 @@ const Homepage = () => {
   }, []);
 
   return (
-    <div className="w-full min-h-screen bg-white">
+    <div className="w-full min-h-screen bg-white pt-20">
       {/* Hero Section with Animation */}
-      <div className="absolute inset-0 z-0 h-[480px] max-h-screen">
+      <div className="absolute inset-0 z-0 h-[420px] max-h-screen">
           <img 
             src="world-map.png" 
             alt="World Map" 
