@@ -10,25 +10,29 @@ export default function Loyalty() {
       title: "Ramadhan Voucher",
       description: "Discount fligt up to 30%",
       image: "https://i.pinimg.com/736x/d3/90/d5/d390d5bf562cfee4c36f0a48f89e9ae6.jpg",
-      link: "#"
+      link: "#",
+      points : 5000
     },
     {
       title: "14K Gold Airplane Necklace, Plane Choker",
       description: "Hike through breathtaking mountain landscapes.",
       image: "https://i.pinimg.com/736x/c5/d7/a6/c5d7a6363e6685e9d8a9048c3d7832e1.jpg",
-      link: "#"
+      link: "#",
+      points : 15000
     },
     {
       title: "Space Chic Souvenirs Double Brooch by Erstwilder",
       description: "54mm x 50mm 38mm x 54mm (H x W) If you missed out on a visit to the space duty-free before departure ask the friendly cabin crew about our in-flight shopping service.",
       image: "https://i.pinimg.com/736x/85/83/29/85832997ca39405b4aa4b80a78bb3dbc.jpg",
-      link: "#"
+      link: "#",
+      points : 8000
     },
     {
       title: "Suitcase Luggage",
       description: "Because nothing says “I love you” like matching luggage. You don’t need a date for Valentine’s Day, but you do need durable luggage.",
       image: "https://i.pinimg.com/736x/df/72/a9/df72a9ece587f47e5c93d6068dbac8bc.jpg",
-      link: "#"
+      link: "#",
+      points : 7000
     }
   ];
 
@@ -56,7 +60,7 @@ export default function Loyalty() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pt-20">
       {/* Hero Section */}
       <div className="relative bg-gray-100 h-64 pt-20">
         <div className="absolute inset-0 overflow-hidden">
@@ -78,7 +82,9 @@ export default function Loyalty() {
           <button
             onClick={() => setActiveTab('about')}
             className={`px-4 py-3 font-medium whitespace-nowrap ${
-              activeTab === 'about' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'
+                activeTab === 'about' 
+                ? 'bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent border-b-2 border-blue-600' 
+                : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             About
@@ -86,7 +92,9 @@ export default function Loyalty() {
           <button
             onClick={() => setActiveTab('rewards')}
             className={`px-4 py-3 font-medium whitespace-nowrap ${
-              activeTab === 'rewards' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'
+                activeTab === 'rewards' 
+                ? 'bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent border-b-2 border-blue-600' 
+                : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             Rewards
@@ -94,7 +102,9 @@ export default function Loyalty() {
           <button
             onClick={() => setActiveTab('contact')}
             className={`px-4 py-3 font-medium whitespace-nowrap ${
-              activeTab === 'contact' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'
+                activeTab === 'contact' 
+                ? 'bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent border-b-2 border-blue-600' 
+                : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             Contact 
@@ -117,6 +127,10 @@ export default function Loyalty() {
                 <div className="grid lg:grid-cols-4 gap-6 mb-10">
                 {travelPackages.map((pkg, index) => (
                     <div key={index} className="bg-white rounded-lg shadow overflow-hidden relative">
+                        {/* Badge Jumlah Poin */}
+          <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-600 to-purple-600  text-white text-sm font-semibold px-3 py-1 rounded-full shadow-md">
+            {pkg.points} Points
+          </div>
                     <img src={pkg.image} alt={pkg.title} className="w-full h-48 object-cover" />
                     <div className="p-4 pb-14">
                         <h3 className="font-medium text-lg mb-1">{pkg.title}</h3>
@@ -140,10 +154,10 @@ export default function Loyalty() {
           
           <div className="flex flex-col items-center space-y-2">
             <p className="text-lg font-medium text-gray-700">
-              📧 Email: <a href="mailto:aerotix@admin.com" className="text-blue-600 hover:underline">aerotix@admin.com</a>
+              📧 Email: <a href="mailto:aerotix@admin.com" className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:underline">aerotix@admin.com</a>
             </p>
             <p className="text-lg font-medium text-gray-700">
-              📞 Phone: <a href="tel:+6281234567890" className="text-blue-600 hover:underline">+62 812 3456 7890</a>
+              📞 Phone: <a href="tel:+6281234567890" className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:underline">+62 812 3456 7890</a>
             </p>
           </div>
           
