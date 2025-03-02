@@ -422,8 +422,8 @@ const Homepage = () => {
           <h3 className="text-center text-sm font-medium text-gray-600 uppercase tracking-wider mb-2">
             Fly With AeroTix
           </h3>
-          <h2 className="text-center text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-          Make this trip extraordinary
+          <h2 className="text-center text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+            Make this trip extraordinary
           </h2>
           <p className="text-center text-gray-600 max-w-2xl mx-auto">
            Enjoy the experience and plan an unforgettable trip after your flight
