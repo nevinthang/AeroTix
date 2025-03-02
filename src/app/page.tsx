@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Card } from '@/components/homepage_card';
 import { Calendar, X, Plus, Minus, ChevronLeft, ChevronRight, Menu, Plane } from 'lucide-react';
 
 const Homepage = () => {
