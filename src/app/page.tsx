@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Card } from '@/components/homepage_card';
 import { Calendar, X, Plus, Minus, ChevronLeft, ChevronRight, Menu, Plane } from 'lucide-react';
 
 const Homepage = () => {
@@ -158,9 +157,9 @@ const Homepage = () => {
   }, []);
 
   return (
-    <div className="w-full min-h-screen bg-white">
+    <div className="w-full min-h-screen pt-20">
       {/* Hero Section with Animation */}
-      <div className="absolute inset-0 z-0 h-[480px] max-h-screen">
+      <div className="absolute inset-0 z-0 h-[410px] max-h-screen">
           <img 
             src="world-map.png" 
             alt="World Map" 
