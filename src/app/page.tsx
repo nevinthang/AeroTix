@@ -159,7 +159,7 @@ const Homepage = () => {
   }, []);
 
   return (
-    <div className="relative flex flex-col items-center justify-center pt-20 px-6 text-center">
+    <div className="relative flex flex-col items-center justify-center pt-20 px-6">
       {/* Hero Section with Animation */}
       <div className="relative flex flex-col items-center justify-center pt-20 px-6 text-center">
         <div className="absolute inset-0 z-0 h-[420px] max-h-screen ">
