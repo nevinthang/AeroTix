@@ -23,3 +23,8 @@ model Flight {
   updatedAt      DateTime @updatedAt
   route          String
 }
+
+model User {
+  id        String   @id @default(cuid())
+  name      String 
+}

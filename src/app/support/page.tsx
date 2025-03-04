@@ -33,7 +33,8 @@ export default function Support() {
   const faqs = [
     {
       question: "What's included in the travel package?",
-      answer: "Our travel package includes round-trip flights, hotel accommodation...",
+      answer:
+        "Our travel package includes round-trip flights, hotel accommodation...",
     },
     {
       question: "What's the cancellation policy?",
@@ -45,7 +46,9 @@ export default function Support() {
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] bg-gradient-main">
       <Button text="Search c" showArrow />
       <BlurCircle></BlurCircle>
-      <div className="card-box">alsjdialsjdliajsdliasjauuskdhhhhhhhhhhhhhhhhhhhhhhhhh</div>
+      <div className="card-box">
+        alsjdialsjdliajsdliasjauuskdhhhhhhhhhhhhhhhhhhhhhhhhh
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6 mt-10">
         {destinations.map((dest, index) => (
           <DestinationCard key={index} destination={dest} />
@@ -56,22 +59,22 @@ export default function Support() {
         <FAQDropdown key={index} faq={faq} />
       ))}
       <form>
-      <TextInput
-        label="Full Name"
-        placeholder="Enter your full name"
-        helperText="As it appears on your passport"
-      />
-      
-      <TextArea
-        label="Special Requests"
-        placeholder="Any special requirements..."
-      />
-      
-      <DateInput
-        label="Check-in Date"
-        helperText="Check-in time starts from 3 PM"
-      />
-    </form>
+        <TextInput
+          label="Full Name"
+          placeholder="Enter your full name"
+          helperText="As it appears on your passport"
+        />
+
+        <TextArea
+          label="Special Requests"
+          placeholder="Any special requirements..."
+        />
+
+        <DateInput
+          label="Check-in Date"
+          helperText="Check-in time starts from 3 PM"
+        />
+      </form>
     </div>
   );
 }
