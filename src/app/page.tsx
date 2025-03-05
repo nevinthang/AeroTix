@@ -159,7 +159,7 @@ const Homepage = () => {
   }, []);
 
   return (
-    <div className="relative flex flex-col items-center justify-center pt-20 px-6">
+    <div className="relative flex flex-col items-center justify-center pt-20 px-6 bg-gradient-main">
       {/* Hero Section with Animation */}
       <div className="relative flex flex-col items-center justify-center pt-20 px-6 text-center">
         <div className="absolute inset-0 z-0 h-[420px] max-h-screen ">
@@ -201,7 +201,7 @@ const Homepage = () => {
               <h1 className="text-3xl md:text-4xl font-bold mb-4 transition-all duration-500 bg-clip-text text-transparent"
                 style={{
                   backgroundImage: isHovered 
-                    ? 'linear-gradient(to right, #2563eb, #9333ea)'  // Gradient dari blue-600 ke purple-600
+                    ? 'linear-gradient(to bottom right, #2563eb, #9333ea)'  // Gradient dari blue-600 ke purple-600
                     : 'linear-gradient(to right, #1f2937, #1f2937)', // Warna default gray-800
                   textShadow: isHovered ? '2px 2px 4px rgba(0, 0, 0, 0.1)' : 'none'
                 }}

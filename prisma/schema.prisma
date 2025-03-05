@@ -8,23 +8,62 @@ datasource db {
 }
 
 model Flight {
-  id             String   @id @default(cuid())
+  flightNumber   String    @id 
+  departure      String
+  departureCode  String
+  arrival        String
+  arrivalCode    String
+  departureDate  DateTime
+  departureHour  DateTime
+  duration       Int
+  arrivalDate    DateTime
+  arrivalHour   DateTime
   airline        String
-  source         String
-  destination    String
-  depTime        String
-  arrivalTime    String
-  duration       String
-  totalStops     Int
-  additionalInfo String?
-  price          String
-  date           String
+  aircraft       String
+  category       Category
+  price          Float
+  seatCapacity   Int
+  availableSeats Int
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
-  route          String
+  tickets        Ticket[]
+}
+
+enum Category {
+  ECONOMY
+  PREMIUM_ECONOMY
+  BUSINESS
+  FIRST_CLASS
+}
+
+model Ticket {
+  ticketNumber String @id @default(uuid())
+  flight         Flight   @relation(fields: [flightNumber], references: [flightNumber])
+  flightNumber   String
+  user           User     @relation(fields: [userId], references: [id])
+  userId         String  
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String 
+  id        String   @id @default(uuid())
+  username  String   @unique
+  email     String @unique
+  password  String
+  name      String
+  title     Title
+  phoneNumber String
+  birthdate  DateTime
+  passport  String?   @unique
+  passport_exp DateTime? 
+  loyaltyPoints Int  @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tickets   Ticket[]
+  isAdmin   Boolean  @default(false)
+}
+
+enum Title {
+  MR
+  MS
+  MRS
 }
