@@ -1,11 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Menu, X, UserCircle } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Gantilah dengan state autentikasi yang sebenarnya
+  const [activePage, setActivePage] = useState("");
 
   const navItems = [
     { label: "Home", href: "/" },
@@ -14,6 +15,25 @@ const Navbar = () => {
     { label: "Loyalty", href: "/loyalty" },
     { label: "Support", href: "/support" },
   ];
+
+  // Deteksi halaman aktif berdasarkan pathname
+  useEffect(() => {
+    // Mendapatkan pathname dari URL saat ini
+    const path = window.location.pathname;
+    
+    // Menentukan halaman aktif berdasarkan path
+    if (path === "/") {
+      setActivePage("Home");
+    } else {
+      // Mencari item navigasi yang pathnya cocok dengan pathname saat ini
+      const activeItem = navItems.find(item => 
+        path.startsWith(item.href) && item.href !== "/"
+      );
+      if (activeItem) {
+        setActivePage(activeItem.label);
+      }
+    }
+  }, []);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50">
@@ -34,8 +54,14 @@ const Navbar = () => {
                   href={item.href}
                   className="relative text-gray-800 px-3 py-2 rounded-md text-sm font-medium group"
                 >
-                  <span className="relative z-10">{item.label}</span>
-                  <span className="absolute inset-x-0 -bottom-1 h-0.5 bg-gray-800 transform origin-left scale-x-0 transition-transform duration-200 group-hover:scale-x-100"></span>
+                  <span className={`relative z-10 ${activePage === item.label ? "font-medium" : ""}`}>
+                    {item.label}
+                  </span>
+                  <span 
+                    className={`absolute inset-x-0 -bottom-1 h-0.5 bg-gray-800 transform origin-left transition-transform duration-200 ${
+                      activePage === item.label ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
+                    }`}
+                  ></span>
                 </a>
               ))}
 
@@ -79,12 +105,17 @@ const Navbar = () => {
               <a
                 key={item.label}
                 href={item.href}
-                className="block text-gray-800 px-4 py-2 rounded-md text-base font-medium transition-all duration-200 hover:bg-white/20"
+                className="block text-gray-800 px-4 py-2 rounded-md text-base font-medium transition-all duration-200 hover:bg-white/20 relative"
                 style={{
                   transitionDelay: `${index * 50}ms`,
                 }}
               >
-                {item.label}
+                <span className={activePage === item.label ? "font-medium" : ""}>
+                  {item.label}
+                </span>
+                {activePage === item.label && (
+                  <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-gray-800"></span>
+                )}
               </a>
             ))}
 
