@@ -1,13 +1,135 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Calendar, X, Plus, Minus, ChevronLeft, ChevronRight, Menu, Plane } from 'lucide-react';
+import './globals.css';
+
 
 const Homepage = () => {
   const [showTravellerModal, setShowTravellerModal] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const sliderRef = useRef<HTMLDivElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [centerIndex, setCenterIndex] = useState(1);
+
+  const testimonials = [
+    {
+      name: "Mehwish",
+      text: "Aerotix is amazing! Super fast booking, hassle-free, and always reliable. My go-to for every trip!",
+      image: "https://randomuser.me/api/portraits/women/1.jpg"
+    },
+    {
+      name: "Elizabeth Jeff",
+      text: "So quick and easy! Found the best deals in seconds, and the process was smooth. Highly recommended!",
+      image: "https://randomuser.me/api/portraits/women/2.jpg"
+    },
+    {
+      name: "Emily Thomas",
+      text: "Trustworthy and efficient! Aerotix makes booking stress-free with great prices and top-notch service.",
+      image: "https://randomuser.me/api/portraits/women/3.jpg"
+    }
+  ];
+
+  // const calculateCenterItem = () => {
+  //   if (!containerRef.current || !sliderRef.current) return;
+  
+  //   // Ambil posisi heading sebagai acuan
+  //   const headingElement = document.querySelector('.testimonial-heading') as HTMLElement | null;
+  //   if (!headingElement) return;
+  
+  //   const headingRect = headingElement.getBoundingClientRect();
+  //   const referencePosition = headingRect.bottom + 10; // Tambahkan offset agar lebih akurat
+  
+  //   // Ambil semua elemen testimonial
+  //   const items = Array.from(sliderRef.current.querySelectorAll('.testimonial-item')) as HTMLElement[];
+  //   if (!items.length) return;
+  
+  //   let closestItem: HTMLElement | null = null;
+  //   let closestDistance = Infinity;
+  //   let nextItem: HTMLElement | null = null;
+  
+  //   items.forEach((item) => {
+  //     const itemRect = item.getBoundingClientRect();
+  //     const itemTop = itemRect.top;
+  
+  //     // Ambil item pertama yang ada DI BAWAH referencePosition
+  //     if (itemTop > referencePosition) {
+  //       if (!nextItem || itemTop < nextItem.getBoundingClientRect().top) {
+  //         nextItem = item;
+  //       }
+  //     }
+  
+  //     // Tetap cari item terdekat sebagai fallback
+  //     const distance = Math.abs(referencePosition - itemTop);
+  //     if (distance < closestDistance) {
+  //       closestDistance = distance;
+  //       closestItem = item;
+  //     }
+  //   });
+  
+  //   // Pilih item yang akan di-highlight
+  //   const itemToHighlight = nextItem || closestItem;
+  //   if (!itemToHighlight) return;
+  
+  //   // Hapus highlight dari semua item dulu
+  //   items.forEach((item) => {
+  //     item.classList.remove('testimonial-highlighted', 'border-l-4', 'border-purple-600', 'bg-gray-100');
+  //     item.classList.add('bg-white');
+  //   });
+  
+  //   // Tambahkan highlight ke item yang dipilih
+  //   (itemToHighlight as HTMLElement).classList.add('testimonial-highlighted', 'border-l-4', 'border-purple-600', 'bg-gray-100');
+  //   (itemToHighlight as HTMLElement).classList.remove('bg-white');
+  
+  //   // Pastikan elemen memiliki dataset.index
+  //   const index = parseInt((itemToHighlight as HTMLElement).dataset.index || '0', 10);
+  //   if (!isNaN(index) && testimonials.length > 0) {
+  //     setCenterIndex(index % testimonials.length);
+  //   }
+  // };
+  
+  
+
+  // // Add this near the useEffect for smooth transitions
+  // useEffect(() => {
+  //   // Calculate center item initially
+  //   setTimeout(calculateCenterItem, 100);
+    
+  //   // Set up scroll event listeners
+  //   const container = containerRef.current;
+  //   if (container) {
+  //     container.addEventListener('scroll', calculateCenterItem);
+  //   }
+    
+  //   // Set up animation end listener
+  //   const slider = sliderRef.current;
+  //   if (slider) {
+  //     slider.addEventListener('animationiteration', () => {
+  //       // When animation completes one iteration, recalculate center
+  //       calculateCenterItem();
+  //     });
+  //   }
+    
+  //   // Add window scroll listener
+  //   window.addEventListener('scroll', calculateCenterItem);
+    
+  //   // Set up interval to periodically check for position changes during animation
+  //   const highlightInterval = setInterval(calculateCenterItem, 500);
+    
+  //   // Clean up event listeners
+  //   return () => {
+  //     if (container) {
+  //       container.removeEventListener('scroll', calculateCenterItem);
+  //     }
+  //     if (slider) {
+  //       slider.removeEventListener('animationiteration', calculateCenterItem);
+  //     }
+  //     window.removeEventListener('scroll', calculateCenterItem);
+  //     clearInterval(highlightInterval);
+  //   };
+  // }, [testimonials.length]);
 
   const whyUsFeatures = [
     {
@@ -58,24 +180,6 @@ const Homepage = () => {
     }
   ];
 
-  const testimonials = [
-    {
-      name: "Mehwish",
-      text: "Aerotix is amazing! Super fast booking, hassle-free, and always reliable. My go-to for every trip!",
-      image: "https://randomuser.me/api/portraits/women/1.jpg"
-    },
-    {
-      name: "Elizabeth Jeff",
-      text: "So quick and easy! Found the best deals in seconds, and the process was smooth. Highly recommended!",
-      image: "https://randomuser.me/api/portraits/women/2.jpg"
-    },
-    {
-      name: "Emily Thomas",
-      text: "Trustworthy and efficient! Aerotix makes booking stress-free with great prices and top-notch service.",
-      image: "https://randomuser.me/api/portraits/women/3.jpg"
-    }
-  ];
-
   const cabinClasses = [
     {
       type: "CABIN FEATURES",
@@ -116,29 +220,23 @@ const Homepage = () => {
 
   const heroSlides = [
     {
-      title: "Phuket",
+      title: "Coming Soon",
       subtitle: "Stunning beaches, vibrant nightlife, endless adventures",
-      image: "https://i.pinimg.com/736x/23/e0/b1/23e0b1442bd7e91beb4966707add8d0b.jpg",
-      miniImage: "https://i.pinimg.com/736x/23/e0/b1/23e0b1442bd7e91beb4966707add8d0b.jpg"
+      image: "/1.png",
+      miniImage: "/1.png"
     },
     {
       title: "Paris",
       subtitle: "Experience the city of lights",
-      image: "https://i.pinimg.com/736x/0b/6e/b3/0b6eb32a51d8f043dd46071a9ed6cbeb.jpg",
-      miniImage: "https://i.pinimg.com/736x/0b/6e/b3/0b6eb32a51d8f043dd46071a9ed6cbeb.jpg"
+      image: "/2.png",
+      miniImage: "/2.png"
     },
     {
       title: "London",
       subtitle: "Discover royal heritage",
-      image: "https://i.pinimg.com/736x/f4/80/93/f4809343e8c9e4ee4653a092e8e371af.jpg",
-      miniImage: "https://i.pinimg.com/736x/f4/80/93/f4809343e8c9e4ee4653a092e8e371af.jpg"
-    },
-    {
-      title: "Bali",
-      subtitle: "Island of the Gods",
-      image: "https://i.pinimg.com/736x/fb/2a/e6/fb2ae646f9e83e1e3b99954c08588f71.jpg",
-      miniImage: "https://i.pinimg.com/736x/fb/2a/e6/fb2ae646f9e83e1e3b99954c08588f71.jpg"
-    },
+      image: "/3.png",
+      miniImage: "/3.png"
+    }
   ];
 
   // Auto slide effect
@@ -217,113 +315,180 @@ const Homepage = () => {
                 Explore the wonders of the world, from breathtaking landscapes to vibrant cities waiting to be discovered. Book your next adventure now with Aerotix and make every journey unforgettable!
               </p>
               <a href="/book">
-                <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent  font-semibold rounded-full shadow-lg transition-all duration-500 transform hover:scale-105 hover:bg-blue-700 hover:shadow-xl"
-                  style={{
-                    backgroundColor: isHovered ? '#2563eb' : '#2563eb',
-                    transform: isHovered ? 'scale(1.05)' : 'scale(1)'
-                  }}
-                >
+                <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg transition-all duration-500 transform hover:scale-105 hover:bg-white hover:text-white hover:shadow-xl">
                   Book Now
                 </button>
               </a>
+
             </div>
           </div>
         </div>
-        {/* Why Us Section */}
-        <div className = "card-box">
-          <section className="bg-white-100 py-12 md:py-16">
+          {/* Why Us Section */}
+          <div className = "card-box">
+          <section className="bg-white-100 py-12 md:py-1">
           <div className="max-w-6xl mx-auto px-4 text-center">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-8">Why Choose Us?</h2>
+          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">
+            Why Choose Us?
+          </h2>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-              {whyUsFeatures.map((feature, index) => (
+              <div 
+                className="group flex flex-col items-center text-center bg-white p-6 rounded-lg shadow-md 
+                          transition-all duration-300"
+              >
                 <div 
-                  key={index} 
-                  className="group flex flex-col items-center text-center bg-white p-6 rounded-lg shadow-md 
-                            transition-all duration-300 ease-in-out hover:shadow-xl hover:-translate-y-2"
-                >
-                 <div 
                   className="w-16 h-16 flex items-center justify-center rounded-full text-3xl transform transition-all duration-500 ease-in-out group-hover:scale-110 group-hover:rotate-6"
                   style={{
-                    background: 'linear-gradient(to right, #e5e7eb, #e5e7eb)', // Default gray-200
+                    background: 'linear-gradient(to right, #e5e7eb, #e5e7eb)',
+                    
+                  }}
+                >
+                  🚀
+                </div>
+                <h3 
+                  className="font-semibold text-lg mt-4 mb-2 transition-colors duration-300 bg-clip-text text-transparent"
+                  style={{
+                    backgroundImage: 'linear-gradient(to right, #1f2937, #1f2937)',
+                   
+                  }}
+                >
+                  Fast & Reliable
+                </h3>
+                <p className="text-gray-600 text-sm">
+                  We ensure quick and trustworthy services for our customers.
+                </p>
+              </div>
+
+              <div 
+                className="group flex flex-col items-center text-center bg-white p-6 rounded-lg shadow-md 
+                          transition-all duration-300 "
+              >
+                <div 
+                  className="w-16 h-16 flex items-center justify-center rounded-full text-3xl transform transition-all duration-500 ease-in-out group-hover:scale-110 group-hover:rotate-6"
+                  style={{
+                    background: 'linear-gradient(to right, #e5e7eb, #e5e7eb)',
                     transition: 'background 0.3s ease-in-out'
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to right, #2563eb, #9333ea)'} // Gradient blue-600 to purple-600 saat hover
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to right, #e5e7eb, #e5e7eb)'} // Kembali ke gray-200 saat tidak hover
                 >
-                  {feature.icon}
+                  💡
                 </div>
+                <h3 
+                  className="font-semibold text-lg mt-4 mb-2 transition-colors duration-300 bg-clip-text text-transparent"
+                  style={{
+                    backgroundImage: 'linear-gradient(to right, #1f2937, #1f2937)',
+                    transition: 'background-image 0.3s ease-in-out'
+                  }}
+                >
+                  Innovative Solutions
+                </h3>
+                <p className="text-gray-600 text-sm transition-all duration-300 group-hover:text-gray-800">
+                  We provide cutting-edge technology to enhance your experience.
+                </p>
+              </div>
 
-                  <h3 
-                    className="font-semibold text-lg mt-4 mb-2 transition-colors duration-300 bg-clip-text text-transparent"
-                    style={{
-                      backgroundImage: 'linear-gradient(to right, #1f2937, #1f2937)', // Default gray-800
-                      transition: 'background-image 0.3s ease-in-out'
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.backgroundImage = 'linear-gradient(to right, #2563eb, #9333ea)'} // Blue-600 to Purple-600 saat hover
-                    onMouseLeave={(e) => e.currentTarget.style.backgroundImage = 'linear-gradient(to right, #1f2937, #1f2937)'} // Kembali ke gray-800 saat tidak hover
-                  >
-                    {feature.title}
-                  </h3>
-
-                  <p className="text-gray-600 text-sm transition-all duration-300 group-hover:text-gray-800">
-                    {feature.description}
-                  </p>
+              <div 
+                className="group flex flex-col items-center text-center bg-white p-6 rounded-lg shadow-md 
+                          transition-all duration-300"
+              >
+                <div 
+                  className="w-16 h-16 flex items-center justify-center rounded-full text-3xl transform transition-all duration-500 ease-in-out group-hover:scale-110 group-hover:rotate-6"
+                  style={{
+                    background: 'linear-gradient(to right, #e5e7eb, #e5e7eb)',
+                  }}
+                >
+                  🌍
                 </div>
-              ))}
+                <h3 
+                  className="font-semibold text-lg mt-4 mb-2 transition-colors duration-300 bg-clip-text text-transparent"
+                  style={{
+                    backgroundImage: 'linear-gradient(to right, #1f2937, #1f2937)',
+                    transition: 'background-image 0.3s ease-in-out'
+                  }}
+                >
+                  Global Reach
+                </h3>
+                <p className="text-gray-600 text-sm transition-all duration-300 group-hover:text-gray-800">
+                  Our services are available worldwide to meet your needs.
+                </p>
+              </div>
             </div>
           </div>
         </section>
         </div>
 
-        {/* Customer Testimonials Section with Enhanced Animations */}
         <div className="max-w-6xl mx-auto mb-16 md:mb-24 px-4 pt-20">
-            <div className="flex flex-col md:flex-row md:items-center md:space-x-8">
-              <div className="w-full md:w-1/2 mb-8 md:mb-0">
-                <h2 className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-4">
-                  What Our Customers Say
-                </h2>
-                <p className="text-gray-500 mb-6">
-                  Relation so in confined smallest children unpacked delicate. Why sir end believe uncivil respect. 
-                  Always get adieus nature day course for common.
-                </p>
-                {/* <button className="w-full md:w-auto px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 
-                                text-white font-semibold rounded-full shadow-lg hover:opacity-90 transition">
-                  View More
-                </button> */}
-              </div>
-              <div className="w-full md:w-1/2">
-                <div className="space-y-4">
-                  {testimonials.map((testimonial, index) => (
-                    <div 
-                      key={index} 
-                      className={`p-4 border rounded-lg shadow-md flex items-start space-x-4 
-                                transition-all duration-300 ease-in-out
-                                hover:shadow-xl hover:scale-[1.02] hover:bg-gradient-to-r 
-                                ${index === 1 
-                                  ? 'border-l-4 border-purple-600 bg-gray-100 hover:from-blue-50 hover:to-purple-50' 
-                                  : 'bg-white hover:from-blue-50 hover:to-purple-50'
-                                }
-                                cursor-pointer`}
-                    >
-                      <img 
-                        src={testimonial.image} 
-                        alt={testimonial.name} 
-                        className="w-12 h-12 rounded-full transition-transform duration-300 hover:scale-110" 
-                      />
-                      <div className="transform transition-all duration-300">
-                        <h3 className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 transition-colors duration-300">
-                          {testimonial.name}
-                        </h3>
-                        <p className="text-gray-600 text-sm transition-colors duration-300 hover:text-gray-800">
-                          {testimonial.text}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+      <div className="flex flex-col md:flex-row md:items-center md:space-x-8">
+        <div className="w-full md:w-1/2 mb-8 md:mb-0">
+          <h2 className="text-2xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-4">
+            What Our Customers Say
+          </h2>
+          <p className="text-gray-500 mb-6">
+            Relation so in confined smallest children unpacked delicate. Why sir end believe uncivil respect. 
+            Always get adieus nature day course for common.
+          </p>
+        </div>
+        <div ref={containerRef} className="w-full md:w-1/2 overflow-hidden relative h-80">
+          <div 
+            ref={sliderRef}
+            className="testimonial-slider"
+          >
+            {/* First set of testimonials */}
+            {testimonials.map((testimonial, index) => (
+              <div 
+                key={`first-${index}`}
+                data-index={index}
+                className={`testimonial-item p-4 border rounded-lg shadow-md flex items-start space-x-4 
+                          transition-all duration-300 ease-in-out
+                          hover:shadow-xl hover:scale-[1.02] hover:bg-gradient-to-r 
+                          'bg-white hover:from-blue-50 hover:to-purple-50'
+                          cursor-pointer`}
+              >
+                <img 
+                  src={testimonial.image} 
+                  alt={testimonial.name} 
+                  className="w-12 h-12 rounded-full transition-transform duration-300 hover:scale-110" 
+                />
+                <div className="transform transition-all duration-300">
+                  <h3 className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 transition-colors duration-300">
+                    {testimonial.name}
+                  </h3>
+                  <p className="text-gray-600 text-sm transition-colors duration-300 hover:text-gray-800">
+                    {testimonial.text}
+                  </p>
                 </div>
               </div>
-            </div>
+            ))}
+            
+            {/* Duplicate testimonials to create seamless loop */}
+            {testimonials.map((testimonial, index) => (
+              <div 
+                key={`second-${index}`}
+                data-index={index}
+                className={`testimonial-item p-4 border rounded-lg shadow-md flex items-start space-x-4 
+                          transition-all duration-300 ease-in-out
+                          hover:shadow-xl hover:scale-[1.02] hover:bg-gradient-to-r 
+                          'bg-white hover:from-blue-50 hover:to-purple-50'
+                          cursor-pointer`}
+              >
+                <img 
+                  src={testimonial.image} 
+                  alt={testimonial.name} 
+                  className="w-12 h-12 rounded-full transition-transform duration-300 hover:scale-110" 
+                />
+                <div className="transform transition-all duration-300">
+                  <h3 className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 transition-colors duration-300">
+                    {testimonial.name}
+                  </h3>
+                  <p className="text-gray-600 text-sm transition-colors duration-300 hover:text-gray-800">
+                    {testimonial.text}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
+        </div>
+      </div>
+    </div>
          {/* Popular Places Section - Modified to be static grid */}
       {/* <div className="max-w-6xl mx-auto mb-16 md:mb-24 px-4">
         <div className="flex items-center justify-between mb-8">
@@ -356,7 +521,7 @@ const Homepage = () => {
       </div> */}
 
        {/* Popular Places Section */}
-       <div className="relative w-full h-[80vh] overflow-hidden">
+       {/* <div className="relative w-full h-[100vh] overflow-hidden">
         <div 
           className="absolute inset-0 w-full h-full transition-transform duration-1000 ease-out"
           style={{
@@ -364,12 +529,12 @@ const Homepage = () => {
             backgroundSize: 'cover',
             backgroundPosition: 'center',
           }}
-        >
+        > */}
           {/* Overlay */}
-          <div className="absolute inset-0 bg-black/30" />
+          {/* <div className="absolute inset-0 " /> */}
           
           {/* Hero Content */}
-          <div className="relative h-full max-w-6xl mx-auto px-4 flex items-center">
+          {/* <div className="relative h-full max-w-6xl mx-auto px-4 flex items-center">
             <div className="text-white">
               <h1 className="text-6xl md:text-8xl font-bold mb-4 animate-fade-in">
                 {heroSlides[currentSlide].title}
@@ -378,11 +543,11 @@ const Homepage = () => {
                 {heroSlides[currentSlide].subtitle}
               </p>
             </div>
-          </div>
-        </div>
+          </div> */}
+        {/* </div> */}
 
         {/* Mini Cards Navigation */}
-        <div className="absolute bottom-8 left-0 right-0">
+        {/* <div className="absolute bottom-8 left-0 right-0">
           <div className="max-w-6xl mx-auto px-4">
             <div className="flex space-x-4 overflow-x-auto pb-4">
               {heroSlides.map((slide, index) => (
@@ -398,7 +563,6 @@ const Homepage = () => {
                     alt={slide.title}
                     className="w-full h-full object-cover"
                   />
-                  {/* Airplane icon for current slide */}
                   {currentSlide === index && (
                     <div className="absolute top-2 right-2">
                       <Plane className="w-6 h-6 text-white transform -rotate-45" />
@@ -412,8 +576,8 @@ const Homepage = () => {
               ))}
             </div>
           </div>
-        </div>
-      </div>
+        </div> */}
+      {/* // </div> */}
       <br/><br/>
       
       {/* Articles Section with Hover Animations */}
@@ -423,10 +587,10 @@ const Homepage = () => {
             Fly With AeroTix
           </h3>
           <h2 className="text-center text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            Make this trip extraordinary
+            Make This Trip Extraordinary
           </h2>
           <p className="text-center text-gray-600 max-w-2xl mx-auto">
-           Enjoy the experience and plan an unforgettable trip after your flight
+           Enjoy The Experience & Plan An Unforgettable Trip After Your Flight
           </p>
         </div>
 
