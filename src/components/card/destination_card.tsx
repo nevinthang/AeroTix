@@ -17,7 +17,9 @@ interface DestinationCardProps {
   destination?: Destination;
 }
 
-const DestinationCard: React.FC<DestinationCardProps> = ({ destination = {} }) => {
+const DestinationCard: React.FC<DestinationCardProps> = ({
+  destination = {},
+}) => {
   const {
     imageUrl = "/api/placeholder/400/250",
     name = "Bali, Indonesia",
@@ -33,7 +35,11 @@ const DestinationCard: React.FC<DestinationCardProps> = ({ destination = {} }) =
     <div className="card-box group">
       {/* Image Container */}
       <div className="relative overflow-hidden rounded-t-xl">
-        <img src={imageUrl} alt={name} className="w-full h-[250px] object-cover transform group-hover:scale-105 transition-transform duration-300" />
+        <img
+          src={imageUrl}
+          alt={name}
+          className="w-full h-[250px] object-cover transform group-hover:scale-105 transition-transform duration-300"
+        />
       </div>
 
       {/* Content */}

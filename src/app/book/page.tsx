@@ -1,72 +1,53 @@
 "use client";
 
-import React, { useState } from "react";
-import { Calendar, MapPin, Plane, Filter, ArrowRight } from "lucide-react";
-import Button from "@/components/ui/button";
-import ModernHeroSection from "@/components/ui/hero";
-import FlightCard from "@/components/card/airplane_card";
+import TravelSearchForm from "@/components/form/travel_form";
+import BlurCircle from "@/components/ui/blur_circle";
+import React, { useEffect, useState } from "react";
 
-const flights = [
-  {
-    id: "FL123",
-    airline: "Delta",
-    dateofJourney: "2023-04-15",
-    source: "JFK",
-    destination: "LAX",
-    depTime: "14:30",
-    arrivalTime: "17:45",
-    duration: "3h 15m",
-    totalStops: 0,
-    additionalInfo: "Meal included",
-    price: "$250",
-    route: "CGK-DPS", // Properti yang hilang ditambahkan
-    date: "2025-03-01T08:00:00Z" //
-  },
-];
+interface Flight {
+  id: string;
+  airline: string;
+  source: string;
+  destination: string;
+  route: string;
+  depTime: string;
+  arrivalTime: string;
+  duration: string;
+  totalStops: number;
+  additionalInfo?: string;
+  price: string;
+  date: string;
+  logoUrl?: string;
+}
 
-const FlightListings = () => (
-  <div className="bg-gray-50 py-16">
-    <div className="container mx-auto px-4">
-      <div className="flex flex-col lg:flex-row gap-8">
-        {/* Filters */}
-        <div className="lg:w-1/4">
-          <div className="bg-white rounded-2xl p-6 shadow-lg sticky top-4">
-            <div className="flex items-center gap-2 mb-6">
-              <Filter className="w-5 h-5 text-blue-600" />
-              <h2 className="text-lg font-semibold">Filters</h2>
-            </div>
+function Book() {
+  return (
+    <div className="min-h-[80vh] bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center px-4">
+      <div className="max-w-5xl mx-auto relative z-10">
+        {/* Background blur elements */}
+        <div className="absolute -top-20 -left-20 w-64 h-64 bg-blue-400 rounded-full filter blur-3xl opacity-20"></div>
+        <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-purple-400 rounded-full filter blur-3xl opacity-20"></div>
 
-            <div className="space-y-4">
-              {["Price Range", "Stops", "Airlines", "Duration"].map((filter) => (
-                <div key={filter} className="border-b border-gray-100 pb-4">
-                  <h3 className="text-sm font-medium mb-3">{filter}</h3>
-                  <select className="w-full p-2 rounded-lg border border-gray-200 text-sm">
-                    <option>All {filter}</option>
-                  </select>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        {/* Content container */}
+        <div className="flex flex-col items-center text-center space-y-6">
+          {/* Heading */}
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight">
+            Explore The{" "}
+            <span className="bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
+              Horizons
+            </span>
+          </h1>
 
-        {/* Flight List */}
-        <div className="lg:w-3/4">
-          <div className="space-y-6">
-            {flights.map((flight) => (
-              <FlightCard key={flight.id} flight={flight} />
-            ))}
-          </div>
+          {/* Subheading */}
+          <p className="text-gray-600 max-w-2xl text-lg">
+            Your journey to extraordinary destinations begins with a single
+            search
+          </p>
+          <TravelSearchForm/>
         </div>
       </div>
     </div>
-  </div>
-);
+  );
+}
 
-const BookingPage = () => (
-  <div className="min-h-screen bg-gray-50">
-    <ModernHeroSection />
-    <FlightListings />
-  </div>
-);
-
-export default BookingPage;
+export default Book;
