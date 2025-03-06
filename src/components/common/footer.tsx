@@ -28,11 +28,11 @@ const Footer = () => {
   ];
 
   return (
-    <footer className="backdrop-blur-md bg-white/30 border-t border-white/20">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex flex-wrap justify-between gap-8">
-          {/* Company Info (Kiri) */}
-          <div className="space-y-4 max-w-sm">
+    <footer className="backdrop-blur-md bg-white/40 border-t border-white/20 py-12">
+      <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-16">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Company Info */}
+          <div className="space-y-4">
             <h2 className="text-2xl font-bold text-gray-800">Aerotix</h2>
             <p className="text-gray-600">Elevate Your Journey With Aerotix</p>
             <div className="flex space-x-4">
@@ -43,16 +43,31 @@ const Footer = () => {
                   className="text-gray-600 hover:text-gray-800 transition-transform duration-200 hover:scale-110"
                   aria-label={social.label}
                 >
-                  <social.icon className="h-5 w-5" />
+                  <social.icon className="h-6 w-6" />
                 </a>
               ))}
             </div>
           </div>
 
-          {/* Quick Links (Kanan) */}
-          <div className="flex flex-wrap gap-8">
+          {/* Contact Info */}
+          <div className="space-y-4 text-center">
+            <h3 className="text-lg font-semibold text-gray-800">Contact Us</h3>
+            {contactInfo.map((info) => (
+              <a
+                key={info.text}
+                href={info.href}
+                className="flex items-center justify-center text-gray-600 hover:text-gray-800 transition-colors duration-200"
+              >
+                <info.icon className="h-5 w-5 mr-2" />
+                <span>{info.text}</span>
+              </a>
+            ))}
+          </div>
+
+          {/* Quick Links */}
+          <div className="flex justify-end">
             {Object.entries(footerSections).map(([title, links]) => (
-              <div key={title} className="space-y-4 min-w-[120px]">
+              <div key={title} className="space-y-4 min-w-[140px] text-right">
                 <h3 className="text-lg font-semibold text-gray-800 capitalize">
                   {title}
                 </h3>
@@ -73,24 +88,8 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Contact Info */}
-        <div className="mt-12 pt-8 border-t border-gray-200/20">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {contactInfo.map((info) => (
-              <a
-                key={info.text}
-                href={info.href}
-                className="flex items-center text-gray-600 hover:text-gray-800 transition-colors duration-200"
-              >
-                <info.icon className="h-5 w-5 mr-2" />
-                <span>{info.text}</span>
-              </a>
-            ))}
-          </div>
-        </div>
-
         {/* Copyright */}
-        <div className="mt-8 pt-8 border-t border-gray-200/20 text-center text-gray-600">
+        <div className="mt-12 pt-8 border-t border-gray-200/20 text-center text-gray-600">
           <p>© {currentYear} Aerotix. All rights reserved.</p>
         </div>
       </div>
