@@ -1,54 +1,54 @@
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from "@prisma/client";
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient()
 
-// GET - Get all users
-export async function GET() {
+// GET - Search for flights with detailed filters
+export async function GET(request: Request) {
   try {
-    const users = await prisma.user.findMany();
-    return NextResponse.json(users);
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 });
-  }
-}
-
-// POST - Create a new user
-export async function POST(request: Request) {
-  try {
-    const data = await request.json();
-    const user = await prisma.user.create({
-      data
+    const url = new URL(request.url);
+    
+    // Extract search parameters
+    const from = url.searchParams.get('from'); // departureCode
+    const to = url.searchParams.get('to'); // arrivalCode
+    const date = url.searchParams.get('date'); // departureDate
+    const passengers = parseInt(url.searchParams.get('passengers') || '1');
+    const airline = url.searchParams.get('airline');
+    const maxPrice = url.searchParams.get('maxPrice');
+    
+    // Build the query filters with proper type
+    const filters: Prisma.FlightWhereInput = {};
+    
+    if (from) filters.departureCode = from;
+    if (to) filters.arrivalCode = to;
+    
+    if (date) {
+      const searchDate = new Date(date);
+      const nextDay = new Date(searchDate);
+      nextDay.setDate(nextDay.getDate() + 1);
+      
+      filters.departureDate = {
+        gte: searchDate,
+        lt: nextDay
+      };
+    }
+    
+    if (airline) filters.airline = airline;
+    if (maxPrice) filters.price = { lte: parseFloat(maxPrice) };
+    
+    // Ensure enough available seats
+    filters.availableSeats = { gte: passengers };
+    
+    const flights = await prisma.flight.findMany({
+      where: filters,
+      orderBy: [
+        { departureDate: 'asc' },
+        { price: 'asc' }
+      ]
     });
-    return NextResponse.json(user, { status: 201 });
+    
+    return Response.json(flights);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create user' }, { status: 500 });
-  }
-}
-
-// PUT - Update user by ID
-export async function PUT(request: Request) {
-  try {
-    const { id, ...data } = await request.json();
-    const user = await prisma.user.update({
-      where: { id: parseInt(id) },
-      data
-    });
-    return NextResponse.json(user);
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to update user' }, { status: 500 });
-  }
-}
-
-// DELETE - Delete user by ID
-export async function DELETE(request: Request) {
-  try {
-    const { id } = await request.json();
-    await prisma.user.delete({
-      where: { id: parseInt(id) }
-    });
-    return NextResponse.json({ message: 'User deleted successfully' });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to delete user' }, { status: 500 });
+    console.error('Error searching flights:', error);
+    return Response.json({ error: 'Failed to search flights' }, { status: 500 });
   }
 }
