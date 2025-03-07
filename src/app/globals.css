@@ -79,4 +79,37 @@ body {
   }
 }
 
+@keyframes scrollUp {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
 
+.testimonial-slider {
+  display: flex;
+  flex-direction: column;
+  animation: scrollUp 20s linear infinite;
+  padding: 20px 0;
+  gap: 16px; /* Space between testimonials */
+}
+
+/* Pause animation on hover */
+.testimonial-slider:hover {
+  animation-play-state: paused;
+}
+
+/* For testimonial items */
+.testimonial-item {
+  flex-shrink: 0; /* Prevent items from shrinking */
+  margin-bottom: 16px; /* Consistent spacing */
+}
+
+/* Ensure the duplicate set matches exactly for seamless loop */
+.testimonial-slider:after {
+  content: "";
+  display: block;
+  height: 16px; /* Match the gap between items */
+}

@@ -65,7 +65,7 @@ export default function Loyalty() {
       <div className="relative bg-gray-100 h-64 pt-20">
         <div className="absolute inset-0 overflow-hidden">
           <img 
-            src="https://i.pinimg.com/736x/97/85/d6/9785d6b1e45f1a326901af242732f6e3.jpg" 
+            src="/pesawat1.png" 
             alt="Travel background" 
             className="w-full h-full object-cover" 
           />

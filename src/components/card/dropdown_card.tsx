@@ -31,7 +31,8 @@ const FAQDropdown: React.FC<FAQDropdownProps> = ({
         aria-expanded={isOpen}
       >
         <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-lg text-gray-900 group-hover:text-blue-600 transition-colors duration-200">
+        <h3 className="font-semibold text-lg bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent transition-colors duration-200">
+
             {faq.question}
           </h3>
           <ChevronDown 
