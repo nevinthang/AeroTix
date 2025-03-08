@@ -614,7 +614,7 @@ const Homepage = () => {
                                transition-all duration-300 hover:from-black/80">
                     <p className="text-white text-xs font-medium mb-2">{dest.type}</p>
                     <h3 className="text-white text-xl font-bold mb-2">{dest.title}</h3>
-                    <a href ="https://www.visitdubai.com/en"><button className="text-white text-sm underline hover:text-blue-300 transition-colors">
+                    <a href ="/article"><button className="text-white text-sm underline hover:text-blue-300 transition-colors">
                       {dest.cta}
                     </button>
                     </a>
@@ -643,7 +643,7 @@ const Homepage = () => {
                                  transition-all duration-300 hover:from-black/80">
                       <p className="text-white text-xs font-medium mb-1">{cabin.type}</p>
                       <h3 className="text-white text-lg font-bold mb-2">{cabin.title}</h3>
-                      <a href ="https://www.emirates.com/english/experience/cabin-features/">
+                      <a href ="/cabin">
                       <button className="text-white text-sm underline hover:text-blue-300 transition-colors">
                         {cabin.cta}
                       </button>
