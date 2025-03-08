@@ -8,7 +8,7 @@ export default function Loyalty() {
   const travelPackages = [
     {
       title: "Ramadhan Voucher",
-      description: "Discount fligt up to 30%",
+      description: "Discount food up to 30%",
       image: "https://i.pinimg.com/736x/d3/90/d5/d390d5bf562cfee4c36f0a48f89e9ae6.jpg",
       link: "#",
       points : 5000

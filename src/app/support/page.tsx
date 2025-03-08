@@ -139,7 +139,7 @@
           <div className="container mx-auto px-4">
             <div className="grid md:grid-cols-2 gap-6">
               {/* Getting Started */}
-              <a href="/" className="block border rounded-lg p-6 flex items-start hover:shadow-lg transform hover:-translate-y-2 transition-all duration-300 ease-in-out">
+              {/* <a href="/" className="block border rounded-lg p-6 flex items-start hover:shadow-lg transform hover:-translate-y-2 transition-all duration-300 ease-in-out">
                 <div className="bg-blue-100 p-3 rounded-full mr-4">
                   <svg className="w-6 h-6 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
@@ -150,10 +150,10 @@
                   <h3 className="text-lg font-medium text-purple-700">Getting Started</h3>
                   <p className="text-gray-600 mt-1">Get started fast with installation and theme setup instructions.</p>
                 </div>
-              </a>
+              </a> */}
 
               {/* User Account */}
-              <a href="/" className="block border rounded-lg p-6 flex items-start hover:shadow-lg transform hover:-translate-y-2 transition-all duration-300 ease-in-out">
+              {/* <a href="/" className="block border rounded-lg p-6 flex items-start hover:shadow-lg transform hover:-translate-y-2 transition-all duration-300 ease-in-out">
                 <div className="bg-blue-100 p-3 rounded-full mr-4">
                   <svg className="w-6 h-6 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
@@ -163,30 +163,30 @@
                   <h3 className="text-lg font-medium text-purple-700">User Account</h3>
                   <p className="text-gray-600 mt-1">Get started fast with installation and theme setup instructions.</p>
                 </div>
-              </a>
+              </a> */}
 
               {/* Product Features */}
-              <a href="/" className="block border rounded-lg p-6 flex items-start hover:shadow-lg transform hover:-translate-y-2 transition-all duration-300 ease-in-out">
+              <a href="/home" className="block border rounded-lg p-6 flex items-start hover:shadow-lg transform hover:-translate-y-2 transition-all duration-300 ease-in-out">
                 <div className="bg-blue-100 p-3 rounded-full mr-4">
                   <svg className="w-6 h-6 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium text-purple-700">Product Features</h3>
+                  <h3 className="text-lg font-medium text-purple-700">Book Features</h3>
                   <p className="text-gray-600 mt-1">Get started fast with installation and theme setup instructions.</p>
                 </div>
               </a>
 
               {/* Email Marketing */}
-              <a href="/" className="block border rounded-lg p-6 flex items-start hover:shadow-lg transform hover:-translate-y-2 transition-all duration-300 ease-in-out">
+              <a href="/support" className="block border rounded-lg p-6 flex items-start hover:shadow-lg transform hover:-translate-y-2 transition-all duration-300 ease-in-out">
                 <div className="bg-blue-100 p-3 rounded-full mr-4">
                   <svg className="w-6 h-6 text-blue-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-medium text-purple-700">Email Marketing</h3>
+                  <h3 className="text-lg font-medium text-purple-700">Contact Us</h3>
                   <p className="text-gray-600 mt-1">Get started fast with installation and theme setup instructions.</p>
                 </div>
               </a>
