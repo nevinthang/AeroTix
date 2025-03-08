@@ -27,3 +27,6 @@ body {
 }
 
 
+.auth-page .navbar, .auth-page .footer {
+  display: none;
+}
