@@ -1,3 +1,6 @@
+
+
+import React from "react";
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
@@ -29,3 +32,21 @@ export default function RootLayout({
     </html>
   );
 }
+
+// export default function RootLayout({
+//   children,
+// }: Readonly<{ children: React.ReactNode }>) {
+//   const pathname = usePathname();
+//   const hideLayout = pathname === '/auth' || pathname === '/auth/register';
+
+//   return (
+//     <html lang="en">
+//       <body className={`${poppins.variable} antialiased`}>
+//         {!hideLayout && <Navbar />}
+//         {children}
+//         {!hideLayout && <Footer />}
+//       </body>
+//     </html>
+//   );
+// }
+

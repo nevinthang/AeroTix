@@ -97,6 +97,11 @@
         id: 4,
         question: "How does the loyalty program work?",
         answer: "Our loyalty program rewards you for every flight booked through our platform. You earn points based on the distance and class of your flights. These points can be redeemed for discounts on future bookings, upgrades, or partner services like hotel stays and car rentals."
+      },
+      {
+        id: 5,
+        question: "Where can I find customer support?",
+        answer: "You can email us at : aerotix@admin.com"
       }
     ];
   
@@ -174,7 +179,7 @@
                 </div>
                 <div>
                   <h3 className="text-lg font-medium text-purple-700">Book Features</h3>
-                  <p className="text-gray-600 mt-1">Get started fast with installation and theme setup instructions.</p>
+                  <p className="text-gray-600 mt-1">Easily book your flights with Aerotix</p>
                 </div>
               </a>
 
@@ -187,7 +192,7 @@
                 </div>
                 <div>
                   <h3 className="text-lg font-medium text-purple-700">Contact Us</h3>
-                  <p className="text-gray-600 mt-1">Get started fast with installation and theme setup instructions.</p>
+                  <p className="text-gray-600 mt-1">Get started fast respose from our staff</p>
                 </div>
               </a>
             </div>
