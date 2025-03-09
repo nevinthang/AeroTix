@@ -39,7 +39,6 @@ interface Passenger {
   cabinBaggage: number; // Additional cabin baggage in kg
   mealPreference: string;
   seatPreference: "window" | "middle" | "aisle" | "no-preference";
-  frequentFlyerNumber: string;
   specialAssistance: string[];
   emergencyContactName: string;
   emergencyContactPhone: string;
@@ -69,21 +68,19 @@ export default function FlightRegistrationPage() {
     phoneNumber: "",
     countryCode: "+1",
   });
-  const [promoCode, setPromoCode] = useState("");
-  const [promoDiscount, setPromoDiscount] = useState(0);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [totalPrice, setTotalPrice] = useState(0);
   const [activePassengerTab, setActivePassengerTab] = useState(0);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [availableLoyaltyPoints, setAvailableLoyaltyPoints] = useState(0);
+  const [loyaltyPointsUsed, setLoyaltyPointsUsed] = useState(0);
 
   // Available options
   const titleOptions = [
     { value: "mr", label: "Mr." },
     { value: "mrs", label: "Mrs." },
     { value: "ms", label: "Ms." },
-    { value: "miss", label: "Miss" },
-    { value: "dr", label: "Dr." },
   ];
 
   const specialAssistanceOptions = [
@@ -163,7 +160,6 @@ export default function FlightRegistrationPage() {
       cabinBaggage: 0,
       mealPreference: "regular",
       seatPreference: "no-preference",
-      frequentFlyerNumber: "",
       specialAssistance: [],
       emergencyContactName: "",
       emergencyContactPhone: "",
@@ -172,7 +168,6 @@ export default function FlightRegistrationPage() {
   }
 
   useEffect(() => {
-    // Check if user is authenticated
     if (!session) {
       setShowLoginPrompt(true);
       // Don't redirect yet, allow guest booking
@@ -210,7 +205,16 @@ export default function FlightRegistrationPage() {
     if (flight) {
       calculateTotalPrice();
     }
-  }, [flight, passengers, promoDiscount]);
+  }, [flight, passengers]);
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      fetch(`/api/loyalty-points?userId=${session.user.id}`)
+        .then((res) => res.json())
+        .then((data) => setAvailableLoyaltyPoints(data.loyaltyPoints || 0))
+        .catch((err) => console.error("Failed to fetch loyalty points:", err));
+    }
+  }, [session]);
 
   const handlePassengerCountChange = (
     e: React.ChangeEvent<HTMLSelectElement>
@@ -314,20 +318,6 @@ export default function FlightRegistrationPage() {
     });
   };
 
-  const validatePromoCode = async () => {
-    // In a real application, you would validate this against your backend
-    if (promoCode.toUpperCase() === "SAVE10") {
-      setPromoDiscount(10); // 10% discount
-      return "Promo code applied successfully: 10% discount";
-    } else if (promoCode.toUpperCase() === "FIRSTTIME") {
-      setPromoDiscount(15); // 15% discount
-      return "Welcome discount applied successfully: 15% off";
-    } else {
-      setPromoDiscount(0);
-      return "Invalid promo code";
-    }
-  };
-
   const calculateTotalPrice = () => {
     if (!flight) return;
 
@@ -342,8 +332,6 @@ export default function FlightRegistrationPage() {
         passengerPrice = flight.price * 0.8; // 20% discount
       }
 
-      // Add baggage cost
-      // Find checked baggage option
       const checkedBaggageOption = checkedBaggageOptions.find(
         (opt) => opt.weight === passenger.checkedBaggage
       );
@@ -367,10 +355,8 @@ export default function FlightRegistrationPage() {
       total += passengerPrice;
     });
 
-    // Apply promo discount if available
-    if (promoDiscount > 0) {
-      total = total * (1 - promoDiscount / 100);
-    }
+    const loyaltyDiscount = Math.floor(loyaltyPointsUsed / 100);
+    total = Math.max(0, total - loyaltyDiscount);
 
     setTotalPrice(total);
   };
@@ -459,7 +445,6 @@ export default function FlightRegistrationPage() {
           contactDetails,
           passengers,
           totalPrice,
-          promoCode: promoDiscount > 0 ? promoCode : null,
         }),
       });
 
@@ -477,6 +462,16 @@ export default function FlightRegistrationPage() {
         server: "There was an error processing your booking. Please try again.",
       });
       window.scrollTo(0, 0);
+    }
+  };
+
+  const getLoyaltyPoints = async () => {
+    const res = await fetch("/api/loyalty-points");
+    const data = await res.json();
+    if (res.ok) {
+      console.log("Loyalty Points:", data.loyaltyPoints);
+    } else {
+      console.error("Error:", data.error);
     }
   };
 
@@ -602,7 +597,8 @@ export default function FlightRegistrationPage() {
             <div className="px-4 last:border-r-0">
               <div className="text-sm text-gray-500">Duration</div>
               <div className="font-medium">
-                {Math.floor(flight.duration / 60)}h {flight.duration % 60}m
+                {Math.floor(flight.duration / 3600)}h{" "}
+                {Math.floor((flight.duration % 3600) / 60)}m
               </div>
             </div>
           </div>
@@ -1017,24 +1013,6 @@ export default function FlightRegistrationPage() {
                       ))}
                     </select>
                   </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Frequent Flyer Number (optional)
-                    </label>
-                    <input
-                      type="text"
-                      value={passenger.frequentFlyerNumber}
-                      onChange={(e) =>
-                        handlePassengerChange(
-                          index,
-                          "frequentFlyerNumber",
-                          e.target.value
-                        )
-                      }
-                      className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-                    />
-                  </div>
                 </div>
               </div>
 
@@ -1226,32 +1204,30 @@ export default function FlightRegistrationPage() {
           ))}
         </div>
 
-        {/* Promo Code */}
+        {/* Loyalty Points */}
         <div className="bg-white shadow-md rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Promo Code</h2>
+          <h2 className="text-xl font-semibold mb-4">Use Loyalty Points</h2>
           <div className="flex flex-wrap items-start gap-4">
             <div className="w-full md:w-64">
               <input
-                type="text"
-                value={promoCode}
-                onChange={(e) => setPromoCode(e.target.value)}
-                placeholder="Enter promo code"
+                type="number"
+                value={loyaltyPointsUsed}
+                onChange={(e) =>
+                  setLoyaltyPointsUsed(
+                    Math.max(0, parseInt(e.target.value) || 0)
+                  )
+                }
+                placeholder="Enter points to redeem"
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                min="0"
+                max={availableLoyaltyPoints} // Batasi sesuai yang tersedia
               />
             </div>
-            <button
-              type="button"
-              onClick={validatePromoCode}
-              className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
-            >
-              Apply
-            </button>
-            {promoDiscount > 0 && (
-              <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-                {promoDiscount}% discount applied
-              </div>
-            )}
           </div>
+          <p className="text-sm text-gray-600 mt-2">
+            Available Loyalty Points:{" "}
+            <span className="font-semibold">{availableLoyaltyPoints}</span>
+          </p>
         </div>
 
         {/* Price Summary */}
@@ -1303,15 +1279,6 @@ export default function FlightRegistrationPage() {
             })}
           </div>
 
-          {promoDiscount > 0 && (
-            <div className="flex justify-between text-green-700 border-t border-gray-100 pt-2 mb-2">
-              <div>Promo Discount ({promoCode})</div>
-              <div>
-                -${Math.round((totalPrice * promoDiscount) / 100).toFixed(2)}
-              </div>
-            </div>
-          )}
-
           <div className="flex justify-between font-bold text-lg border-t border-gray-200 pt-4">
             <div>Total</div>
             <div>${Math.round(totalPrice).toFixed(2)}</div>
@@ -1355,7 +1322,7 @@ export default function FlightRegistrationPage() {
             className="w-full md:w-auto px-6 py-3 bg-blue-600 text-white font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={!acceptTerms}
           >
-            Continue to Payment
+            Book Now
           </button>
         </div>
       </form>
