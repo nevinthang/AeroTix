@@ -13,7 +13,6 @@ export async function GET(request: Request) {
     const date = url.searchParams.get('date'); // departureDate
     const passengers = parseInt(url.searchParams.get('passengers') || '1');
     const airline = url.searchParams.get('airline');
-    const maxPrice = url.searchParams.get('maxPrice');
     
     // Build the query filters with proper type
     const filters: Prisma.FlightWhereInput = {};
@@ -33,7 +32,6 @@ export async function GET(request: Request) {
     }
     
     if (airline) filters.airline = airline;
-    if (maxPrice) filters.price = { lte: parseFloat(maxPrice) };
     
     // Ensure enough available seats
     filters.availableSeats = { gte: passengers };
