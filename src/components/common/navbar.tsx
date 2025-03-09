@@ -5,7 +5,7 @@ import { Menu, X, UserCircle } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Gantilah dengan state autentikasi yang sebenarnya
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
   const [activePage, setActivePage] = useState("");
 
   const navItems = [

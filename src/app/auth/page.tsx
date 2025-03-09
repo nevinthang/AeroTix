@@ -9,6 +9,7 @@ const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -27,10 +28,20 @@ const LoginPage = () => {
       }
 
       const data = await response.json();
+      setIsLoggedIn(true); // Update login status to true
       toast.success("Login successful");
       console.log("Login Response:", data);
+      
+      // Store the login status in localStorage
+      localStorage.setItem("isLoggedIn", "true");
+      
+      // Trigger an event to notify other components about the login status change
+      window.dispatchEvent(new Event("loginStatusChanged"));
+      
+      // Keep the original routing behavior
       router.push("/book");
     } catch (error: any) {
+      setIsLoggedIn(false); // 
       toast.error(error.message || "Login failed");
       console.error("Login Error:", error);
     }
@@ -41,7 +52,7 @@ const LoginPage = () => {
       <div className="w-full max-w-md p-8 rounded-3xl bg-white/90 backdrop-blur-md border border-purple-200 shadow-xl transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-purple-300/50">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <div className="rounded-full bg-white  p-5 shadow-lg">
+          <div className="rounded-full bg-white p-5 shadow-lg">
             <img src="/logo1.png" alt="Logo" className="w-16 h-16" />
           </div>
         </div>
@@ -49,7 +60,9 @@ const LoginPage = () => {
         {/* Title */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Welcome Back</h1>
-          <p className="text-gray-500 mt-2">Please sign in to continue</p>
+          <p className="text-gray-500 mt-2">
+            {isLoggedIn ? "You are logged in!" : "Please sign in to continue"}
+          </p>
         </div>
 
         {/* Form */}
@@ -88,25 +101,6 @@ const LoginPage = () => {
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
           </div>
-
-          {/* <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-gray-600">
-                Remember me
-              </label>
-            </div>
-            <div>
-              <Link href="/auth/forgot-password" className="text-purple-600 hover:text-purple-800 font-medium">
-                Forgot password?
-              </Link>
-            </div>
-          </div> */}
 
           {/* Login Button */}
           <button
