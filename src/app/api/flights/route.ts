@@ -1,25 +1,54 @@
-import { NextResponse } from 'next/server'
-import prisma from '../../../../lib/prisma'
+import { Prisma, PrismaClient } from "@prisma/client";
 
-// GET - Get all flights
-export async function GET() {
-  try {
-    const flights = await prisma.flight.findMany()
-    return NextResponse.json(flights)
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to fetch flights' }, { status: 500 })
-  }
-}
+const prisma = new PrismaClient()
 
-// POST - Create a new flight
-export async function POST(request: Request) {
+// GET - Search for flights with detailed filters
+export async function GET(request: Request) {
   try {
-    const data = await request.json()
-    const flight = await prisma.flight.create({
-      data
-    })
-    return NextResponse.json(flight, { status: 201 })
+    const url = new URL(request.url);
+    
+    // Extract search parameters
+    const from = url.searchParams.get('from'); // departureCode
+    const to = url.searchParams.get('to'); // arrivalCode
+    const date = url.searchParams.get('date'); // departureDate
+    const passengers = parseInt(url.searchParams.get('passengers') || '1');
+    const airline = url.searchParams.get('airline');
+    const maxPrice = url.searchParams.get('maxPrice');
+    
+    // Build the query filters with proper type
+    const filters: Prisma.FlightWhereInput = {};
+    
+    if (from) filters.departureCode = from;
+    if (to) filters.arrivalCode = to;
+    
+    if (date) {
+      const searchDate = new Date(date);
+      const nextDay = new Date(searchDate);
+      nextDay.setDate(nextDay.getDate() + 1);
+      
+      filters.departureDate = {
+        gte: searchDate,
+        lt: nextDay
+      };
+    }
+    
+    if (airline) filters.airline = airline;
+    if (maxPrice) filters.price = { lte: parseFloat(maxPrice) };
+    
+    // Ensure enough available seats
+    filters.availableSeats = { gte: passengers };
+    
+    const flights = await prisma.flight.findMany({
+      where: filters,
+      orderBy: [
+        { departureDate: 'asc' },
+        { price: 'asc' }
+      ]
+    });
+    
+    return Response.json(flights);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create flight' }, { status: 500 })
+    console.error('Error searching flights:', error);
+    return Response.json({ error: 'Failed to search flights' }, { status: 500 });
   }
 }

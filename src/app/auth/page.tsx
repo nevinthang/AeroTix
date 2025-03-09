@@ -1,99 +1,128 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import Link from "next/link";
+import { toast } from "react-toastify";
+import { Eye, EyeOff, User, Lock } from "lucide-react";
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Login attempt with:', { username, password, rememberMe });
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Login failed");
+      }
+
+      const data = await response.json();
+      toast.success("Login successful");
+      console.log("Login Response:", data);
+    } catch (error: any) {
+      toast.error(error.message || "Login failed");
+      console.error("Login Error:", error);
+    }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-b from-blue-50 to-white">
-      <div className="w-full max-w-md p-8 rounded-3xl bg-blue-600/20 backdrop-blur-sm border border-purple-300/30 shadow-lg transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-purple-300/50 transform hover:-translate-y-1">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-white pt-20 pb-20">
+      <div className="w-full max-w-md p-8 rounded-3xl bg-white/90 backdrop-blur-md border border-purple-200 shadow-xl transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-purple-300/50">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <div className="rounded-full border-2 border-purple-400 p-4 bg-white/10">
+          <div className="rounded-full bg-white  p-5 shadow-lg">
             <img src="/logo1.png" alt="Logo" className="w-16 h-16" />
           </div>
         </div>
 
-        <div className="text-center mb-6">
-          <h2 className="text-2xl font-bold text-indigo-900">LOGIN</h2>
+        {/* Title */}
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Welcome Back</h1>
+          <p className="text-gray-500 mt-2">Please sign in to continue</p>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          {/* Username field */}
-          <div className="mb-4">
-            <div className="flex items-center bg-indigo-900/50 rounded-md overflow-hidden border border-purple-300/20">
-              <div className="px-3 py-3">
-                <svg className="w-5 h-5 text-blue-100" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </div>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Username"
-                className="flex-1 bg-transparent border-none text-white focus:ring-0 outline-none py-3 px-2 placeholder-blue-200/70"
-              />
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <User size={18} className="text-gray-400" />
             </div>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Username"
+              className="w-full pl-10 pr-3 py-4 bg-gray-50 text-gray-800 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all"
+              required
+            />
+          </div>
+          
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Lock size={18} className="text-gray-400" />
+            </div>
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Password"
+              className="w-full pl-10 pr-12 py-4 bg-gray-50 text-gray-800 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all"
+              required
+            />
+            <button 
+              type="button" 
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
           </div>
 
-          {/* Password field */}
-          <div className="mb-6">
-            <div className="flex items-center bg-indigo-900/50 rounded-md overflow-hidden border border-purple-300/20">
-              <div className="px-3 py-3">
-                <svg className="w-5 h-5 text-blue-100" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-              </div>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••••••"
-                className="flex-1 bg-transparent border-none text-white focus:ring-0 outline-none py-3 px-2 placeholder-blue-200/70"
-              />
-            </div>
-          </div>
-
-          {/* Remember me and Forgot password */}
-          <div className="flex justify-between mb-6 text-sm">
+          {/* <div className="flex items-center justify-between text-sm">
             <div className="flex items-center">
               <input
+                id="remember-me"
+                name="remember-me"
                 type="checkbox"
-                id="remember"
-                checked={rememberMe}
-                onChange={() => setRememberMe(!rememberMe)}
-                className="mr-2 h-4 w-4 bg-indigo-900/50 border-purple-300 rounded focus:ring-0"
+                className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
               />
-              <label htmlFor="remember" className="text-indigo-900 cursor-pointer font-medium">Remember me</label>
+              <label htmlFor="remember-me" className="ml-2 block text-gray-600">
+                Remember me
+              </label>
             </div>
-            <a href="#" className="text-indigo-900 hover:text-purple-900 text-right font-medium">Forgot Password?</a>
-          </div>
+            <div>
+              <Link href="/auth/forgot-password" className="text-purple-600 hover:text-purple-800 font-medium">
+                Forgot password?
+              </Link>
+            </div>
+          </div> */}
 
-          {/* Login button */}
+          {/* Login Button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-bold py-3 px-4 rounded transition-colors uppercase text-sm tracking-wider shadow-md"
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 px-6 rounded-xl font-medium shadow-md hover:shadow-lg transform transition-all duration-300 ease-in-out hover:-translate-y-1 hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-50"
           >
-            LOGIN
+            Sign In
           </button>
-
-          {/* New here? Register Here */}
-          <div className="mt-6 text-center text-sm">
-            <span className="text-indigo-900">New here? </span>
-            <Link href="auth/register" className="text-purple-700 hover:text-purple-900 font-semibold transition-colors">
-              Register Here
-            </Link>
-          </div>
         </form>
+
+        {/* Register Link */}
+        <div className="text-center mt-8">
+          <p className="text-gray-600">
+            Don't have an account?{" "}
+            <Link href="/auth/register" className="text-purple-600 font-semibold hover:text-purple-800 hover:underline transition-colors">
+              Create Account
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

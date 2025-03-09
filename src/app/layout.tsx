@@ -7,7 +7,6 @@ import "./globals.css";
 import Navbar from "@/components/common/navbar";
 import Footer from "@/components/common/footer";
 
-
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],
