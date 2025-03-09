@@ -2,6 +2,7 @@
 import Link from "next/link";
 import React, { useState } from "react";
 import { Eye, EyeOff, User, Mail, Phone, Calendar, CreditCard, FileText , ChevronDown} from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -21,6 +22,7 @@ const RegisterPage = () => {
   const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -51,9 +53,10 @@ const RegisterPage = () => {
 
       if (response.ok) {
         setMessage("Registration successful!");
+        router.push("/auth");
       } else {
         const error = await response.json();
-        setMessage(error.message || "Failed to register");
+        setMessage(error.message || "Failed to register, please try again");
       }
     } catch (error) {
       setMessage("An error occurred");
@@ -106,7 +109,7 @@ const RegisterPage = () => {
                 <option value="MRS">Mrs.</option>
                 <option value="MS">Ms.</option>
               </select>
-            <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none" style={{ marginTop: '5px' }}>
+            <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none" style={{ marginTop: '25px' }}>
               <ChevronDown size={18} className="text-gray-400" />
             </div>
             </div>
@@ -172,9 +175,7 @@ const RegisterPage = () => {
             </div>
           </div>
 
-          {/* Passport & Birthdate Section */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Birthdate */}
             <div className="relative">
               <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
               <div className="relative">

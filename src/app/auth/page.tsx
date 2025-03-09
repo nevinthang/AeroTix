@@ -3,11 +3,13 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import { Eye, EyeOff, User, Lock } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +29,7 @@ const LoginPage = () => {
       const data = await response.json();
       toast.success("Login successful");
       console.log("Login Response:", data);
+      router.push("/book");
     } catch (error: any) {
       toast.error(error.message || "Login failed");
       console.error("Login Error:", error);
