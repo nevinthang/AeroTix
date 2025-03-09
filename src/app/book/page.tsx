@@ -16,7 +16,8 @@ import { format } from "date-fns";
 import Button from "@/components/ui/button";
 import Cloud from "@/components/ui/cloud";
 import HeroBookCard from "@/components/card/hero_book_card";
-import { useNavigate } from "react-router-dom";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface Flight {
   flightNumber: string;
@@ -532,7 +533,6 @@ const FlightSearchForm: React.FC<HookProps> = ({
             </div>
           </div>
 
-          {/* Unique search button with animated gradient */}
           <div className="mt-12 relative">
             <div className="flex justify-end">
               <button
@@ -584,6 +584,8 @@ const FlightSearchForm: React.FC<HookProps> = ({
 };
 
 const Result: React.FC<HookProps> = ({ flights, loading, error, searched }) => {
+  const { data: session } = useSession();
+  const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -607,10 +609,13 @@ const Result: React.FC<HookProps> = ({ flights, loading, error, searched }) => {
     };
   }
 
-  const navigate = useNavigate();
-
-  const handleSelectFlight = (flight: Flight) => {
-    navigate(`/ticket/${flight.flightNumber}`, { state: { flight } });
+  
+  const handleSelectFlight = () => {
+    if (!session) {
+      router.push("/auth"); 
+      return;
+    }
+    router.push("/flights"); // Redirect to flight selection
   };
 
   return (
@@ -763,10 +768,7 @@ const Result: React.FC<HookProps> = ({ flights, loading, error, searched }) => {
                           </span>{" "}
                           seats left
                         </div>
-                        <button
-                          className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-102 active:scale-98 flex items-center justify-center"
-                          onClick={() => handleSelectFlight(flight)}
-                        >
+                        <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-102 active:scale-98 flex items-center justify-center">
                           Select Flight
                           <ArrowRight size={16} className="ml-1" />
                         </button>
@@ -780,7 +782,6 @@ const Result: React.FC<HookProps> = ({ flights, loading, error, searched }) => {
         </div>
       )}
 
-      {/* CSS Animations */}
       <style jsx global>{`
         @keyframes float {
           0% {
