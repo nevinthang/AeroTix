@@ -611,12 +611,12 @@ const Result: React.FC<HookProps> = ({ flights, loading, error, searched }) => {
   }
 
   
-  const handleSelectFlight = () => {
+  const handleSelectFlight = (flightNumber: string) => {
     if (!session) {
-      router.push("/auth"); 
+      router.push("/auth");
       return;
     }
-    router.push("/flights"); // Redirect to flight selection
+    router.push(`/book/${flightNumber}`); 
   };
 
   return (
@@ -770,7 +770,7 @@ const Result: React.FC<HookProps> = ({ flights, loading, error, searched }) => {
                           seats left
                         </div>
                         <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-102 active:scale-98 flex items-center justify-center"
-                        onClick={handleSelectFlight}>
+                        onClick={() => handleSelectFlight(flight.flightNumber)}>
                           Select Flight
                           <ArrowRight size={16} className="ml-1" />
                         </button>
