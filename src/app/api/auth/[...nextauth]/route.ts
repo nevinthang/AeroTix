@@ -1,18 +1,19 @@
+// app/api/auth/[...nextauth]/route.ts
+import NextAuth from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { PrismaClient } from "@prisma/client";
-import { NextAuthOptions } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
 
-export const authOptions: NextAuthOptions = {
+const handler = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "username" },
+        username: { label: "Username", type: "text" },
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
@@ -20,30 +21,34 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        const user = await prisma.user.findUnique({
-          where: { username: credentials.username },
-        });
+        try {
+          const user = await prisma.user.findUnique({
+            where: { username: credentials.username },
+          });
 
-        if (!user || !user.password) {
+          if (!user || !user.password) {
+            return null;
+          }
+
+          const isPasswordValid = await bcrypt.compare(
+            credentials.password,
+            user.password
+          );
+
+          if (!isPasswordValid) {
+            return null;
+          }
+
+          return {
+            id: user.id,
+            username: user.username,
+            email: user.email || null,
+            name: user.name || null
+          };
+        } catch (error) {
+          console.error("Auth error:", error);
           return null;
         }
-
-        const isPasswordValid = await bcrypt.compare(
-          credentials.password,
-          user.password
-        );
-
-        if (!isPasswordValid) {
-          return null;
-        }
-
-        // Make sure we return an object matching our User interface
-        return {
-          id: user.id,
-          username: user.username,
-          email: user.email || null,
-          name: user.name || null
-        };
       },
     }),
   ],
@@ -52,7 +57,6 @@ export const authOptions: NextAuthOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-      // Add username to the token when user signs in
       if (user) {
         token.id = user.id;
         token.username = user.username;
@@ -60,16 +64,18 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }) {
-      // Add username from token to the session
       if (session.user) {
-        session.user.id = token.id as string;
-        session.user.username = token.username as string;
+        session.user.id = token.id;
+        session.user.username = token.username;
       }
       return session;
     },
   },
   pages: {
-    signIn: "/auth/",
+    signIn: "/auth",
   },
   secret: process.env.NEXTAUTH_SECRET,
-};
+  debug: process.env.NODE_ENV === "development",
+});
+
+export { handler as GET, handler as POST };

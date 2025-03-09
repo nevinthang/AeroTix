@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Menu, X, UserCircle } from "lucide-react";
+import { Menu, X, UserCircle, LogOut } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 
 const Navbar = () => {
+  const { data: session, status } = useSession();
+  const isLoggedIn = status === "authenticated";
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // Gantilah dengan state autentikasi yang sebenarnya
   const [activePage, setActivePage] = useState("");
 
   const navItems = [
@@ -16,16 +18,16 @@ const Navbar = () => {
     { label: "Support", href: "/support" },
   ];
 
-  // Deteksi halaman aktif berdasarkan pathname
+  // Detect active page based on pathname
   useEffect(() => {
-    // Mendapatkan pathname dari URL saat ini
+    // Get current pathname
     const path = window.location.pathname;
     
-    // Menentukan halaman aktif berdasarkan path
+    // Determine active page based on path
     if (path === "/") {
       setActivePage("Home");
     } else {
-      // Mencari item navigasi yang pathnya cocok dengan pathname saat ini
+      // Find nav item that matches the current pathname
       const activeItem = navItems.find(item => 
         path.startsWith(item.href) && item.href !== "/"
       );
@@ -34,6 +36,11 @@ const Navbar = () => {
       }
     }
   }, []);
+
+  // Handle logout
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: '/' });
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50">
@@ -45,7 +52,7 @@ const Navbar = () => {
               <img src="/logo1.png" alt="AR PLANE Logo" className="w-24 md:w-32 h-auto" />
             </div>
 
-            {/* Desktop Navigation & Login */}
+            {/* Desktop Navigation & Authentication */}
             <div className="hidden md:flex items-center space-x-8">
               {/* Navigation Items */}
               {navItems.map((item) => (
@@ -65,9 +72,18 @@ const Navbar = () => {
                 </a>
               ))}
 
-              {/* Login Button or Avatar */}
+              {/* Login Button or User Menu */}
               {isLoggedIn ? (
-                <UserCircle className="w-8 h-8 text-gray-800 cursor-pointer hover:text-gray-600" />
+                <div className="flex items-center space-x-4">
+                  <UserCircle className="w-8 h-8 text-gray-800" />
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center space-x-1 text-gray-800 hover:text-gray-600"
+                  >
+                    <LogOut className="w-5 h-5" />
+                    <span>Logout</span>
+                  </button>
+                </div>
               ) : (
                 <a
                   href="/auth"
@@ -119,17 +135,25 @@ const Navbar = () => {
               </a>
             ))}
 
-            {/* Mobile Login Button */}
-            {!isLoggedIn && (
-              <div className="mt-4 flex justify-center">
+            {/* Mobile Authentication */}
+            <div className="mt-4 flex justify-center">
+              {isLoggedIn ? (
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Logout</span>
+                </button>
+              ) : (
                 <a
-                  href="/login"
+                  href="/auth"
                   className="w-full text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
                 >
                   Login
                 </a>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>

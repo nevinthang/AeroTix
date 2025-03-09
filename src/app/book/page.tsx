@@ -769,7 +769,8 @@ const Result: React.FC<HookProps> = ({ flights, loading, error, searched }) => {
                           </span>{" "}
                           seats left
                         </div>
-                        <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-102 active:scale-98 flex items-center justify-center">
+                        <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-102 active:scale-98 flex items-center justify-center"
+                        onClick={handleSelectFlight}>
                           Select Flight
                           <ArrowRight size={16} className="ml-1" />
                         </button>
