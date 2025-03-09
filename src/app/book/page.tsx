@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+
 import {
   Globe,
   Clock,
@@ -16,7 +17,6 @@ import { format } from "date-fns";
 import Button from "@/components/ui/button";
 import Cloud from "@/components/ui/cloud";
 import HeroBookCard from "@/components/card/hero_book_card";
-import { useNavigate } from "react-router-dom";
 
 interface Flight {
   flightNumber: string;
@@ -607,11 +607,6 @@ const Result: React.FC<HookProps> = ({ flights, loading, error, searched }) => {
     };
   }
 
-  const navigate = useNavigate();
-
-  const handleSelectFlight = (flight: Flight) => {
-    navigate(`/ticket/${flight.flightNumber}`, { state: { flight } });
-  };
 
   return (
     /* Results Section */
@@ -765,7 +760,7 @@ const Result: React.FC<HookProps> = ({ flights, loading, error, searched }) => {
                         </div>
                         <button
                           className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-102 active:scale-98 flex items-center justify-center"
-                          onClick={() => handleSelectFlight(flight)}
+                          
                         >
                           Select Flight
                           <ArrowRight size={16} className="ml-1" />
