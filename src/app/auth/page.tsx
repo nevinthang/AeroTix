@@ -4,46 +4,38 @@ import Link from "next/link";
 import { toast } from "react-toastify";
 import { Eye, EyeOff, User, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
+    
     try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
+      const result = await signIn("credentials", {
+        username,
+        password,
+        redirect: false,
       });
 
-      if (!response.ok) {
+      if (result?.error) {
         throw new Error("Login failed");
       }
 
-      const data = await response.json();
-      setIsLoggedIn(true); // Update login status to true
       toast.success("Login successful");
-      console.log("Login Response:", data);
-      
-      // Store the login status in localStorage
-      localStorage.setItem("isLoggedIn", "true");
-      
-      // Trigger an event to notify other components about the login status change
-      window.dispatchEvent(new Event("loginStatusChanged"));
-      
-      // Keep the original routing behavior
       router.push("/book");
     } catch (error: any) {
-      setIsLoggedIn(false); // 
+      setIsLoading(false); // 
       toast.error(error.message || "Login failed");
       console.error("Login Error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -61,7 +53,7 @@ const LoginPage = () => {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Welcome Back</h1>
           <p className="text-gray-500 mt-2">
-            {isLoggedIn ? "You are logged in!" : "Please sign in to continue"}
+            {isLoading ? "You are logged in!" : "Please sign in to continue"}
           </p>
         </div>
 
@@ -78,6 +70,7 @@ const LoginPage = () => {
               placeholder="Username"
               className="w-full pl-10 pr-3 py-4 bg-gray-50 text-gray-800 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all"
               required
+              disabled={isLoading}
             />
           </div>
           
@@ -92,11 +85,13 @@ const LoginPage = () => {
               placeholder="Password"
               className="w-full pl-10 pr-12 py-4 bg-gray-50 text-gray-800 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all"
               required
+              disabled={isLoading}
             />
             <button 
               type="button" 
               onClick={() => setShowPassword(!showPassword)}
               className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+              disabled={isLoading}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -105,9 +100,10 @@ const LoginPage = () => {
           {/* Login Button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 px-6 rounded-xl font-medium shadow-md hover:shadow-lg transform transition-all duration-300 ease-in-out hover:-translate-y-1 hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-50"
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-4 px-6 rounded-xl font-medium shadow-md hover:shadow-lg transform transition-all duration-300 ease-in-out hover:-translate-y-1 hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-opacity-50 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none"
+            disabled={isLoading}
           >
-            Sign In
+            {isLoading ? "Signing In..." : "Sign In"}
           </button>
         </form>
 
