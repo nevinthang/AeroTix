@@ -177,7 +177,7 @@ export default function Loyalty() {
             </div>
             <div>
               <button 
-                onClick={() => router.push('/profile')} 
+                onClick={() => (window.location.href = '/profile')}
                 className="bg-white text-purple-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
               >
                 View Profile
