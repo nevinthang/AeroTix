@@ -5,6 +5,7 @@ import "./globals.css";
 import Navbar from "@/components/common/navbar";
 import Footer from "@/components/common/footer";
 import SessionProvider from "./session-provider";
+import { ToastContainer } from "react-toastify";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -27,6 +28,7 @@ export default function RootLayout({
         <SessionProvider>
           <Navbar />
           {children}
+          <ToastContainer />
         </SessionProvider>
         <Footer />
       </body>

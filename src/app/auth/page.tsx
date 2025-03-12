@@ -23,20 +23,30 @@ const LoginPage = () => {
         password,
         redirect: false,
       });
-
+  
       if (result?.error) {
-        throw new Error("Login failed");
+        if (result.status === 401) {
+          setIsLoading(false);
+          toast.error("Data tidak ditemukan silakan coba lagi");
+        } else {
+          toast.error("Login failed");
+        }
+      }else {
+        toast.success("Login successful");
+        router.push("/book");
       }
-
-      toast.success("Login successful");
-      router.push("/book");
-    } catch (error: any) {
-      setIsLoading(false); // 
-      toast.error(error.message || "Login failed");
-      console.error("Login Error:", error);
-    } finally {
+    } catch (error: unknown) {
       setIsLoading(false);
+    
+      let errorMessage = "Data tidak ditemukan silakan coba lagi";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+    
+      toast.error(errorMessage);
+      console.error(error);
     }
+    
   };
 
   return (
@@ -53,7 +63,7 @@ const LoginPage = () => {
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Welcome Back</h1>
           <p className="text-gray-500 mt-2">
-            {isLoading ? "You are logged in!" : "Please sign in to continue"}
+            Please sign in to continue
           </p>
         </div>
 

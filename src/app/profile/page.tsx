@@ -59,7 +59,7 @@ export default function UserProfileClient() {
         
         // Fetch loyalty information
         try {
-          const loyaltyResponse = await axios.get('/api/profile/loyalty');
+          const loyaltyResponse = await axios.get('/api/loyalty-points');
           setLoyaltyInfo({
             nextTier: loyaltyResponse.data.nextTier,
             pointsToNextTier: loyaltyResponse.data.pointsToNextTier
