@@ -41,6 +41,16 @@ export default function UserProfileClient() {
     nextTier: MembershipTier | null;
     pointsToNextTier: number | null;
   } | null>(null);
+  
+  // Adding state for edit modal
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    phoneNumber: '',
+    passport: '',
+    passport_exp: ''
+  });
+  const [updateSuccess, setUpdateSuccess] = useState(false);
 
   // Fetch user profile data
   useEffect(() => {
@@ -56,6 +66,14 @@ export default function UserProfileClient() {
         };
         
         setUser(userData);
+        
+        // Update form data with current values
+        setFormData({
+          name: userData.name || '',
+          phoneNumber: userData.phoneNumber || '',
+          passport: userData.passport || '',
+          passport_exp: userData.passport_exp ? format(new Date(userData.passport_exp), 'yyyy-MM-dd') : ''
+        });
         
         // Fetch loyalty information
         try {
@@ -150,30 +168,68 @@ export default function UserProfileClient() {
     return { nextTier, pointsToNextTier };
   };
 
+  // Handle input changes
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
   // Handle form submission for profile updates
-  const handleUpdateProfile = async (formData: FormData) => {
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
       setLoading(true);
       
       const updateData = {
-        name: formData.get('name'),
-        phoneNumber: formData.get('phoneNumber'),
-        passport: formData.get('passport'),
-        passport_exp: formData.get('passport_exp')
+        name: formData.name,
+        phoneNumber: formData.phoneNumber,
+        passport: formData.passport || null,
+        passport_exp: formData.passport_exp ? new Date(formData.passport_exp).toISOString() : null
       };
       
       const response = await axios.put('/api/profile', updateData);
-      setUser(response.data);
+      
+      // Update local state with new data
+      setUser({
+        ...user!,
+        ...response.data
+      });
+      
       setError(null);
+      setUpdateSuccess(true);
+      
+      // Close modal after successful update
+      setTimeout(() => {
+        setIsEditModalOpen(false);
+        setUpdateSuccess(false);
+      }, 1500);
+      
     } catch (err) {
       console.error("Error updating profile:", err);
       setError("Failed to update profile");
+      setUpdateSuccess(false);
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading) {
+  // Open edit modal and populate form with current data
+  const openEditModal = () => {
+    if (user) {
+      setFormData({
+        name: user.name || '',
+        phoneNumber: user.phoneNumber || '',
+        passport: user.passport || '',
+        passport_exp: user.passport_exp ? format(new Date(user.passport_exp), 'yyyy-MM-dd') : ''
+      });
+    }
+    setIsEditModalOpen(true);
+  };
+
+  if (loading && !user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500">
@@ -182,12 +238,12 @@ export default function UserProfileClient() {
     );
   }
 
-  if (error) {
+  if (error && !user) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="bg-red-100 text-red-700 p-4 rounded-lg">
           Error: {error}
-          </div>
+        </div>
       </div>
     );
   }
@@ -247,10 +303,7 @@ export default function UserProfileClient() {
             
             <button 
               className="mt-4 md:mt-0 flex items-center text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 px-4 py-2 rounded-lg transition-colors"
-              onClick={() => {
-                // You can implement edit functionality here
-                // For example, open a modal with a form
-              }}
+              onClick={openEditModal}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -337,11 +390,11 @@ export default function UserProfileClient() {
                   </div>
                 </div>
               </div>
-            </div> */}
-          {/* )} */}
+            </div>
+          )} */}
           
           {/* Max tier achievement message */}
-          {isMaxTier && (
+          {/* {isMaxTier && (
             <div className="mt-8">
               <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg border border-purple-200 shadow-sm">
                 <div className="flex items-center">
@@ -355,9 +408,105 @@ export default function UserProfileClient() {
                 </div>
               </div>
             </div>
-          )}
+          )} */}
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-lg">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-800">Edit Profile</h2>
+              <button 
+                className="text-gray-500 hover:text-gray-700"
+                onClick={() => setIsEditModalOpen(false)}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {updateSuccess && (
+              <div className="mb-4 p-2 bg-green-100 text-green-800 rounded">
+                Profile updated successfully!
+              </div>
+            )}
+
+            {error && (
+              <div className="mb-4 p-2 bg-red-100 text-red-800 rounded">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleUpdateProfile}>
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Phone Number</label>
+                <input
+                  type="tel"
+                  name="phoneNumber"
+                  value={formData.phoneNumber}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700">Passport Number</label>
+                <input
+                  type="text"
+                  name="passport"
+                  value={formData.passport}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                />
+              </div>
+
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700">Passport Expiry Date</label>
+                <input
+                  type="date"
+                  name="passport_exp"
+                  value={formData.passport_exp}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500"
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-blue-500 to-purple-600 rounded-md hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+                  disabled={loading}
+                >
+                  {loading ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
