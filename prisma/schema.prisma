@@ -36,14 +36,6 @@ enum Category {
   FIRST_CLASS
 }
 
-model Ticket {
-  ticketNumber String @id @default(uuid())
-  flight         Flight   @relation(fields: [flightNumber], references: [flightNumber])
-  flightNumber   String
-  user           User     @relation(fields: [userId], references: [id])
-  userId         String  
-}
-
 model User {
   id        String   @id @default(uuid())
   username  String   @unique
@@ -66,4 +58,48 @@ enum Title {
   MR
   MS
   MRS
+}
+
+model Ticket {
+  ticketNumber String @id @default(uuid())
+  flight         Flight   @relation(fields: [flightNumber], references: [flightNumber])
+  flightNumber   String
+  user           User     @relation(fields: [userId], references: [id])
+  userId         String  
+  passengers      Passenger[]
+}
+
+model Passenger {
+  id                  String    @id @default(uuid())
+  title               String
+  firstName           String
+  lastName            String
+  dateOfBirth         DateTime
+  nationality         String
+  passportNumber      String  @unique
+  passportExpiryDate  DateTime
+  ageCategory        AgeCategory
+  checkedBaggage      Int
+  cabinBaggage        Int
+  mealPreference      String
+  seatPreference     SeatPreference
+  specialAssistance   String[]
+  emergencyContactName  String
+  emergencyContactPhone String
+  insurance          Boolean
+  ticket         Ticket   @relation(fields: [ticketNumber], references: [ticketNumber])
+  ticketNumber       String
+}
+
+enum AgeCategory {
+  ADULT
+  CHILD
+  INFANT
+}
+
+enum SeatPreference {
+  WINDOW
+  MIDDLE
+  AISLE
+  NO_PREFERENCE
 }
