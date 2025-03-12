@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Menu, X, UserCircle, LogOut } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 
 const Navbar = () => {
   const { data: session, status } = useSession();
@@ -75,7 +76,9 @@ const Navbar = () => {
               {/* Login Button or User Menu */}
               {isLoggedIn ? (
                 <div className="flex items-center space-x-4">
-                  <UserCircle className="w-8 h-8 text-gray-800" />
+                  <Link href="/profile">
+                    <UserCircle className="w-8 h-8 text-gray-800 cursor-pointer hover:text-gray-600 transition-colors" />
+                  </Link>
                   <button
                     onClick={handleLogout}
                     className="flex items-center space-x-1 text-gray-800 hover:text-gray-600"

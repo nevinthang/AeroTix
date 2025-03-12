@@ -52,12 +52,20 @@ model User {
   updatedAt DateTime @updatedAt
   tickets   Ticket[]
   isAdmin   Boolean  @default(false)
+  membershipTier MembershipTier @default(SILVER) 
 }
 
 enum Title {
   MR
   MS
   MRS
+}
+
+enum MembershipTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
 }
 
 model Ticket {
