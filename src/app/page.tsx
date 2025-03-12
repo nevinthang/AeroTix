@@ -520,24 +520,14 @@ const Homepage = () => {
                        </div>
                        
                        {/* Floating destination cards */}
-                       <DestinationHighlight 
-                         city="Tokyo" 
-                         country="Japan"
-                         image="https://i.pinimg.com/736x/40/3f/0a/403f0a34e3870bed1e3ebfbb690cb14f.jpg"
-                         stats="20 flights daily"
-                         delay={1400}
-                         className="top-0 right-0 md:top-10 md:right-0"
-                         style={{ top: "0", right: "0" }}
-                       />
-                       
+                    
                        <DestinationHighlight 
                          city="New York" 
                          country="United States"
                          image="https://i.pinimg.com/736x/15/e0/15/15e015d2aec7f5c12529a6256597446d.jpg"
                          stats="Most popular"
                          delay={1600}
-                         className="bottom-0 left-0 md:bottom-10 md:left-10"
-                         style={{ bottom: "0", left: "10%" }}
+                         
                        />
                      </div>
                    </div>
