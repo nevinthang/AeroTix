@@ -9,7 +9,7 @@ const Navbar = () => {
   const { data: session, status } = useSession();
   const isLoggedIn = status === "authenticated";
   const [isOpen, setIsOpen] = useState(false);
-  const [activePage, setActivePage] = useState("");
+  const [activePage, setActivePage] = useState<string | null>(null);
 
   const navItems = [
     { label: "Home", href: "/" },
@@ -23,8 +23,7 @@ const Navbar = () => {
   useEffect(() => {
     // Get current pathname
     const path = window.location.pathname;
-    
-    // Determine active page based on path
+
     if (path === "/") {
       setActivePage("Home");
     } else {

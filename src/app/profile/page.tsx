@@ -304,7 +304,7 @@ export default function UserProfileClient() {
           </div>
 
           {/* Loyalty Information */}
-          {!isMaxTier && (
+          {/* {!isMaxTier && (
             <div className="mt-8">
               <h3 className="text-xs uppercase font-semibold text-gray-500 tracking-wider mb-4">LOYALTY STATUS</h3>
               
@@ -337,8 +337,8 @@ export default function UserProfileClient() {
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            </div> */}
+          {/* )} */}
           
           {/* Max tier achievement message */}
           {isMaxTier && (
