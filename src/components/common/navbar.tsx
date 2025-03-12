@@ -1,15 +1,17 @@
-"use client";
+"use client"
 
-import React, { useState, useEffect } from "react";
-import { Menu, X, UserCircle, LogOut } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
-import Link from "next/link";
+import { useState, useEffect } from "react"
+import { Menu, X, UserCircle, LogOut } from "lucide-react"
+import { signOut, useSession } from "next-auth/react"
+import Link from "next/link"
+import { cn } from "@/lib/utils"
 
 const Navbar = () => {
-  const { data: session, status } = useSession();
-  const isLoggedIn = status === "authenticated";
-  const [isOpen, setIsOpen] = useState(false);
-  const [activePage, setActivePage] = useState<string | null>(null);
+  const { data: session, status } = useSession()
+  const isLoggedIn = status === "authenticated"
+  const [isOpen, setIsOpen] = useState(false)
+  const [activePage, setActivePage] = useState<string | null>(null)
+  const [scrolled, setScrolled] = useState(false)
 
   const navItems = [
     { label: "Home", href: "/" },
@@ -17,82 +19,115 @@ const Navbar = () => {
     { label: "Check In", href: "/checkin" },
     { label: "Loyalty", href: "/loyalty" },
     { label: "Support", href: "/support" },
-  ];
+  ]
 
   // Detect active page based on pathname
   useEffect(() => {
     // Get current pathname
-    const path = window.location.pathname;
+    const path = window.location.pathname
 
     if (path === "/") {
-      setActivePage("Home");
+      setActivePage("Home")
     } else {
       // Find nav item that matches the current pathname
-      const activeItem = navItems.find(item => 
-        path.startsWith(item.href) && item.href !== "/"
-      );
+      const activeItem = navItems.find((item) => path.startsWith(item.href) && item.href !== "/")
       if (activeItem) {
-        setActivePage(activeItem.label);
+        setActivePage(activeItem.label)
       }
     }
-  }, []);
+
+    // Add scroll listener
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setScrolled(true)
+      } else {
+        setScrolled(false)
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [])
 
   // Handle logout
   const handleLogout = async () => {
-    await signOut({ callbackUrl: '/' });
-  };
+    await signOut({ callbackUrl: "/" })
+  }
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50">
-      <div className="backdrop-blur-md bg-white/30 border-b border-white/20">
+    <nav className={cn("absolute top-0 left-0 right-0 z-50 transition-all duration-300", scrolled ? "py-2" : "py-4")}>
+      <div
+        className={cn(
+          "backdrop-blur-xl border-b transition-all duration-300",
+          scrolled ? "shadow-lg border-white/10" : "border-transparent",
+        )}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <div className="flex-shrink-0">
-              <img src="/logo1.png" alt="AR PLANE Logo" className="w-24 md:w-32 h-auto" />
+            <div className="flex-shrink-0 group">
+              <Link href="/">
+                <div className="relative overflow-hidden">
+                  <img
+                    src="/logo1.png"
+                    alt="AR PLANE Logo"
+                    className="w-24 md:w-32 h-auto transition-transform duration-500 group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/20 to-blue-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg"></div>
+                </div>
+              </Link>
             </div>
 
             {/* Desktop Navigation & Authentication */}
             <div className="hidden md:flex items-center space-x-8">
               {/* Navigation Items */}
-              {navItems.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="relative text-gray-800 px-3 py-2 rounded-md text-sm font-medium group"
-                >
-                  <span className={`relative z-10 ${activePage === item.label ? "font-medium" : ""}`}>
-                    {item.label}
-                  </span>
-                  <span 
-                    className={`absolute inset-x-0 -bottom-1 h-0.5 bg-gray-800 transform origin-left transition-transform duration-200 ${
-                      activePage === item.label ? "scale-x-100" : "scale-x-0 group-hover:scale-x-100"
-                    }`}
-                  ></span>
-                </a>
-              ))}
+              <div className="flex space-x-1 bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
+                {navItems.map((item) => (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    className={cn(
+                      "relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 overflow-hidden group",
+                      activePage === item.label ? "text-white" : "text-gray-300 hover:text-white",
+                    )}
+                  >
+                    <span className="relative z-10">{item.label}</span>
+                    <span
+                      className={cn(
+                        "absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full -z-0 transition-all duration-300",
+                        activePage === item.label ? "opacity-100" : "opacity-0 group-hover:opacity-50",
+                      )}
+                    ></span>
+                  </Link>
+                ))}
+              </div>
 
               {/* Login Button or User Menu */}
               {isLoggedIn ? (
-                <div className="flex items-center space-x-4">
-                  <Link href="/profile">
-                    <UserCircle className="w-8 h-8 text-gray-800 cursor-pointer hover:text-gray-600 transition-colors" />
+                <div className="flex items-center space-x-4 text-white">
+                  <Link
+                    href="/profile"
+                    className="group relative flex items-center space-x-2 p-1 rounded-full overflow-hidden"
+                  >
+                    <UserCircle className="w-8 h-8 text-white transition-transform duration-300 group-hover:scale-110" />
+                    <span className="absolute inset-0 bg-white/10 scale-0 group-hover:scale-100 rounded-full transition-transform duration-300"></span>
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center space-x-1 text-gray-800 hover:text-gray-600"
+                    className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:shadow-glow"
                   >
-                    <LogOut className="w-5 h-5" />
+                    <LogOut className="w-4 h-4" />
                     <span>Logout</span>
                   </button>
                 </div>
               ) : (
-                <a
+                <Link
                   href="/auth"
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-transform duration-200 hover:scale-105"
+                  className="relative overflow-hidden bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300 hover:shadow-glow group"
                 >
-                  Login
-                </a>
+                  <span className="relative z-10">Login</span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+                </Link>
               )}
             </div>
 
@@ -100,12 +135,14 @@ const Navbar = () => {
             <div className="md:hidden">
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-md text-gray-800 hover:text-gray-600 focus:outline-none transition-transform duration-200 hover:scale-110"
+                className="inline-flex items-center justify-center p-2 rounded-full text-gray-300 hover:text-white hover:bg-white/10 focus:outline-none transition-all duration-300"
+                aria-expanded={isOpen}
               >
+                <span className="sr-only">{isOpen ? "Close menu" : "Open menu"}</span>
                 {isOpen ? (
-                  <X className="h-6 w-6 transform transition-transform duration-200" />
+                  <X className="h-6 w-6 transition-transform duration-300 rotate-90" />
                 ) : (
-                  <Menu className="h-6 w-6 transform transition-transform duration-200" />
+                  <Menu className="h-6 w-6 transition-transform duration-300" />
                 )}
               </button>
             </div>
@@ -114,53 +151,84 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         <div
-          className={`md:hidden backdrop-blur-md bg-white/30 transform transition-all duration-300 ease-in-out overflow-hidden ${
-            isOpen ? "max-h-screen opacity-100 py-4" : "max-h-0 opacity-0"
-          }`}
+          className={cn(
+            "md:hidden backdrop-blur-xl bg-white/5 transform transition-all duration-500 ease-in-out overflow-hidden",
+            isOpen
+              ? "max-h-[400px] opacity-100 border-t border-white/10"
+              : "max-h-0 opacity-0 border-t border-transparent",
+          )}
         >
-          <div className="px-4 space-y-3">
+          <div className="px-4 py-2 space-y-">
             {navItems.map((item, index) => (
-              <a
+              <Link
                 key={item.label}
                 href={item.href}
-                className="block text-gray-800 px-4 py-2 rounded-md text-base font-medium transition-all duration-200 hover:bg-white/20 relative"
+                className={cn(
+                  "block text-gray-300 px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 relative overflow-hidden",
+                  activePage === item.label
+                    ? "text-white bg-gradient-to-r from-purple-600/20 to-blue-600/20"
+                    : "hover:bg-white/5 hover:text-white",
+                )}
                 style={{
                   transitionDelay: `${index * 50}ms`,
+                  transform: isOpen ? "translateY(0)" : "translateY(20px)",
+                  opacity: isOpen ? 1 : 0,
                 }}
+                onClick={() => setIsOpen(false)}
               >
-                <span className={activePage === item.label ? "font-medium" : ""}>
-                  {item.label}
-                </span>
+                <span>{item.label}</span>
                 {activePage === item.label && (
-                  <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-gray-800"></span>
+                  <span className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-purple-500 to-blue-500"></span>
                 )}
-              </a>
+              </Link>
             ))}
 
             {/* Mobile Authentication */}
-            <div className="mt-4 flex justify-center">
+            <div
+              className="mt-4 pt-4 border-t border-white/10"
+              style={{
+                transitionDelay: `${navItems.length * 50}ms`,
+                transform: isOpen ? "translateY(0)" : "translateY(20px)",
+                opacity: isOpen ? 1 : 0,
+              }}
+            >
               {isLoggedIn ? (
-                <button
-                  onClick={handleLogout}
-                  className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
-                >
-                  <LogOut className="w-4 h-4" />
-                  <span>Logout</span>
-                </button>
+                <div className="space-y-3">
+                  <Link
+                    href="/profile"
+                    className="flex items-center space-x-3 text-white px-4 py-3 rounded-lg hover:bg-white/5 transition-colors duration-300"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <UserCircle className="w-5 h-5" />
+                    <span>Profile</span>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleLogout()
+                      setIsOpen(false)
+                    }}
+                    className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 hover:shadow-glow"
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Logout</span>
+                  </button>
+                </div>
               ) : (
-                <a
+                <Link
                   href="/auth"
-                  className="w-full text-center bg-gradient-to-r from-blue-600 to-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium"
+                  className="block w-full text-center bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 hover:shadow-glow"
+                  onClick={() => setIsOpen(false)}
                 >
                   Login
-                </a>
+                </Link>
               )}
             </div>
           </div>
         </div>
       </div>
     </nav>
-  );
-};
+  )
+}
 
-export default Navbar;
+export default Navbar
+

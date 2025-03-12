@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Globe,
   Clock,
@@ -11,6 +11,11 @@ import {
   Plane,
   Search,
   ArrowLeftRight,
+  Wifi,
+  Coffee,
+  MonitorSmartphone,
+  BaggageClaim,
+  Star,
 } from "lucide-react";
 import { format } from "date-fns";
 import Button from "@/components/ui/button";
@@ -18,6 +23,10 @@ import Cloud from "@/components/ui/cloud";
 import HeroBookCard from "@/components/card/hero_book_card";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface Flight {
   flightNumber: string;
@@ -49,9 +58,12 @@ interface HookProps {
   setSearched: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+// Main Flight Hero Component
 const FlightHero = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [planePosition, setPlanePosition] = useState(0);
+  const [scrollPosition, setScrollPosition] = useState(0);
+  const heroRef = useRef(null);
 
   useEffect(() => {
     setIsLoaded(true);
@@ -60,165 +72,341 @@ const FlightHero = () => {
       setPlanePosition((prev) => (prev + 1) % 100);
     }, 50);
 
-    return () => clearInterval(interval);
+    const handleScroll = () => {
+      setScrollPosition(window.scrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
+  // Parallax effect calculation
+  const parallaxOffset = scrollPosition * 0.3;
+
   return (
-    <div className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 text-white">
-      {/* Background elements with animation */}
-      <div className="absolute inset-0 z-0 opacity-20">
-        <div className="absolute top-0 left-0 w-full h-full">
-          <div
-            className={`absolute h-32 w-32 rounded-full bg-white blur-3xl opacity-30 -top-10 left-1/4 transition-all duration-1000 ease-in-out ${
-              isLoaded ? "scale-100" : "scale-0"
-            }`}
-          ></div>
-          <div
-            className={`absolute h-32 w-32 rounded-full bg-blue-300 blur-3xl opacity-30 top-32 right-1/3 transition-all duration-1000 delay-300 ease-in-out ${
-              isLoaded ? "scale-100" : "scale-0"
-            }`}
-          ></div>
-          <div
-            className={`absolute h-32 w-32 rounded-full bg-purple-300 blur-3xl opacity-30 bottom-10 right-1/4 transition-all duration-1000 delay-500 ease-in-out ${
-              isLoaded ? "scale-100" : "scale-0"
-            }`}
-          ></div>
-        </div>
+    <div
+      ref={heroRef}
+      className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 text-white min-h-screen flex items-center"
+    >
+      {/* Animated gradient orbs with parallax */}
+      <div className="absolute inset-0 z-0 opacity-30">
+        <div
+          className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 blur-3xl"
+          style={{
+            transform: `translate3d(${-parallaxOffset * 0.5}px, ${
+              -parallaxOffset * 0.2
+            }px, 0)`,
+          }}
+        ></div>
+        <div
+          className="absolute bottom-1/3 right-1/4 w-96 h-96 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 blur-3xl opacity-30"
+          style={{
+            transform: `translate3d(${parallaxOffset * 0.4}px, ${
+              parallaxOffset * 0.3
+            }px, 0)`,
+          }}
+        ></div>
+        <div
+          className="absolute top-2/3 left-1/3 w-72 h-72 rounded-full bg-gradient-to-r from-indigo-400 to-purple-600 blur-3xl opacity-40"
+          style={{
+            transform: `translate3d(${-parallaxOffset * 0.3}px, ${
+              parallaxOffset * 0.4
+            }px, 0)`,
+          }}
+        ></div>
       </div>
 
       {/* Hero Content */}
-      <div className="container mx-auto px-6 py-20 md:py-28 relative z-10">
-        <div className="flex flex-col md:flex-row items-center">
-          {/* Text Content with fade-in animation */}
+      <div className="container mx-auto px-6 py-20 md:py-24 relative z-10">
+        <div className="flex flex-col md:flex-row items-center gap-12">
+          {/* Text Content with staggered reveal animation */}
           <div
-            className={`w-full md:w-1/2 text-center md:text-left mb-12 md:mb-0 transition-all duration-1000 ease-out ${
-              isLoaded
-                ? "opacity-100 transform-none"
-                : "opacity-0 -translate-y-8"
-            }`}
+            className="w-full md:w-1/2 text-center md:text-left"
+            style={{
+              transform: `translateY(${Math.min(parallaxOffset * 0.2, 20)}px)`,
+              opacity: isLoaded ? 1 : 0,
+              transition: "opacity 1s ease-out, transform 0.5s ease-out",
+            }}
           >
+            <div className="overflow-hidden mb-2">
+              <span
+                className="inline-block text-sm font-medium px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/10"
+                style={{
+                  transform: isLoaded ? "translateY(0)" : "translateY(100%)",
+                  opacity: isLoaded ? 1 : 0,
+                  transition: "transform 0.8s ease-out, opacity 0.8s ease-out",
+                }}
+              >
+                Aerotix
+              </span>
+            </div>
+
             <h1 className="text-5xl md:text-6xl font-extrabold mb-6 leading-tight">
-              <span className="block overflow-hidden">
+              <span className="block overflow-hidden h-auto">
                 <span
-                  className={`block transition-transform duration-1000 delay-300 ${
-                    isLoaded ? "transform-none" : "translate-y-full"
-                  }`}
+                  className="block"
+                  style={{
+                    transform: isLoaded ? "translateY(0)" : "translateY(100%)",
+                    opacity: isLoaded ? 1 : 0,
+                    transition:
+                      "transform 0.8s ease-out 0.2s, opacity 0.8s ease-out 0.2s",
+                  }}
                 >
                   Explore the World
                 </span>
               </span>
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-200 via-white to-purple-200 block overflow-hidden">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-200 via-white to-purple-200 block overflow-hidden h-auto mt-1">
                 <span
-                  className={`block transition-transform duration-1000 delay-500 ${
-                    isLoaded ? "transform-none" : "translate-y-full"
-                  }`}
+                  className="block"
+                  style={{
+                    transform: isLoaded ? "translateY(0)" : "translateY(100%)",
+                    opacity: isLoaded ? 1 : 0,
+                    transition:
+                      "transform 0.8s ease-out 0.4s, opacity 0.8s ease-out 0.4s",
+                  }}
                 >
                   Without Limits
                 </span>
               </span>
             </h1>
 
+            <div
+              className="h-px w-24 bg-gradient-to-r from-blue-300 to-transparent mb-6 hidden md:block"
+              style={{
+                transform: isLoaded ? "scaleX(1)" : "scaleX(0)",
+                transformOrigin: "left",
+                opacity: isLoaded ? 1 : 0,
+                transition:
+                  "transform 1s ease-out 0.6s, opacity 1s ease-out 0.6s",
+              }}
+            ></div>
+
             <p
-              className={`text-xl text-blue-100 mb-8 max-w-lg mx-auto md:mx-0 transition-all duration-1000 delay-700 ${
-                isLoaded
-                  ? "opacity-100 transform-none"
-                  : "opacity-0 translate-y-4"
-              }`}
+              className="text-xl text-blue-100 mb-8 max-w-lg mx-auto md:mx-0"
+              style={{
+                transform: isLoaded ? "translateY(0)" : "translateY(20px)",
+                opacity: isLoaded ? 1 : 0,
+                transition:
+                  "transform 0.8s ease-out 0.6s, opacity 0.8s ease-out 0.6s",
+              }}
             >
               Discover incredible destinations with our unbeatable flight deals.
               Your dream journey is just a click away.
             </p>
 
             <div
-              className={`transition-all duration-1000 delay-1000 ${
-                isLoaded
-                  ? "opacity-100 transform-none"
-                  : "opacity-0 translate-y-4"
-              }`}
+              className="flex flex-col sm:flex-row gap-4"
+              style={{
+                transform: isLoaded ? "translateY(0)" : "translateY(20px)",
+                opacity: isLoaded ? 1 : 0,
+                transition:
+                  "transform 0.8s ease-out 0.8s, opacity 0.8s ease-out 0.8s",
+              }}
             >
-              <Button text="Start Exploring" showArrow />
+              <Button className="relative overflow-hidden group bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-full font-medium">
+                <span className="relative z-10 flex items-center">
+                  Start Exploring
+                  <svg
+                    className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M14 5l7 7m0 0l-7 7m7-7H3"
+                    />
+                  </svg>
+                </span>
+                <span className="absolute top-0 left-0 w-full h-full bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
+              </Button>
+
+              <button className="text-white border border-white/30 hover:bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full font-medium transition-colors">
+                View Destinations
+              </button>
+            </div>
+
+            {/* Destination stats */}
+            <div
+              className="flex gap-8 mt-12"
+              style={{
+                transform: isLoaded ? "translateY(0)" : "translateY(20px)",
+                opacity: isLoaded ? 1 : 0,
+                transition:
+                  "transform 0.8s ease-out 1s, opacity 0.8s ease-out 1s",
+              }}
+            >
+              <div>
+                <div className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-white">
+                  500+
+                </div>
+                <div className="text-sm text-blue-200">Destinations</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-white">
+                  24/7
+                </div>
+                <div className="text-sm text-blue-200">Support</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-200 to-white">
+                  98%
+                </div>
+                <div className="text-sm text-blue-200">Happy Travelers</div>
+              </div>
             </div>
           </div>
 
-          {/* Image Elements with animations */}
+          {/* Interactive Flight Animation Area */}
           <div
-            className={`w-full md:w-1/2 relative transition-all duration-1000 delay-500 ${
-              isLoaded
-                ? "opacity-100 transform-none"
-                : "opacity-0 translate-x-8"
-            }`}
+            className="w-full md:w-1/2 relative h-96"
+            style={{
+              transform: `translateY(${Math.min(-parallaxOffset * 0.1, 10)}px)`,
+              opacity: isLoaded ? 1 : 0,
+              transition: "opacity 1s ease-out 0.5s, transform 0.5s ease-out",
+            }}
           >
-            <div className="relative h-96 w-full">
-              {/* Main plane image with glow and movement */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="relative w-full h-full">
-                  <div className="absolute top-5 right-0 w-64 h-64 md:w-80 md:h-80 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full opacity-20 blur-xl animate-pulse"></div>
-                  <div
-                    className="absolute -bottom-10 -right-10 w-40 h-40 bg-gradient-to-br from-purple-400 to-pink-600 rounded-full opacity-20 blur-xl animate-pulse"
-                    style={{ animationDelay: "1s" }}
-                  ></div>
+            {/* 3D Scene Container */}
+            <div className="relative h-full w-full perspective-1000">
+              {/* Animated Background Elements */}
+              <div className="absolute inset-0">
+                <div
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 rounded-full bg-gradient-to-br from-blue-400/30 to-indigo-600/30 blur-md animate-pulse"
+                  style={{ animationDuration: "4s" }}
+                ></div>
 
-                  {/* Animated plane */}
-                  <div
-                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                {/* Animated Flight Path */}
+                <svg
+                  className="absolute inset-0 w-full h-full"
+                  viewBox="0 0 400 300"
+                >
+                  <path
+                    d="M50,150 C100,50 300,200 350,100"
+                    fill="none"
+                    stroke="rgba(255,255,255,0.2)"
+                    strokeWidth="2"
+                    strokeDasharray="5,5"
+                    className="path-animation"
+                  />
+                  <circle
+                    cx="50"
+                    cy="150"
+                    r="4"
+                    fill="white"
+                    className="opacity-70"
+                  />
+                  <circle
+                    cx="350"
+                    cy="100"
+                    r="4"
+                    fill="white"
+                    className="opacity-70"
+                  />
+                </svg>
+
+                {/* Cloud Elements */}
+                <Cloud
+                  className="absolute top-10 left-20 w-24 h-10 bg-white opacity-40 rounded-full blur-sm"
+                  delay={0}
+                  duration={15}
+                  scale={1.2}
+                />
+                <Cloud
+                  className="absolute top-24 left-10 w-20 h-8 bg-white opacity-30 rounded-full blur-sm"
+                  delay={1}
+                  duration={20}
+                  scale={0.9}
+                />
+                <Cloud
+                  className="absolute bottom-20 right-12 w-32 h-12 bg-white opacity-40 rounded-full blur-sm"
+                  delay={0.5}
+                  duration={18}
+                  scale={1.4}
+                />
+                <Cloud
+                  className="absolute bottom-36 right-24 w-20 h-8 bg-white opacity-30 rounded-full blur-sm"
+                  delay={2}
+                  duration={22}
+                  scale={0.8}
+                />
+              </div>
+
+              {/* Animated Plane with Smooth Motion */}
+              <div
+                className="absolute"
+                style={{
+                  left: `${Math.sin(planePosition * 0.03) * 20 + 50}%`,
+                  top: `${Math.cos(planePosition * 0.05) * 15 + 45}%`,
+                  transform: `translate(-50%, -50%) rotate(${
+                    Math.sin(planePosition * 0.02) * 10 + 45
+                  }deg)`,
+                  transition:
+                    "left 0.5s ease-out, top 0.5s ease-out, transform 0.3s ease-out",
+                }}
+              >
+                <div className="relative">
+                  {/* Plane Glow Effect */}
+                  <div className="absolute -inset-4 bg-blue-400 rounded-full opacity-30 blur-xl animate-pulse"></div>
+                  <div className="absolute -inset-2 bg-white rounded-full opacity-50 blur-md"></div>
+
+                  {/* Plane Icon */}
+                  <Plane
+                    size={60}
+                    className="text-white relative z-10"
                     style={{
-                      transform: `translate(-50%, -50%) translateY(${
-                        Math.sin(planePosition * 0.05) * 10
-                      }px)`,
+                      filter: "drop-shadow(0 0 10px rgba(255, 255, 255, 0.8))",
                     }}
-                  >
-                    <div className="relative">
-                      <div className="w-64 h-64 rounded-full bg-white opacity-10 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
-                      <Plane
-                        size={120}
-                        className="text-white transform rotate-45"
-                        style={{
-                          filter:
-                            "drop-shadow(0 0 10px rgba(255, 255, 255, 0.5))",
-                        }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Animated cloud elements */}
-                  <Cloud
-                    className="absolute top-10 left-10 w-20 h-8 bg-white opacity-40 rounded-full blur-sm"
-                    delay={0}
-                    duration={10}
-                  />
-                  <Cloud
-                    className="absolute top-16 left-5 w-16 h-6 bg-white opacity-30 rounded-full blur-sm"
-                    delay={2}
-                    duration={19}
-                  />
-                  <Cloud
-                    className="absolute bottom-20 right-20 w-24 h-8 bg-white opacity-40 rounded-full blur-sm"
-                    delay={1}
-                    duration={17}
-                  />
-                  <Cloud
-                    className="absolute bottom-28 right-12 w-16 h-6 bg-white opacity-30 rounded-full blur-sm"
-                    delay={3}
-                    duration={19}
                   />
                 </div>
               </div>
 
-              {/* Animated destination cards */}
+              {/* Flight Path Particles */}
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div
+                  key={i}
+                  className="absolute h-1 w-1 rounded-full bg-white opacity-70"
+                  style={{
+                    left: `${
+                      Math.sin((planePosition + i * 15) * 0.03) * 20 + 50
+                    }%`,
+                    top: `${
+                      Math.cos((planePosition + i * 15) * 0.05) * 15 + 45
+                    }%`,
+                    opacity: 0.7 - i * 0.1,
+                    transform: "translate(-50%, -50%)",
+                  }}
+                ></div>
+              ))}
+
+              {/* Enhanced Destination Cards */}
               <HeroBookCard
                 code="JFK"
                 city="New York"
                 label="Popular Destination"
-                className="absolute -bottom-6 left-0"
-                delay={1200}
+                className="absolute -bottom-4 left-4"
+                delay={800}
               />
 
               <HeroBookCard
                 code="HND"
                 city="Tokyo"
                 label="Trending Now"
-                className="absolute -top-4 right-12"
-                delay={1500}
+                className="absolute top-4 right-4"
+                delay={1000}
+              />
+
+              <HeroBookCard
+                code="CDG"
+                city="Paris"
+                label="Best Deal"
+                className="absolute bottom-1/3 right-0"
+                delay={1200}
               />
             </div>
           </div>
@@ -230,7 +418,7 @@ const FlightHero = () => {
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 1440 120"
-          className="w-full h-12 fill-gray-50"
+          className="w-full h-12 md:h-16 fill-gray-50"
         >
           <path d="M0,96L80,80C160,64,320,32,480,21.3C640,11,800,21,960,42.7C1120,64,1280,96,1360,112L1440,128L1440,320L1360,320C1280,320,1120,320,960,320C800,320,640,320,480,320C320,320,160,320,80,320L0,320Z"></path>
         </svg>
@@ -260,6 +448,23 @@ const FlightHero = () => {
           animation-name: float;
           animation-timing-function: ease-in-out;
           animation-iteration-count: infinite;
+        }
+
+        @keyframes path-animation {
+          0% {
+            stroke-dashoffset: 1000;
+          }
+          100% {
+            stroke-dashoffset: 0;
+          }
+        }
+
+        .path-animation {
+          animation: path-animation 20s linear infinite;
+        }
+
+        .perspective-1000 {
+          perspective: 1000px;
         }
       `}</style>
     </div>
@@ -417,11 +622,42 @@ const FlightSearchForm: React.FC<HookProps> = ({
 
               {/* Arrow icon in the middle */}
               <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 hidden md:block z-10">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:shadow-xl transition-all group">
-                  <ArrowLeftRight
-                    size={18}
-                    className="group-hover:rotate-180 transition-transform duration-500"
-                  />
+                <div
+                  className="w-14 h-14 bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-500 
+      text-white rounded-full flex items-center justify-center shadow-lg cursor-pointer 
+      hover:shadow-xl transition-all duration-300 group overflow-hidden relative"
+                  onClick={() => {
+                    setSearchParams((prev) => ({
+                      ...prev,
+                      from: prev.to,
+                      to: prev.from,
+                    }));
+                  }}
+                >
+                  {/* Background Glow on Hover */}
+                  <div
+                    className="absolute inset-0 bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-500 
+      opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-full"
+                  ></div>
+
+                  {/* Icon Container (Ensures Circle Stays Intact) */}
+                  <div className="relative flex items-center justify-center w-full h-full">
+                    <div className="flex items-center justify-center transition-transform duration-300">
+                      <ArrowLeftRight
+                        size={20}
+                        className="group-hover:rotate-180 transition-transform duration-500"
+                        strokeWidth={2.5}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Text (Ensure it stays within the circle) */}
+                  <span
+                    className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-xs font-medium 
+      opacity-0 group-hover:opacity-100 group-hover:bottom-1 transition-all duration-300 text-white"
+                  >
+                    Swap
+                  </span>
                 </div>
               </div>
 
@@ -583,10 +819,38 @@ const FlightSearchForm: React.FC<HookProps> = ({
   );
 };
 
-const Result: React.FC<HookProps> = ({ flights, loading, error, searched }) => {
+interface Flight {
+  flightNumber: string;
+  airline: string;
+  aircraft: string;
+  departure: string;
+  departureCode: string;
+  departureDate: Date;
+  departureHour: Date;
+  arrival: string;
+  arrivalCode: string;
+  arrivalDate: Date;
+  arrivalHour: Date;
+  duration: number;
+  price: number;
+  availableSeats: number;
+  amenities?: string[];
+  rating?: number;
+}
+
+interface HookProps {
+  flights: Flight[];
+  loading: boolean;
+  error: string | null;
+  searched: boolean;
+}
+
+const FlightResults: React.FC<HookProps> = ({ flights, loading, error, searched }) => {
   const { data: session } = useSession();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
+  const [sortOption, setSortOption] = useState<'price' | 'duration' | 'departure'>('price');
+  const [selectedAirlines, setSelectedAirlines] = useState<string[]>([]);
 
   useEffect(() => {
     setIsMounted(true);
@@ -609,228 +873,310 @@ const Result: React.FC<HookProps> = ({ flights, loading, error, searched }) => {
     };
   }
 
-  
   const handleSelectFlight = (flightNumber: string) => {
     if (!session) {
       router.push("/auth");
       return;
     }
-    router.push(`/book/${flightNumber}`); 
+    router.push(`/book/${flightNumber}`);
+  };
+
+  // Get unique airlines for filtering
+  const airlines = [...new Set(flights.map(flight => flight.airline))];
+
+  // Filter and sort flights
+  const filteredFlights = flights
+    .filter(flight => selectedAirlines.length === 0 || selectedAirlines.includes(flight.airline))
+    .sort((a, b) => {
+      if (sortOption === 'price') return a.price - b.price;
+      if (sortOption === 'duration') return a.duration - b.duration;
+      if (sortOption === 'departure') {
+        return new Date(a.departureHour).getTime() - new Date(b.departureHour).getTime();
+      }
+      return 0;
+    });
+
+  // Function to render amenity icons
+  const renderAmenityIcon = (amenity: string) => {
+    switch (amenity) {
+      case 'wifi': return <Wifi size={16} />;
+      case 'food': return <Coffee size={16} />;
+      case 'entertainment': return <MonitorSmartphone size={16} />;
+      case 'baggage': return <BaggageClaim size={16} />;
+      default: return null;
+    }
   };
 
   return (
-    /* Results Section */
-    <div className="container mx-auto px-4 mt-8">
+    <div className="container mx-auto px-4 py-8">
       {error && (
-        <div
-          className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg mb-4 shadow-sm opacity-0 animate-fadeIn"
-          style={{ animation: "fadeIn 0.3s ease-out forwards" }}
-        >
+        <div className="bg-destructive/10 border border-destructive/20 text-destructive p-4 rounded-lg mb-6 animate-in fade-in duration-300">
           {error}
         </div>
       )}
 
       {searched && !loading && flights.length === 0 && !error && (
-        <div
-          className="bg-yellow-50 border border-yellow-200 text-yellow-700 p-4 rounded-lg shadow-sm opacity-0 animate-fadeIn"
-          style={{ animation: "fadeIn 0.3s ease-out forwards" }}
-        >
-          No flights found matching your criteria. Try adjusting your search
-          parameters.
+        <div className="bg-warning/10 border border-warning/20 text-warning-foreground p-4 rounded-lg mb-6 animate-in fade-in duration-300">
+          No flights found matching your criteria. Try adjusting your search parameters.
         </div>
       )}
 
-      {loading && (
-        <div className="flex justify-center items-center py-12">
-          <div className="relative">
-            <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-500 border-b-purple-500 rounded-full animate-spin"></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Plane size={20} className="text-purple-500" />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {flights.length > 0 && (
-        <div
-          className="space-y-6 opacity-0 animate-fadeIn"
-          style={{ animation: "fadeIn 0.5s ease-out forwards" }}
-        >
+      {loading ? (
+        <div className="space-y-6">
           <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-8 w-32" />
+          </div>
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="animate-pulse">
+              <CardContent className="p-0">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="p-6 border-b md:border-b-0 md:border-r border-border">
+                    <Skeleton className="h-6 w-32 mb-2" />
+                    <Skeleton className="h-4 w-24" />
+                  </div>
+                  <div className="p-6 md:col-span-2 border-b md:border-b-0 md:border-r border-border">
+                    <div className="flex items-center">
+                      <div className="flex-1">
+                        <Skeleton className="h-8 w-20 mb-1" />
+                        <Skeleton className="h-4 w-24 mb-2" />
+                        <Skeleton className="h-5 w-32" />
+                      </div>
+                      <div className="flex-1 px-4">
+                        <Skeleton className="h-4 w-full mb-4" />
+                        <Skeleton className="h-4 w-16 mx-auto" />
+                      </div>
+                      <div className="flex-1 text-right">
+                        <Skeleton className="h-8 w-20 ml-auto mb-1" />
+                        <Skeleton className="h-4 w-24 ml-auto mb-2" />
+                        <Skeleton className="h-5 w-32 ml-auto" />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-6 bg-muted/30">
+                    <Skeleton className="h-10 w-32 mb-2" />
+                    <Skeleton className="h-4 w-24 mb-6" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : flights.length > 0 ? (
+        <div className="space-y-6 animate-in fade-in duration-500">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
               Available Flights
             </h2>
-            <div className="text-gray-600 px-4 py-1 bg-white rounded-full shadow-sm">
-              {flights.length} flights found
+            
+            <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+              {/* Sort options */}
+          
+              
+              {/* Filter by airline */}
+              {airlines.length > 1 && (
+                <div className="flex items-center gap-2 ml-auto sm:ml-4">
+                  <span className="text-sm font-medium text-muted-foreground">Airlines:</span>
+                  <div className="flex flex-wrap gap-1">
+                    {airlines.map((airline) => (
+                      <Badge 
+                        key={airline}
+                        variant={selectedAirlines.includes(airline) ? "default" : "outline"}
+                        className="cursor-pointer"
+                        onClick={() => {
+                          if (selectedAirlines.includes(airline)) {
+                            setSelectedAirlines(selectedAirlines.filter(a => a !== airline));
+                          } else {
+                            setSelectedAirlines([...selectedAirlines, airline]);
+                          }
+                        }}
+                      >
+                        {airline}
+                      </Badge>
+                    ))}
+                    {selectedAirlines.length > 0 && (
+                      <Badge 
+                        variant="secondary"
+                        className="cursor-pointer"
+                        onClick={() => setSelectedAirlines([])}
+                      >
+                        Clear
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
           <div className="space-y-4">
-            {flights.map((flight, index) => {
-              const departure = formatDateTime(
-                flight.departureDate,
-                flight.departureHour
-              );
-              const arrival = formatDateTime(
-                flight.arrivalDate,
-                flight.arrivalHour
-              );
+            <div className="flex justify-between items-center px-2">
+              <span className="text-sm text-muted-foreground">
+                {filteredFlights.length} {filteredFlights.length === 1 ? 'flight' : 'flights'} found
+              </span>
+              {sortOption === 'price' && filteredFlights.length > 0 && (
+                <span className="text-sm font-medium text-primary">
+                  Best price: ${Math.min(...filteredFlights.map(f => f.price)).toFixed(2)}
+                </span>
+              )}
+            </div>
+
+            {filteredFlights.map((flight, index) => {
+              const departure = formatDateTime(flight.departureDate, flight.departureHour);
+              const arrival = formatDateTime(flight.arrivalDate, flight.arrivalHour);
+              const isLowestPrice = flight.price === Math.min(...filteredFlights.map(f => f.price));
+              const isShortestDuration = flight.duration === Math.min(...filteredFlights.map(f => f.duration));
 
               return (
-                <div
+                <Card
                   key={flight.flightNumber}
-                  className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100 opacity-0 transition-all duration-500 hover:shadow-lg hover:translate-y-px"
-                  style={{
-                    animation: `fadeSlideUp 0.5s ease-out ${
-                      index * 0.1
-                    }s forwards`,
-                  }}
+                  className="overflow-hidden border-border hover:shadow-md transition-all duration-300 animate-in fade-in slide-in-from-bottom-5"
+                  style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <div className="grid grid-cols-1 md:grid-cols-4">
-                    {/* Airline Info */}
-                    <div className="p-6 flex flex-col justify-between border-b md:border-b-0 md:border-r border-gray-100">
-                      <div>
-                        <span className="text-lg font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-                          {flight.airline}
-                        </span>
-                        <p className="text-gray-500">{flight.flightNumber}</p>
-                      </div>
-                      <div className="mt-2 text-sm text-gray-500 flex items-center">
-                        <Plane size={14} className="mr-1 text-blue-500" />
-                        {flight.aircraft}
-                      </div>
-                    </div>
-
-                    {/* Flight Times */}
-                    <div className="p-6 md:col-span-2 border-b md:border-b-0 md:border-r border-gray-100">
-                      <div className="flex items-center">
-                        <div className="flex-1">
-                          <p className="text-2xl font-bold">{departure.time}</p>
-                          <p className="text-sm text-gray-500">
-                            {departure.date}
-                          </p>
-                          <p className="font-medium mt-1 text-blue-500">
-                            {flight.departure}{" "}
-                            <span className="text-gray-500">
-                              ({flight.departureCode})
+                  <CardContent className="p-0">
+                    <div className="grid grid-cols-1 md:grid-cols-4">
+                      {/* Airline Info */}
+                      <div className="p-6 flex flex-col justify-between border-b md:border-b-0 md:border-r border-border relative">
+                        {isLowestPrice && (
+                          <Badge className="absolute -top-1 -left-1 bg-green-500 hover:bg-green-600">
+                            Best Price
+                          </Badge>
+                        )}
+                        {isShortestDuration && !isLowestPrice && (
+                          <Badge className="absolute -top-1 -left-1 bg-blue-500 hover:bg-blue-600">
+                            Fastest
+                          </Badge>
+                        )}
+                        
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-lg font-bold text-primary">
+                              {flight.airline}
                             </span>
+                            {flight.rating && (
+                              <div className="flex items-center text-amber-500">
+                                <Star size={14} className="fill-current" />
+                                <span className="text-xs ml-0.5">{flight.rating}</span>
+                              </div>
+                            )}
+                          </div>
+                          <p className="text-muted-foreground text-sm">{flight.flightNumber}</p>
+                        </div>
+                        
+                        <div className="mt-4 text-sm text-muted-foreground flex items-center">
+                          <Plane size={14} className="mr-1 text-primary" />
+                          {flight.aircraft}
+                        </div>
+                        
+                        {flight.amenities && flight.amenities.length > 0 && (
+                          <div className="mt-3 flex gap-2">
+                            <TooltipProvider>
+                              {flight.amenities.map((amenity, i) => (
+                                <Tooltip key={i}>
+                                  <TooltipTrigger asChild>
+                                    <div className="p-1.5 bg-muted rounded-md text-muted-foreground">
+                                      {renderAmenityIcon(amenity)}
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p className="capitalize">{amenity}</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              ))}
+                            </TooltipProvider>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Flight Times */}
+                      <div className="p-6 md:col-span-2 border-b md:border-b-0 md:border-r border-border">
+                        <div className="flex items-center">
+                          <div className="flex-1">
+                            <p className="text-2xl font-bold">{departure.time}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {departure.date}
+                            </p>
+                            <p className="font-medium mt-1 text-primary">
+                              {flight.departure}{" "}
+                              <span className="text-muted-foreground">
+                                ({flight.departureCode})
+                              </span>
+                            </p>
+                          </div>
+
+                          <div className="flex flex-col items-center px-4">
+                            <div className="text-muted-foreground text-sm flex items-center">
+                              <Clock size={14} className="mr-1 text-primary" />
+                              {formatDuration(flight.duration)}
+                            </div>
+                            <div className="relative py-4">
+                              <div className="w-32 h-0.5 bg-gradient-to-r from-primary to-primary/60 my-1"></div>
+                              <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full bg-primary"></div>
+                              <Plane
+                                size={16}
+                                className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 text-primary/70"
+                              />
+                              <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full bg-primary/70"></div>
+                            </div>
+                            <div className="text-muted-foreground text-xs uppercase tracking-wider font-medium">
+                              Direct
+                            </div>
+                          </div>
+
+                          <div className="flex-1 text-right">
+                            <p className="text-2xl font-bold">{arrival.time}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {arrival.date}
+                            </p>
+                            <p className="font-medium mt-1 text-primary/80">
+                              {flight.arrival}{" "}
+                              <span className="text-muted-foreground">
+                                ({flight.arrivalCode})
+                              </span>
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Price and Booking */}
+                      <div className="p-6 bg-muted/30 flex flex-col justify-between">
+                        <div>
+                          <p className="text-3xl font-bold text-primary">
+                            ${flight.price.toFixed(2)}
                           </p>
+                          <p className="text-sm text-muted-foreground">per passenger</p>
                         </div>
 
-                        <div className="flex flex-col items-center px-4">
-                          <div className="text-gray-400 text-sm flex items-center">
-                            <Clock size={14} className="mr-1 text-purple-500" />
-                            {formatDuration(flight.duration)}
+                        <div className="mt-4">
+                          <div className="text-sm text-muted-foreground mb-3 flex items-center">
+                            <Users size={14} className="mr-1 text-primary" />
+                            <span className="font-medium">
+                              {flight.availableSeats}
+                            </span>{" "}
+                            seats left
                           </div>
-                          <div className="relative py-4">
-                            <div className="w-32 h-px bg-gradient-to-r from-blue-500 to-purple-500 my-1"></div>
-                            <div className="absolute left-0 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full bg-blue-500"></div>
-                            <Plane
-                              size={16}
-                              className="absolute top-1/2 left-1/2 transform -translate-y-1/2 -translate-x-1/2 text-purple-400"
-                            />
-                            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 w-2 h-2 rounded-full bg-purple-500"></div>
-                          </div>
-                          <div className="text-gray-400 text-xs uppercase tracking-wider font-medium">
-                            Direct
-                          </div>
-                        </div>
-
-                        <div className="flex-1 text-right">
-                          <p className="text-2xl font-bold">{arrival.time}</p>
-                          <p className="text-sm text-gray-500">
-                            {arrival.date}
-                          </p>
-                          <p className="font-medium mt-1 text-purple-500">
-                            {flight.arrival}{" "}
-                            <span className="text-gray-500">
-                              ({flight.arrivalCode})
-                            </span>
-                          </p>
+                          <Button
+                            className="w-full group"
+                            onClick={() => handleSelectFlight(flight.flightNumber)}
+                          >
+                            Select Flight
+                            <ArrowRight size={16} className="ml-1 transition-transform group-hover:translate-x-1" />
+                          </Button>
                         </div>
                       </div>
                     </div>
-
-                    {/* Price and Booking */}
-                    <div className="p-6 bg-gray-50 flex flex-col justify-between border-t md:border-t-0 md:border-l border-gray-100">
-                      <div>
-                        <p className="text-3xl font-bold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
-                          ${flight.price.toFixed(2)}
-                        </p>
-                        <p className="text-sm text-gray-500">per passenger</p>
-                      </div>
-
-                      <div className="mt-4">
-                        <div className="text-sm text-gray-600 mb-2 flex items-center">
-                          <Users size={14} className="mr-1 text-blue-500" />
-                          <span className="font-medium">
-                            {flight.availableSeats}
-                          </span>{" "}
-                          seats left
-                        </div>
-                        <button className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-102 active:scale-98 flex items-center justify-center"
-                        onClick={() => handleSelectFlight(flight.flightNumber)}>
-                          Select Flight
-                          <ArrowRight size={16} className="ml-1" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  </CardContent>
+                </Card>
               );
             })}
           </div>
         </div>
-      )}
-
-      <style jsx global>{`
-        @keyframes float {
-          0% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-20px);
-          }
-          100% {
-            transform: translateY(0px);
-          }
-        }
-
-        @keyframes fadeIn {
-          0% {
-            opacity: 0;
-          }
-          100% {
-            opacity: 1;
-          }
-        }
-
-        @keyframes fadeSlideUp {
-          0% {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .transform.hover\\:scale-103:hover {
-          transform: scale(1.03);
-        }
-
-        .transform.active\\:scale-98:active {
-          transform: scale(0.98);
-        }
-
-        .transform.hover\\:scale-102:hover {
-          transform: scale(1.02);
-        }
-      `}</style>
+      ) : null}
     </div>
   );
 };
+
 
 export default function FlightBookingPage() {
   const [flights, setFlights] = useState<Flight[]>([]);
@@ -851,7 +1197,7 @@ export default function FlightBookingPage() {
         searched={searched}
         setSearched={setSearched}
       />
-      <Result
+      <FlightResults
         flights={flights}
         setFlights={setFlights}
         error={error}

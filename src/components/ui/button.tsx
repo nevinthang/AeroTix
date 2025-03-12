@@ -2,13 +2,13 @@ import React from "react";
 import { ArrowRight } from "lucide-react";
 
 interface ButtonProps {
-  text: string;
   onClick?: () => void;
   className?: string;
   showArrow?: boolean;
+  children: React.ReactNode;  // Menambahkan children
 }
 
-const Button: React.FC<ButtonProps> = ({ text, onClick, className = "", showArrow = false }) => {
+const Button: React.FC<ButtonProps> = ({ onClick, className = "", showArrow = false, children }) => {
   return (
     <button
       onClick={onClick}
@@ -18,7 +18,7 @@ const Button: React.FC<ButtonProps> = ({ text, onClick, className = "", showArro
         transition-all duration-300 ease-out overflow-hidden ${className}`}
     >
       <span className="flex items-center gap-2 group-hover:text-white relative z-10">
-        {text}
+        {children}
         {showArrow && (
           <ArrowRight className="w-5 h-5 transition-transform duration-300 ease-out group-hover:translate-x-1" />
         )}

@@ -74,7 +74,8 @@ model Ticket {
   flightNumber   String
   user           User     @relation(fields: [userId], references: [id])
   userId         String  
-  passengers      Passenger[]
+  passengers     Passenger[]
+  totalAmount    Int
 }
 
 model Passenger {
