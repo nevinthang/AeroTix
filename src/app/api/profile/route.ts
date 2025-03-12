@@ -1,228 +1,187 @@
-// app/api/users/[...user]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
 
 const prisma = new PrismaClient();
 
-// Handle GET and PUT for /api/users/profile/[userId]
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { user: string[] } }
-) {
+// GET: Mengambil data profil user
+export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    if (!session?.user) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401 }
+      );
     }
     
-    // Parse route params
-    const [action, userId] = params.user;
+    const userId = session.user.id;
     
-    // Handle different actions
-    if (action === "profile") {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phoneNumber: true,
+        birthdate: true,
+        passport: true,
+        passport_exp: true,
+        loyaltyPoints: true,
+        membershipTier: true,
+      },
+    });
+    
+    if (!user) {
+      return NextResponse.json(
+        { message: "User not found" },
+        { status: 404 }
+      );
+    }
+    
+    return NextResponse.json(user);
+  } catch (error) {
+    console.error("Error fetching user profile:", error);
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+// PUT: Update data profil user
+export async function PUT(req: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+    
+    if (!session?.user) {
+      return NextResponse.json(
+        { message: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+    
+    const userId = session.user.id;
+    const data = await req.json();
+    
+    // Validasi data yang boleh diupdate
+    const allowedFields = [
+      "name",
+      "phoneNumber",
+      "passport",
+      "passport_exp",
+      "nik"
+    ];
+    
+    const updateData: any = {};
+    
+    allowedFields.forEach((field) => {
+      if (data[field] !== undefined) {
+        updateData[field] = data[field];
+      }
+    });
+    
+    // Validasi format data
+    if (data.passport_exp) {
+      updateData.passport_exp = new Date(data.passport_exp);
+    }
+    
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: updateData,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phoneNumber: true,
+        birthdate: true,
+        passport: true,
+        passport_exp: true,
+        loyaltyPoints: true,
+        membershipTier: true,
+      },
+    });
+    
+    return NextResponse.json(updatedUser);
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    return NextResponse.json(
+      { message: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+// Rute untuk mendapatkan detail membership tier dan poin
+export async function GETLoyalty(req: NextRequest) {
+  try {
+    const url = new URL(req.url);
+    if (url.pathname.endsWith('/loyalty')) {
+      const session = await getServerSession(authOptions);
+      
+      if (!session?.user) {
+        return NextResponse.json(
+          { message: "Unauthorized" },
+          { status: 401 }
+        );
+      }
+      
+      const userId = session.user.id;
+      
       const user = await prisma.user.findUnique({
-        where: { id: userId },
+        where: {
+          id: userId,
+        },
+        select: {
+          loyaltyPoints: true,
+          membershipTier: true,
+        },
       });
       
       if (!user) {
-        return NextResponse.json({ error: "User not found" }, { status: 404 });
+        return NextResponse.json(
+          { message: "User not found" },
+          { status: 404 }
+        );
       }
       
-      return NextResponse.json(user);
-    } 
-    else if (action === "bookings") {
-      const bookings = await prisma.booking.findMany({
-        where: { userId: userId },
-        orderBy: { date: "desc" },
-      });
+      // Informasi tentang tier berikutnya
+      const tierThresholds = {
+        BRONZE: 0,
+        SILVER: 500,
+        GOLD: 1000, 
+        PLATINUM: 2500
+      };
       
-      return NextResponse.json(bookings);
-    } 
-    else if (action === "history") {
-      const history = await prisma.history.findMany({
-        where: { userId: userId },
-        orderBy: { timestamp: "desc" },
-      });
+      const currentTier = user.membershipTier;
+      let nextTier = null;
+      let pointsToNextTier = null;
       
-      return NextResponse.json(history);
+      if (currentTier !== 'PLATINUM') {
+        const tiers: (keyof typeof tierThresholds)[] = ['BRONZE', 'SILVER', 'GOLD', 'PLATINUM'];
+        const currentIndex = tiers.indexOf(currentTier);
+        nextTier = tiers[currentIndex + 1];
+        pointsToNextTier = tierThresholds[nextTier] - user.loyaltyPoints;
+      }
+      
+      return NextResponse.json({
+        ...user,
+        nextTier,
+        pointsToNextTier
+      });
     }
-    
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   } catch (error) {
-    console.error("API error:", error);
+    console.error("Error fetching loyalty data:", error);
     return NextResponse.json(
-      { error: "Failed to process request" },
+      { message: "Internal server error" },
       { status: 500 }
     );
   }
 }
-
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { user: string[] } }
-) {
-  try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    
-    const [action, userId] = params.user;
-    const data = await request.json();
-    
-    if (action === "profile") {
-      const updatedUser = await prisma.user.update({
-        where: { id: userId },
-        data: {
-          name: data.name,
-          email: data.email,
-          phone: data.phone,
-          address: data.address,
-          birthday: data.birthday,
-          gender: data.gender,
-          updatedAt: new Date(),
-        },
-      });
-      
-      return NextResponse.json(updatedUser);
-    }
-    
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-  } catch (error) {
-    console.error("API error:", error);
-    return NextResponse.json(
-      { error: "Failed to process request" },
-      { status: 500 }
-    );
-  }
-}
-
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { user: string[] } }
-) {
-  try {
-    const session = await getServerSession(authOptions);
-    
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-    
-    const [action, userId] = params.user;
-    const data = await request.json();
-    
-    if (action === "bookings") {
-      const newBooking = await prisma.booking.create({
-        data: {
-          userId: userId,
-          title: data.title,
-          date: new Date(data.date),
-          status: data.status || "Pending",
-        },
-      });
-      
-      // Add history entry for booking
-      await prisma.history.create({
-        data: {
-          userId: userId,
-          activity: `Booked: ${data.title}`,
-        },
-      });
-      
-      return NextResponse.json(newBooking, { status: 201 });
-    } 
-    else if (action === "loyalty-points") {
-      const user = await prisma.user.findUnique({
-        where: { id: userId },
-      });
-      
-      if (!user) {
-        return NextResponse.json({ error: "User not found" }, { status: 404 });
-      }
-      
-      const updatedPoints = user.loyaltyPoints + data.points;
-      
-      // Check if user should upgrade membership level
-      let membershipLevel = user.membershipLevel;
-      if (updatedPoints >= 5000) {
-        membershipLevel = "Platinum";
-      } else if (updatedPoints >= 3000) {
-        membershipLevel = "Gold";
-      } else if (updatedPoints >= 1000) {
-        membershipLevel = "Silver";
-      }
-      
-      const updatedUser = await prisma.user.update({
-        where: { id: userId },
-        data: {
-          loyaltyPoints: updatedPoints,
-          membershipLevel: membershipLevel,
-        },
-      });
-      
-      // Add to history
-      await prisma.history.create({
-        data: {
-          userId: userId,
-          activity: `Earned ${data.points} loyalty points`,
-        },
-      });
-      
-      return NextResponse.json(updatedUser);
-    }
-    
-    return NextResponse.json({ error: "Invalid request" }, { status: 400 });
-  } catch (error) {
-    console.error("API error:", error);
-    return NextResponse.json(
-      { error: "Failed to process request" },
-      { status: 500 }
-    );
-  }
-}
-
-// Prisma schema reference (place in prisma/schema.prisma):
-/*
-model User {
-  id                  String    @id @default(uuid())
-  name                String
-  email               String    @unique
-  username            String    @unique
-  password            String
-  phone               String?
-  address             String?
-  birthday            String?
-  gender              String?
-  membershipLevel     String    @default("Basic")
-  loyaltyPoints       Int       @default(0)
-  memberId            String    @unique
-  membershipValidUntil String
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-  bookings            Booking[]
-  history             History[]
-}
-
-model Booking {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  title     String
-  date      DateTime
-  status    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model History {
-  id        String   @id @default(uuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
-  activity  String
-  timestamp DateTime @default(now())
-}
-*/
