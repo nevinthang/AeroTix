@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Calendar, X, Plus, Minus, ChevronLeft, ChevronRight, Menu, Plane } from 'lucide-react';
+import { Plane, Map, Globe, Navigation, Compass } from "lucide-react";
 import './globals.css';
+import Button from "@/components/ui/button";
 
 
 const Homepage = () => {
@@ -13,6 +14,79 @@ const Homepage = () => {
   const sliderRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [centerIndex, setCenterIndex] = useState(1);
+  
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  // New states for enhanced hero animations
+  const [globeRotation, setGlobeRotation] = useState(0);
+  const [activePath, setActivePath] = useState(0);
+  const [searchText, setSearchText] = useState("");
+  const searchInputRef = useRef(null);
+
+  // Path animations configuration
+  const flightPaths = [
+    { from: {x: 20, y: 120}, to: {x: 180, y: 80}, active: true },
+    { from: {x: 60, y: 160}, to: {x: 220, y: 40}, active: false },
+    { from: {x: 100, y: 140}, to: {x: 240, y: 100}, active: false },
+  ];
+
+   // Set isLoaded to true after component mounts
+   useEffect(() => {
+    setIsLoaded(true);
+    
+    // Animate globe rotation
+    const animateGlobe = () => {
+      setGlobeRotation(prev => (prev + 0.2) % 360);
+      requestAnimationFrame(animateGlobe);
+    };
+    
+    const globeAnimation = requestAnimationFrame(animateGlobe);
+    
+    // Cycle through flight paths
+    const pathInterval = setInterval(() => {
+      setActivePath(prev => (prev + 1) % flightPaths.length);
+    }, 3000);
+    
+    // Typing animation effect
+    const destinations = ["Paris", "New York", "Tokyo", "Dubai", "London", "Sydney"];
+    let currentDestIndex = 0;
+    let currentCharIndex = 0;
+    let isDeleting = false;
+    
+    const typeEffect = () => {
+      const currentDest = destinations[currentDestIndex];
+      
+      if (isDeleting) {
+        setSearchText(currentDest.substring(0, currentCharIndex - 1));
+        currentCharIndex--;
+      } else {
+        setSearchText(currentDest.substring(0, currentCharIndex + 1));
+        currentCharIndex++;
+      }
+      
+      if (!isDeleting && currentCharIndex === currentDest.length) {
+        // Wait a bit when a word is complete
+        setTimeout(() => {
+          isDeleting = true;
+        }, 1500);
+      } else if (isDeleting && currentCharIndex === 0) {
+        isDeleting = false;
+        currentDestIndex = (currentDestIndex + 1) % destinations.length;
+      }
+      
+      // Adjust typing speed based on whether deleting or typing
+      const typingSpeed = isDeleting ? 50 : 150;
+      setTimeout(typeEffect, typingSpeed);
+    };
+    
+    const typingAnimation = setTimeout(typeEffect, 1000);
+    
+    return () => {
+      cancelAnimationFrame(globeAnimation);
+      clearInterval(pathInterval);
+      clearTimeout(typingAnimation);
+    };
+  }, []);
 
   const testimonials = [
     {
@@ -31,105 +105,6 @@ const Homepage = () => {
       image: "https://randomuser.me/api/portraits/women/3.jpg"
     }
   ];
-
-  // const calculateCenterItem = () => {
-  //   if (!containerRef.current || !sliderRef.current) return;
-  
-  //   // Ambil posisi heading sebagai acuan
-  //   const headingElement = document.querySelector('.testimonial-heading') as HTMLElement | null;
-  //   if (!headingElement) return;
-  
-  //   const headingRect = headingElement.getBoundingClientRect();
-  //   const referencePosition = headingRect.bottom + 10; // Tambahkan offset agar lebih akurat
-  
-  //   // Ambil semua elemen testimonial
-  //   const items = Array.from(sliderRef.current.querySelectorAll('.testimonial-item')) as HTMLElement[];
-  //   if (!items.length) return;
-  
-  //   let closestItem: HTMLElement | null = null;
-  //   let closestDistance = Infinity;
-  //   let nextItem: HTMLElement | null = null;
-  
-  //   items.forEach((item) => {
-  //     const itemRect = item.getBoundingClientRect();
-  //     const itemTop = itemRect.top;
-  
-  //     // Ambil item pertama yang ada DI BAWAH referencePosition
-  //     if (itemTop > referencePosition) {
-  //       if (!nextItem || itemTop < nextItem.getBoundingClientRect().top) {
-  //         nextItem = item;
-  //       }
-  //     }
-  
-  //     // Tetap cari item terdekat sebagai fallback
-  //     const distance = Math.abs(referencePosition - itemTop);
-  //     if (distance < closestDistance) {
-  //       closestDistance = distance;
-  //       closestItem = item;
-  //     }
-  //   });
-  
-  //   // Pilih item yang akan di-highlight
-  //   const itemToHighlight = nextItem || closestItem;
-  //   if (!itemToHighlight) return;
-  
-  //   // Hapus highlight dari semua item dulu
-  //   items.forEach((item) => {
-  //     item.classList.remove('testimonial-highlighted', 'border-l-4', 'border-purple-600', 'bg-gray-100');
-  //     item.classList.add('bg-white');
-  //   });
-  
-  //   // Tambahkan highlight ke item yang dipilih
-  //   (itemToHighlight as HTMLElement).classList.add('testimonial-highlighted', 'border-l-4', 'border-purple-600', 'bg-gray-100');
-  //   (itemToHighlight as HTMLElement).classList.remove('bg-white');
-  
-  //   // Pastikan elemen memiliki dataset.index
-  //   const index = parseInt((itemToHighlight as HTMLElement).dataset.index || '0', 10);
-  //   if (!isNaN(index) && testimonials.length > 0) {
-  //     setCenterIndex(index % testimonials.length);
-  //   }
-  // };
-  
-  
-
-  // // Add this near the useEffect for smooth transitions
-  // useEffect(() => {
-  //   // Calculate center item initially
-  //   setTimeout(calculateCenterItem, 100);
-    
-  //   // Set up scroll event listeners
-  //   const container = containerRef.current;
-  //   if (container) {
-  //     container.addEventListener('scroll', calculateCenterItem);
-  //   }
-    
-  //   // Set up animation end listener
-  //   const slider = sliderRef.current;
-  //   if (slider) {
-  //     slider.addEventListener('animationiteration', () => {
-  //       // When animation completes one iteration, recalculate center
-  //       calculateCenterItem();
-  //     });
-  //   }
-    
-  //   // Add window scroll listener
-  //   window.addEventListener('scroll', calculateCenterItem);
-    
-  //   // Set up interval to periodically check for position changes during animation
-  //   const highlightInterval = setInterval(calculateCenterItem, 500);
-    
-  //   // Clean up event listeners
-  //   return () => {
-  //     if (container) {
-  //       container.removeEventListener('scroll', calculateCenterItem);
-  //     }
-  //     if (slider) {
-  //       slider.removeEventListener('animationiteration', calculateCenterItem);
-  //     }
-  //     window.removeEventListener('scroll', calculateCenterItem);
-  //     clearInterval(highlightInterval);
-  //   };
-  // }, [testimonials.length]);
 
   const whyUsFeatures = [
     {
@@ -239,6 +214,42 @@ const Homepage = () => {
     }
   ];
 
+  // Floating card component for destination highlights
+  interface DestinationHighlightProps {
+    city: string;
+    country: string;
+    image: string;
+    stats: string;
+    delay: number;
+  }
+
+  const DestinationHighlight: React.FC<DestinationHighlightProps> = ({ city, country, image, stats, delay }) => (
+    <div 
+      className={`bg-white/10 backdrop-blur-md rounded-xl p-4 shadow-xl border border-white/20 w-64 absolute transition-all duration-1000 ${
+        isLoaded ? "opacity-100 transform-none" : "opacity-0 translate-y-8"
+      }`}
+      style={{ 
+        transitionDelay: `${delay}ms`,
+        boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1), 0 0 15px rgba(79, 70, 229, 0.2)"
+      }}
+    >
+      <div className="flex space-x-3">
+        <div className="h-16 w-16 overflow-hidden rounded-lg">
+          <img src={image} alt={city} className="h-full w-full object-cover" />
+        </div>
+        <div className="flex-1">
+          <h3 className="font-bold text-white text-lg leading-tight">{city}</h3>
+          <p className="text-blue-200 text-xs">{country}</p>
+          <div className="flex items-center mt-2 space-x-2">
+            <div className="bg-blue-600/30 rounded-full px-2 py-1 text-xs text-white">
+              {stats}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   // Auto slide effect
   useEffect(() => {
     const timer = setInterval(() => {
@@ -257,164 +268,445 @@ const Homepage = () => {
   }, []);
 
   return (
-    <div className="relative flex flex-col items-center justify-center pt-20 px-6 bg-gradient-main">
+    <div >
       {/* Hero Section with Animation */}
-      <div className="relative flex flex-col items-center justify-center pt-20 px-6 text-center">
-        <div className="absolute inset-0 z-0 h-[420px] max-h-screen ">
-            <img 
-              src="world-map.png" 
-              alt="World Map" 
-              className="w-full h-full object-cover opacity-10 transition-opacity duration-500"
-              style={{ opacity: isHovered ? '0.2' : '0.1' }}
-            />
-          </div>
-
-          <div 
-            className="relative z-10 flex flex-col md:flex-row items-center justify-between w-full max-w-6xl mx-auto mb-4"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-          >
-            {/* Animated Airplane Image */}
-            <div className="w-full md:w-1/2 mb-8 md:mb-0 transform transition-all duration-700 ease-in-out"
-              style={{
-                transform: isHovered ? 'translateY(-20px) rotate(-5deg)' : 'translateY(0) rotate(0)',
-              }}
-            >
-              <img 
-                src="/pesawat.png" 
-                alt="Airplane" 
-                className="w-full max-w-lg mx-auto hover:drop-shadow-2xl transition-all duration-700"
-                style={{
-                  filter: isHovered ? 'drop-shadow(0 25px 25px rgba(0, 0, 0, 0.15))' : 'none'
-                }}
-              />
-            </div>
-
-            {/* Animated Text and Button */}
-            <div className="w-full md:w-1/2 text-center md:text-left md:pl-8 transform transition-all duration-700 ease-in-out"
-              style={{
-                transform: isHovered ? 'translateX(20px)' : 'translateX(0)',
-              }}
-            >
-              <h1 className="text-3xl md:text-4xl font-bold mb-4 transition-all duration-500 bg-clip-text text-transparent"
-                style={{
-                  backgroundImage: isHovered 
-                    ? 'linear-gradient(to bottom right, #2563eb, #9333ea)'  // Gradient dari blue-600 ke purple-600
-                    : 'linear-gradient(to right, #1f2937, #1f2937)', // Warna default gray-800
-                  textShadow: isHovered ? '2px 2px 4px rgba(0, 0, 0, 0.1)' : 'none'
-                }}
-              >
-                Travel Around The World
-              </h1>
-              <p className="text-gray-500 text-sm mb-6 transition-all duration-500"
-                style={{
-                  opacity: isHovered ? '1' : '0.8',
-                  transform: isHovered ? 'translateY(0)' : 'translateY(5px)'
-                }}
-              >
-                Explore the wonders of the world, from breathtaking landscapes to vibrant cities waiting to be discovered. Book your next adventure now with Aerotix and make every journey unforgettable!
-              </p>
-              <a href="/book">
-                <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg transition-all duration-500 transform hover:scale-105 hover:bg-white hover:text-white hover:shadow-xl">
-                  Book Now
-                </button>
-              </a>
-
-            </div>
-          </div>
-        </div>
-          {/* Why Us Section */}
-          <div className = "card-box">
-          <section className="bg-white-100 py-12 md:py-1">
-          <div className="max-w-6xl mx-auto px-4 text-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-8 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-purple-500">
-            Why Choose Us?
-          </h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-              <div 
-                className="group flex flex-col items-center text-center bg-white p-6 rounded-lg shadow-md 
-                          transition-all duration-300"
-              >
-                <div 
-                  className="w-16 h-16 flex items-center justify-center rounded-full text-3xl transform transition-all duration-500 ease-in-out group-hover:scale-110 group-hover:rotate-6"
-                  style={{
-                    background: 'linear-gradient(to right, #e5e7eb, #e5e7eb)',
-                    
-                  }}
-                >
-                  🚀
-                </div>
-                <h3 
-                  className="font-semibold text-lg mt-4 mb-2 transition-colors duration-300 bg-clip-text text-transparent"
-                  style={{
-                    backgroundImage: 'linear-gradient(to right, #1f2937, #1f2937)',
+      <div className="min-h-screen bg-gray-50">
+           {/* New Interactive Hero Section */}
+           <div className="relative overflow-hidden bg-gradient-to-r from-indigo-800 via-blue-700 to-indigo-900 text-white">
+             {/* Background elements with enhanced animation */}
+             <div className="absolute inset-0 z-0 opacity-20">
+               <div className="absolute top-0 left-0 w-full h-full">
+                 {/* Animated gradient blobs */}
+                 <div
+                   className={`absolute h-64 w-64 rounded-full bg-gradient-to-br from-blue-400 to-indigo-600 blur-3xl opacity-30 top-10 -left-20 transition-all duration-3000 ease-in-out ${
+                     isLoaded ? "scale-100" : "scale-0"
+                   }`}
+                   style={{
+                     animation: "pulse-slow 8s infinite alternate, move-slow 20s infinite",
+                   }}
+                 ></div>
+                 <div
+                   className={`absolute h-64 w-64 rounded-full bg-gradient-to-br from-purple-400 to-indigo-600 blur-3xl opacity-30 -bottom-32 right-0 transition-all duration-3000 delay-300 ease-in-out ${
+                     isLoaded ? "scale-100" : "scale-0"
+                   }`}
+                   style={{
+                     animation: "pulse-slow 10s infinite alternate-reverse, move-slow-reverse 25s infinite",
+                   }}
+                 ></div>
+                 <div
+                   className={`absolute h-96 w-96 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 blur-3xl opacity-20 -top-48 right-32 transition-all duration-3000 delay-500 ease-in-out ${
+                     isLoaded ? "scale-100" : "scale-0"
+                   }`}
+                   style={{
+                     animation: "pulse-slow 12s infinite alternate, move-diagonal 30s infinite",
+                   }}
+                 ></div>
+               </div>
+             </div>
+     
+             {/* Hero Content with Search Focus */}
+             <div className="container mx-auto px-6 pt-24 pb-32 md:pt-32 md:pb-40 relative z-10">
+               <div className="max-w-7xl mx-auto">
+                 {/* Main Content Section */}
+                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                   {/* Left Search Section */}
+                   <div 
+                     className={`transition-all duration-1000 ease-out 
+                       ${isLoaded ? "opacity-100 transform-none" : "opacity-0 -translate-y-8"}`}
+                   >
+                     <div className="mb-8">
+                       <h3 
+                         className="text-blue-200 font-medium mb-3 transition-all duration-1000 delay-300"
+                         style={{
+                           opacity: isLoaded ? 1 : 0,
+                           transform: isLoaded ? "none" : "translateY(10px)",
+                         }}
+                       >
+                         EXPERIENCE THE FREEDOM OF FLIGHT
+                       </h3>
+                       
+                       <h1 
+                         className="text-5xl md:text-6xl font-extrabold mb-6 leading-tight"
+                         style={{
+                           opacity: isLoaded ? 1 : 0,
+                           transform: isLoaded ? "none" : "translateY(20px)",
+                           transitionProperty: "opacity, transform",
+                           transitionDuration: "1s",
+                           transitionDelay: "0.5s",
+                         }}
+                       >
+                         <span className="block text-white">Discover</span>
+                         <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300">
+                           A World of Wonder
+                         </span>
+                       </h1>
+                       
+                       <p 
+                         className="text-xl text-blue-100 mb-8 max-w-lg"
+                         style={{
+                           opacity: isLoaded ? 1 : 0,
+                           transform: isLoaded ? "none" : "translateY(20px)",
+                           transitionProperty: "opacity, transform",
+                           transitionDuration: "1s",
+                           transitionDelay: "0.7s",
+                         }}
+                       >
+                         Your journey begins with a single search. Where will your adventures take you?
+                       </p>
+                     </div>
+     
+                     {/* Interactive Search Box */}
+                     <div 
+                       className="bg-white/10 backdrop-blur-md rounded-2xl p-1 shadow-2xl border border-white/20 mb-8 transform transition-all duration-1000 delay-1000"
+                       style={{
+                         opacity: isLoaded ? 1 : 0,
+                         transform: isLoaded ? "none" : "translateY(30px)",
+                         boxShadow: "0 0 30px rgba(79, 70, 229, 0.3)",
+                       }}
+                     >
+                       <div className="relative p-4">
+                         <div className="flex items-center space-x-3 mb-6">
+                           <div className="w-10 h-10 rounded-full bg-indigo-600/30 flex items-center justify-center">
+                             <Navigation size={20} className="text-white" />
+                           </div>
+                           <div className="flex-1">
+                             <div className="text-white text-lg font-medium relative flex items-center">
+                               <span className="mr-1">I want to fly to</span>
+                               <div className="relative min-w-20 inline-block">
+                                 <span className="text-blue-200">{searchText}</span>
+                                 <span className="absolute right-0 top-0 h-full w-2 bg-blue-200 animate-blink"></span>
+                               </div>
+                             </div>
+                           </div>
+                         </div>
+                         
+     
+                         
+                         <a href="/book">
+                           <button className="w-full py-3 bg-gradient-to-r from-indigo-600 to-blue-500 hover:from-indigo-700 hover:to-blue-600 text-white font-medium rounded-xl transition-colors shadow-lg flex items-center justify-center space-x-2">
+                             <span>Find My Adventure</span>
+                             <Compass size={18} />
+                           </button>
+                         </a>
+                       </div>
+                     </div>
+                     
+                     {/* Trust Indicators */}
+                     <div 
+                       className="flex items-center space-x-6 text-blue-200 text-sm"
+                       style={{
+                         opacity: isLoaded ? 0.8 : 0,
+                         transform: isLoaded ? "none" : "translateY(20px)",
+                         transitionProperty: "opacity, transform",
+                         transitionDuration: "1s",
+                         transitionDelay: "1.3s",
+                       }}
+                     >
+                       <div className="flex items-center space-x-2">
+                         <div className="w-5 h-5 rounded-full bg-blue-600/30 flex items-center justify-center">
+                           <span className="text-xs">✓</span>
+                         </div>
+                         <span>No hidden fees</span>
+                       </div>
+                       <div className="flex items-center space-x-2">
+                         <div className="w-5 h-5 rounded-full bg-blue-600/30 flex items-center justify-center">
+                           <span className="text-xs">✓</span>
+                         </div>
+                         <span>Trusted by 2M+ travelers</span>
+                       </div>
+                     </div>
+                   </div>
                    
-                  }}
-                >
-                  Fast & Reliable
-                </h3>
-                <p className="text-gray-600 text-sm">
-                  We ensure quick and trustworthy services for our customers.
-                </p>
-              </div>
+                   {/* Right Interactive Globe Visualization */}
+                   <div 
+                     className={`relative h-96 md:h-[550px] transition-all duration-1000 delay-500 ${
+                       isLoaded ? "opacity-100 transform-none" : "opacity-0 translate-x-8"
+                     }`}
+                   >
+                     <div className="absolute inset-0 flex items-center justify-center">
+                       {/* Globe container with rotation */}
+                       <div 
+                         className="relative w-80 h-80 md:w-[400px] md:h-[400px]"
+                         style={{
+                           transform: `rotate(${globeRotation}deg)`,
+                           transition: "transform 0.5s ease-out"
+                         }}
+                       >
+                         {/* Outer circular path */}
+                         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-full rounded-full border-2 border-white/10"></div>
+                         
+                         {/* Middle circular path */}
+                         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 rounded-full border-2 border-white/15"
+                           style={{ animation: "rotate-reverse 30s linear infinite" }}
+                         ></div>
+                         
+                         {/* Inner circular path */}
+                         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-1/2 h-1/2 rounded-full border-2 border-white/20"
+                           style={{ animation: "rotate 20s linear infinite" }}
+                         ></div>
+                         
+                         {/* Central glowing orb (Earth) */}
+                         <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                           <div className="relative">
+                             {/* Glowing effect */}
+                             <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full opacity-60 blur-xl"></div>
+                             
+                             {/* Globe icon */}
+                             <Globe 
+                               size={100} 
+                               className="relative z-10 text-white"
+                               style={{
+                                 filter: "drop-shadow(0 0 20px rgba(79, 70, 229, 0.5))"
+                               }}
+                             />
+                           </div>
+                         </div>
+                         
+                         {/* Flight path animations */}
+                         <svg className="absolute inset-0 w-full h-full" style={{ animation: "rotate-slow 60s linear infinite" }}>
+                           <defs>
+                             <linearGradient id="flightGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                               <stop offset="0%" stopColor="rgba(255, 255, 255, 0.1)" />
+                               <stop offset="100%" stopColor="rgba(255, 255, 255, 0.7)" />
+                             </linearGradient>
+                           </defs>
+                           
+                           {flightPaths.map((path, index) => (
+                             <g key={index} style={{ opacity: activePath === index ? 1 : 0.3, transition: "opacity 1s ease" }}>
+                               <path
+                                 d={`M${path.from.x},${path.from.y} Q${(path.from.x + path.to.x)/2 + 30},${(path.from.y + path.to.y)/2 - 50} ${path.to.x},${path.to.y}`}
+                                 fill="none"
+                                 stroke="url(#flightGradient)"
+                                 strokeWidth="2"
+                                 strokeDasharray="5,5"
+                                 className={activePath === index ? "animate-dash" : ""}
+                               />
+                               
+                               {/* Animated plane along the path */}
+                               {activePath === index && (
+                                 <g>
+                                   <circle 
+                                     r="4" 
+                                     fill="white"
+                                     className="animate-ping-slow"
+                                     style={{
+                                       transformOrigin: "center",
+                                       transformBox: "fill-box",
+                                       animation: "moveAlongPath 3s ease-in-out infinite"
+                                     }}
+                                   >
+                                     <animateMotion
+                                       dur="3s"
+                                       repeatCount="indefinite"
+                                       path={`M${path.from.x},${path.from.y} Q${(path.from.x + path.to.x)/2 + 30},${(path.from.y + path.to.y)/2 - 50} ${path.to.x},${path.to.y}`}
+                                     />
+                                   </circle>
+                                 </g>
+                               )}
+                             </g>
+                           ))}
+                         </svg>
+                         
+                         {/* Location markers around the globe */}
+                         <div className="absolute top-0 left-1/4 transform -translate-x-1/2 -translate-y-1/2">
+                           <div className="w-4 h-4 bg-pink-400 rounded-full animate-ping-slow"></div>
+                         </div>
+                         <div className="absolute bottom-1/4 right-0 transform translate-x-1/2 translate-y-1/2">
+                           <div className="w-4 h-4 bg-blue-400 rounded-full animate-ping-slow" style={{ animationDelay: "1s" }}></div>
+                         </div>
+                         <div className="absolute bottom-0 left-1/3 transform -translate-x-1/2 translate-y-1/2">
+                           <div className="w-4 h-4 bg-purple-400 rounded-full animate-ping-slow" style={{ animationDelay: "2s" }}></div>
+                         </div>
+                       </div>
+                       
+                       {/* Floating destination cards */}
+                       <DestinationHighlight 
+                         city="Tokyo" 
+                         country="Japan"
+                         image="https://i.pinimg.com/736x/40/3f/0a/403f0a34e3870bed1e3ebfbb690cb14f.jpg"
+                         stats="20 flights daily"
+                         delay={1400}
+                         className="top-0 right-0 md:top-10 md:right-0"
+                         style={{ top: "0", right: "0" }}
+                       />
+                       
+                       <DestinationHighlight 
+                         city="New York" 
+                         country="United States"
+                         image="https://i.pinimg.com/736x/15/e0/15/15e015d2aec7f5c12529a6256597446d.jpg"
+                         stats="Most popular"
+                         delay={1600}
+                         className="bottom-0 left-0 md:bottom-10 md:left-10"
+                         style={{ bottom: "0", left: "10%" }}
+                       />
+                     </div>
+                   </div>
+                 </div>
+               </div>
+             </div>
+           </div>
+     
+           {/* Add new CSS animations */}
+           <style jsx global>{`
+             @keyframes pulse-slow {
+               0% {
+                 transform: scale(1);
+                 opacity: 0.2;
+               }
+               100% {
+                 transform: scale(1.1);
+                 opacity: 0.3;
+               }
+             }
+     
+             @keyframes move-slow {
+               0% {
+                 transform: translateX(0) translateY(0);
+               }
+               50% {
+                 transform: translateX(100px) translateY(50px);
+               }
+               100% {
+                 transform: translateX(0) translateY(0);
+               }
+             }
+     
+             @keyframes move-slow-reverse {
+               0% {
+                 transform: translateX(0) translateY(0);
+               }
+               50% {
+                 transform: translateX(-100px) translateY(-50px);
+               }
+               100% {
+                 transform: translateX(0) translateY(0);
+               }
+             }
+     
+             @keyframes move-diagonal {
+               0% {
+                 transform: translateX(0) translateY(0);
+               }
+               33% {
+                 transform: translateX(-50px) translateY(50px);
+               }
+               66% {
+                 transform: translateX(50px) translateY(-30px);
+               }
+               100% {
+                 transform: translateX(0) translateY(0);
+               }
+             }
+     
+             @keyframes rotate {
+               from {
+                 transform: translate(-50%, -50%) rotate(0deg);
+               }
+               to {
+                 transform: translate(-50%, -50%) rotate(360deg);
+               }
+             }
+     
+             @keyframes rotate-reverse {
+               from {
+                 transform: translate(-50%, -50%) rotate(0deg);
+               }
+               to {
+                 transform: translate(-50%, -50%) rotate(-360deg);
+               }
+             }
+     
+             @keyframes rotate-slow {
+               from {
+                 transform: rotate(0deg);
+               }
+               to {
+                 transform: rotate(360deg);
+               }
+             }
+     
+             @keyframes ping-slow {
+               0% {
+                 transform: scale(0.8);
+                 opacity: 1;
+               }
+               50% {
+                 transform: scale(1.5);
+                 opacity: 0.5;
+               }
+               100% {
+                 transform: scale(0.8);
+                 opacity: 1;
+               }
+             }
+     
+             @keyframes moveAlongPath {
+               0% {
+                 offset-distance: 0%;
+               }
+               100% {
+                 offset-distance: 100%;
+               }
+             }
+     
+             @keyframes dash {
+               to {
+                 stroke-dashoffset: 20;
+               }
+             }
+     
+             @keyframes blink {
+               0%, 100% {
+                 opacity: 1;
+               }
+               50% {
+                 opacity: 0;
+               }
+             }
+     
+             .animate-ping-slow {
+               animation: ping-slow 3s cubic-bezier(0, 0, 0.2, 1) infinite;
+             }
+     
+             .animate-blink {
+               animation: blink 0.8s step-end infinite;
+             }
+     
+             .animate-dash {
+               animation: dash 0.5s linear infinite;
+             }
+           `}</style>
+         </div>
+        
+      {/* Why Us Section with improved styling */}
+      <section className="py-16 mt-8">
+  <div className="max-w-6xl mx-auto px-4 text-center">
+    <h2 className="text-3xl font-bold mb-12 text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-700">
+      Why Choose Us?
+    </h2>
 
-              <div 
-                className="group flex flex-col items-center text-center bg-white p-6 rounded-lg shadow-md 
-                          transition-all duration-300 "
-              >
-                <div 
-                  className="w-16 h-16 flex items-center justify-center rounded-full text-3xl transform transition-all duration-500 ease-in-out group-hover:scale-110 group-hover:rotate-6"
-                  style={{
-                    background: 'linear-gradient(to right, #e5e7eb, #e5e7eb)',
-                    transition: 'background 0.3s ease-in-out'
-                  }}
-                >
-                  💡
-                </div>
-                <h3 
-                  className="font-semibold text-lg mt-4 mb-2 transition-colors duration-300 bg-clip-text text-transparent"
-                  style={{
-                    backgroundImage: 'linear-gradient(to right, #1f2937, #1f2937)',
-                    transition: 'background-image 0.3s ease-in-out'
-                  }}
-                >
-                  Innovative Solutions
-                </h3>
-                <p className="text-gray-600 text-sm transition-all duration-300 group-hover:text-gray-800">
-                  We provide cutting-edge technology to enhance your experience.
-                </p>
-              </div>
-
-              <div 
-                className="group flex flex-col items-center text-center bg-white p-6 rounded-lg shadow-md 
-                          transition-all duration-300"
-              >
-                <div 
-                  className="w-16 h-16 flex items-center justify-center rounded-full text-3xl transform transition-all duration-500 ease-in-out group-hover:scale-110 group-hover:rotate-6"
-                  style={{
-                    background: 'linear-gradient(to right, #e5e7eb, #e5e7eb)',
-                  }}
-                >
-                  🌍
-                </div>
-                <h3 
-                  className="font-semibold text-lg mt-4 mb-2 transition-colors duration-300 bg-clip-text text-transparent"
-                  style={{
-                    backgroundImage: 'linear-gradient(to right, #1f2937, #1f2937)',
-                    transition: 'background-image 0.3s ease-in-out'
-                  }}
-                >
-                  Global Reach
-                </h3>
-                <p className="text-gray-600 text-sm transition-all duration-300 group-hover:text-gray-800">
-                  Our services are available worldwide to meet your needs.
-                </p>
-              </div>
-            </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {whyUsFeatures.map((feature, index) => (
+        <div 
+          key={index}
+          className="p-8 rounded-xl bg-white shadow-lg"
+        >
+          <div 
+            className="w-16 h-16 mx-auto flex items-center justify-center rounded-full text-3xl mb-6 bg-gradient-to-br from-blue-50 to-purple-50"
+          >
+            {feature.icon}
           </div>
-        </section>
+          <h3 className="text-xl font-bold mb-4 text-gray-800">
+            {feature.title}
+          </h3>
+          <p className="text-gray-600">
+            {feature.description}
+          </p>
         </div>
+      ))}
+    </div>
+  </div>
+</section>
 
         <div className="max-w-6xl mx-auto mb-16 md:mb-24 px-4 pt-20">
       <div className="flex flex-col md:flex-row md:items-center md:space-x-8">
@@ -489,173 +781,87 @@ const Homepage = () => {
         </div>
       </div>
     </div>
-         {/* Popular Places Section - Modified to be static grid */}
-      {/* <div className="max-w-6xl mx-auto mb-16 md:mb-24 px-4">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold">Explore the Beautiful Places</h2>
-        </div>
-        
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {popularPlaces.map((place, index) => (
-            <div key={index} className="rounded-lg overflow-hidden bg-white shadow-lg">
-              <div className="relative">
-                <img src={place.image} alt={place.city} className="w-full h-48 object-cover" />
-                <div className="absolute top-4 right-4 bg-[#578FCA] text-white px-3 py-1 rounded-full text-sm">
-                  {place.price}
-                </div>
-              </div>
-              <div className="p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <h3 className="font-semibold">{place.city}</h3>
-                  <span className="text-[#3674B5] text-sm">{place.days}</span>
-                </div>
-                <div className="flex items-center justify-end">
-                  <button className="px-4 py-1 bg-[#3674B5] text-white rounded-full text-sm hover:bg-[#2964A3]">
-                    Explore
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div> */}
 
-       {/* Popular Places Section */}
-       {/* <div className="relative w-full h-[100vh] overflow-hidden">
-        <div 
-          className="absolute inset-0 w-full h-full transition-transform duration-1000 ease-out"
-          style={{
-            backgroundImage: `url(${heroSlides[currentSlide].image})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        > */}
-          {/* Overlay */}
-          {/* <div className="absolute inset-0 " /> */}
-          
-          {/* Hero Content */}
-          {/* <div className="relative h-full max-w-6xl mx-auto px-4 flex items-center">
-            <div className="text-white">
-              <h1 className="text-6xl md:text-8xl font-bold mb-4 animate-fade-in">
-                {heroSlides[currentSlide].title}
-              </h1>
-              <p className="text-xl md:text-2xl opacity-90 animate-fade-in-up">
-                {heroSlides[currentSlide].subtitle}
-              </p>
-            </div>
-          </div> */}
-        {/* </div> */}
-
-        {/* Mini Cards Navigation */}
-        {/* <div className="absolute bottom-8 left-0 right-0">
-          <div className="max-w-6xl mx-auto px-4">
-            <div className="flex space-x-4 overflow-x-auto pb-4">
-              {heroSlides.map((slide, index) => (
-                <div
-                  key={index}
-                  onClick={() => setCurrentSlide(index)}
-                  className={`relative flex-shrink-0 cursor-pointer rounded-lg overflow-hidden transition-all duration-150 ${
-                    currentSlide === index ? 'w-48 h-28 ring-2 ring-white' : 'w-40 h-24 opacity-70'
-                  }`}
-                >
-                  <img
-                    src={slide.miniImage}
-                    alt={slide.title}
-                    className="w-full h-full object-cover"
-                  />
-                  {currentSlide === index && (
-                    <div className="absolute top-2 right-2">
-                      <Plane className="w-6 h-6 text-white transform -rotate-45" />
-                    </div>
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                  <div className="absolute bottom-2 left-2 text-white text-sm font-medium">
-                    {slide.title}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div> */}
-      {/* // </div> */}
-      <br/><br/>
       
-      {/* Articles Section with Hover Animations */}
-      <div className="max-w-6xl mx-auto mb-16 md:mb-24 px-4">
-        <div className="mb-12">
-          <h3 className="text-center text-sm font-medium text-gray-600 uppercase tracking-wider mb-2">
-            Fly With AeroTix
-          </h3>
-          <h2 className="text-center text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            Make This Trip Extraordinary
-          </h2>
-          <p className="text-center text-gray-600 max-w-2xl mx-auto">
-           Enjoy The Experience & Plan An Unforgettable Trip After Your Flight
-          </p>
-        </div>
-
-        {/* Dubai Highlight Card and Cabin Classes with Hover Effects */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-          {/* Dubai Highlight Card */}
-          <div className="lg:col-span-1">
-            {destinations.map((dest, index) => (
-              <div 
-                key={index} 
-                className="h-full bg-white rounded-lg overflow-hidden border border-gray-200
-                         transition-all duration-300 hover:shadow-xl hover:scale-[1.02]"
-              >
-                <div className="relative h-64 lg:h-full">
-                  <img 
-                    src={dest.image} 
-                    alt={dest.title} 
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" 
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/60
-                               transition-all duration-300 hover:from-black/80">
-                    <p className="text-white text-xs font-medium mb-2">{dest.type}</p>
-                    <h3 className="text-white text-xl font-bold mb-2">{dest.title}</h3>
-                    <a href ="/article"><button className="text-white text-sm underline hover:text-blue-300 transition-colors">
-                      {dest.cta}
-                    </button>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            ))}
+      {/* Articles/Travel Options Section with modern design */}
+      <section className="py-8">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <h3 className="text-sm font-medium text-blue-600 uppercase tracking-wider mb-2">
+              Fly With AeroTix
+            </h3>
+            <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+              Make This Trip Extraordinary
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Enjoy The Experience & Plan An Unforgettable Trip After Your Flight
+            </p>
           </div>
 
-          {/* Cabin Classes Grid */}
-          <div className="lg:col-span-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {cabinClasses.map((cabin, index) => (
+          {/* Dubai Highlight and Cabin Classes with enhanced styling */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Dubai Highlight Card */}
+            <div className="lg:col-span-1">
+              {destinations.map((dest, index) => (
                 <div 
                   key={index} 
-                  className="bg-white rounded-lg overflow-hidden border border-gray-200
-                           transition-all duration-300 hover:shadow-xl hover:scale-[1.02]"
+                  className="h-full bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.01] border border-gray-100"
                 >
-                  <div className="relative h-48">
+                  <div className="relative h-full">
                     <img 
-                      src={cabin.image} 
-                      alt={cabin.title} 
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" 
+                      src={dest.image} 
+                      alt={dest.title} 
+                      className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
                     />
-                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/60
-                                 transition-all duration-300 hover:from-black/80">
-                      <p className="text-white text-xs font-medium mb-1">{cabin.type}</p>
-                      <h3 className="text-white text-lg font-bold mb-2">{cabin.title}</h3>
-                      <a href ="/cabin">
-                      <button className="text-white text-sm underline hover:text-blue-300 transition-colors">
-                        {cabin.cta}
-                      </button>
-                      </a>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
+                      <div className="absolute bottom-0 left-0 right-0 p-8">
+                        <p className="text-white text-xs font-medium mb-2">{dest.type}</p>
+                        <h3 className="text-white text-2xl font-bold mb-4">{dest.title}</h3>
+                        <a href="/article">
+                          <button className="px-6 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full hover:bg-white/30 transition-colors">
+                            {dest.cta}
+                          </button>
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
+
+            {/* Cabin Classes Grid */}
+            <div className="lg:col-span-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {cabinClasses.map((cabin, index) => (
+                  <div 
+                    key={index} 
+                    className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.01] border border-gray-100"
+                  >
+                    <div className="relative h-48">
+                      <img 
+                        src={cabin.image} 
+                        alt={cabin.title} 
+                        className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300">
+                        <div className="absolute bottom-0 left-0 right-0 p-6">
+                          <p className="text-white text-xs font-medium mb-1">{cabin.type}</p>
+                          <h3 className="text-white text-xl font-bold mb-3">{cabin.title}</h3>
+                          <a href="/cabin">
+                            <button className="px-4 py-1 bg-white/20 backdrop-blur-sm text-white rounded-full hover:bg-white/30 transition-colors">
+                              {cabin.cta}
+                            </button>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

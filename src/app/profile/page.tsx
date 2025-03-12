@@ -142,9 +142,9 @@ export default function UserProfileClient() {
     // Fallback calculation if API loyalty endpoint fails
     const pointsNeeded = {
       [MembershipTier.BRONZE]: 0,
-      [MembershipTier.SILVER]: 500,
-      [MembershipTier.GOLD]: 1000,
-      [MembershipTier.PLATINUM]: 2500
+      [MembershipTier.SILVER]: 5000,
+      [MembershipTier.GOLD]: 10000,
+      [MembershipTier.PLATINUM]: 25000
     };
     
     let nextTier;
