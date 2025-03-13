@@ -121,8 +121,9 @@ export default function Loyalty() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
+    <div className="min-h-screen bg-gray-50">
         <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white pt-20 pb-32 relative overflow-hidden">
+         
           {/* Enhanced Background Elements */}
           <div className="absolute inset-0 overflow-hidden">
             {/* Original blur elements */}
@@ -146,7 +147,7 @@ export default function Loyalty() {
             <div className="absolute top-1/3 right-10 w-20 h-20 rounded-full bg-blue-400/10 blur-xl animate-bounce" style={{animationDuration: '10s'}}></div>
           </div>
         
-        <div className="container mx-auto px-4 relative z-10">
+        <div className="container mx-auto px-4 relative z-10 pt-10">
           <div className="flex flex-col items-center text-center max-w-3xl mx-auto">      
             <h1 className="text-5xl md:text-5xl font-bold mb-6 leading-tight">
               Manage Your Travel Rewards

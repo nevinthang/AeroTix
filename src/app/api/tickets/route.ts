@@ -120,3 +120,32 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export async function GET(req: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+
+    const tickets = await prisma.ticket.findMany({
+      where: {
+        userId: userId,
+      },
+      include: {
+        passengers: true,
+      },
+    });
+
+    return NextResponse.json(tickets);
+  } catch (error) {
+    console.error("Error fetching tickets:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch tickets" },
+      { status: 500 }
+    );
+  }
+}
