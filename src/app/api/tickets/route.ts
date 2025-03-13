@@ -1,7 +1,7 @@
-import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { getServerSession } from 'next-auth';
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"; 
+import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 const prisma = new PrismaClient();
 
@@ -13,11 +13,11 @@ interface PassengerData {
   nationality: string;
   passportNumber: string;
   passportExpiryDate: string;
-  ageCategory: 'ADULT' | 'CHILD' | 'INFANT';
+  ageCategory: "ADULT" | "CHILD" | "INFANT";
   checkedBaggage: number;
   cabinBaggage: number;
   mealPreference: string;
-  seatPreference: 'WINDOW' | 'MIDDLE' | 'AISLE' | 'NO_PREFERENCE';
+  seatPreference: "WINDOW" | "MIDDLE" | "AISLE" | "NO_PREFERENCE";
   specialAssistance: string[];
   emergencyContactName: string;
   emergencyContactPhone: string;
@@ -27,9 +27,9 @@ interface PassengerData {
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    
+
     if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
@@ -41,7 +41,10 @@ export async function POST(req: Request) {
     };
 
     if (!flightNumber || !userId || !passengers || passengers.length === 0) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
     }
 
     const flight = await prisma.flight.findUnique({
@@ -49,21 +52,24 @@ export async function POST(req: Request) {
     });
 
     if (!flight) {
-      return NextResponse.json({ error: 'Flight not found' }, { status: 404 });
+      return NextResponse.json({ error: "Flight not found" }, { status: 404 });
     }
 
     if (flight.availableSeats < passengers.length) {
-      return NextResponse.json({ 
-        error: 'Not enough seats available for this booking' 
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          error: "Not enough seats available for this booking",
+        },
+        { status: 400 }
+      );
     }
 
     const result = await prisma.$transaction(async (tx) => {
       const updatedFlight = await tx.flight.update({
         where: { flightNumber },
         data: {
-          availableSeats: flight.availableSeats - passengers.length
-        }
+          availableSeats: flight.availableSeats - passengers.length,
+        },
       });
 
       const ticket = await tx.ticket.create({
@@ -89,14 +95,14 @@ export async function POST(req: Request) {
               emergencyContactName: passenger.emergencyContactName,
               emergencyContactPhone: passenger.emergencyContactPhone,
               insurance: passenger.insurance,
-            }))
-          }
+            })),
+          },
         },
         include: {
           passengers: true,
           user: true,
-          flight: true
-        }
+          flight: true,
+        },
       });
 
       return ticket;
@@ -104,10 +110,13 @@ export async function POST(req: Request) {
 
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
-    console.error('Error creating ticket:', error);
-    return NextResponse.json({ 
-      error: 'Failed to create ticket', 
-      details: error instanceof Error ? error.message : 'Unknown error'
-    }, { status: 500 });
+    console.error("Error creating ticket:", error);
+    return NextResponse.json(
+      {
+        error: "Failed to create ticket",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      { status: 500 }
+    );
   }
 }
