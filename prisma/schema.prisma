@@ -85,7 +85,7 @@ model Passenger {
   lastName            String
   dateOfBirth         DateTime
   nationality         String
-  passportNumber      String  @unique
+  passportNumber      String  
   passportExpiryDate  DateTime
   ageCategory        AgeCategory
   checkedBaggage      Int
