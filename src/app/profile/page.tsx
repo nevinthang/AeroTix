@@ -19,6 +19,36 @@ interface UserProfile {
   username?: string;
 }
 
+interface Passenger {
+  id: string;
+  title: string;
+  firstName: string;
+  lastName: string;
+  dateOfBirth: string;
+  nationality: string;
+  passportNumber: string;
+  passportExpiryDate: string;
+  ageCategory: "ADULT" | "CHILD" | "INFANT";
+  checkedBaggage: number;
+  cabinBaggage: number;
+  mealPreference: string;
+  seatPreference: "WINDOW" | "MIDDLE" | "AISLE" | "NO_PREFERENCE";
+  specialAssistance: string[];
+  emergencyContactName: string;
+  emergencyContactPhone: string;
+  insurance: boolean;
+  ticketId: string;
+}
+
+
+interface Ticket {
+  ticketNumber: string;
+  flightNumber: string;
+  userId: string;
+  totalAmount: number;
+  passengers: Passenger[];
+}
+
 // Enum definitions
 enum Title {
   MR = "MR",
@@ -34,6 +64,44 @@ enum MembershipTier {
 }
 
 export default function UserProfileClient() {
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [ticketLoading, setTicketLoading] = useState(true);
+  const [ticketError, setTicketError] = useState<string | null>(null);
+  const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
+  const [showPassengerDetails, setShowPassengerDetails] = useState(false);
+  const [selectedPassenger, setSelectedPassenger] = useState<Passenger | null>(null);
+
+  // Fetch tickets data
+  useEffect(() => {
+    const fetchTickets = async () => {
+      setTicketLoading(true);
+      try {
+        // Replace with your actual API call
+        const response = await fetch('/api/tickets');
+        const data = await response.json();
+        setTickets(data);
+        setTicketError(null);
+      } catch (error) {
+        console.error('Error fetching tickets:', error);
+        setTicketError('Failed to load tickets');
+      } finally {
+        setTicketLoading(false);
+      }
+    };
+
+    fetchTickets();
+  }, []);
+
+    // Add this function to handle ticket selection
+  const handleTicketSelect = (ticket: Ticket) => {
+    setSelectedTicket(ticket);
+    setShowPassengerDetails(true);
+  };
+
+  // Add this function to handle passenger selection
+  const handlePassengerSelect = (passenger: Passenger) => {
+    setSelectedPassenger(passenger);
+  };
   const [user, setUser] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -275,9 +343,10 @@ export default function UserProfileClient() {
   // Calculate progress percentage for the progress bar
   const progressPercentage = isMaxTier ? 100 : Math.min(100, Math.max(0, 100 - (pointsToNextTier / getMaxPointsForTier()) * 100));
 
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-white pt-20 pb-20">
-      <div className="w-full max-w-4xl p-8 rounded-3xl bg-white/90 backdrop-blur-md border border-purple-200 shadow-xl transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-purple-300/50">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-r from-indigo-800 via-blue-700 to-indigo-900 pt-20 pb-20">
+      <div className="w-full max-w-4xl p-8 rounded-3xl bg-white/90 backdrop-blur-md border border-purple-200 shadow-xl transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-purple-300/50 mt-5">
         
         <div className="relative">
           
@@ -355,60 +424,67 @@ export default function UserProfileClient() {
               </div>
             </div>
           </div>
-
-          {/* Loyalty Information */}
-          {/* {!isMaxTier && (
-            <div className="mt-8">
-              <h3 className="text-xs uppercase font-semibold text-gray-500 tracking-wider mb-4">LOYALTY STATUS</h3>
-              
-              <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-4 rounded-lg border border-purple-100 shadow-sm">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-medium text-gray-500">Current Tier</span>
-                  <span className="text-sm font-medium text-gray-500">Next Tier</span>
-                </div>
-                
-                <div className="flex justify-between items-center mb-3">
-                  <span className={`px-3 py-1 ${getMembershipColor(user.membershipTier)} text-xs font-medium rounded-full`}>
-                    {user.membershipTier.charAt(0) + user.membershipTier.slice(1).toLowerCase()}
-                  </span>
-                  <span className={`px-3 py-1 ${getMembershipColor(nextTier as MembershipTier)} text-xs font-medium rounded-full`}>
-                    {(nextTier as string).charAt(0) + (nextTier as string).slice(1).toLowerCase()}
-                  </span>
-                </div>
-                
-                <div className="relative pt-1">
-                  <div className="flex mb-2 items-center justify-between">
-                    <div>
-                      <span className="text-xs font-semibold inline-block text-purple-600">
-                        {pointsToNextTier} points to next tier
-                      </span>
-                    </div>
-                  </div>
-                  <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-200">
-                    <div style={{ width: `${progressPercentage}%` }} 
-                         className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-blue-500 to-purple-600"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )} */}
+        </div>
+        {/* Ticket History Section */}
+        <div className="mt-8">
+          <h3 className="text-xs uppercase font-semibold text-gray-500 tracking-wider mb-4">TICKET HISTORY</h3>
           
-          {/* Max tier achievement message */}
-          {/* {isMaxTier && (
-            <div className="mt-8">
-              <div className="bg-gradient-to-r from-purple-50 to-purple-100 p-4 rounded-lg border border-purple-200 shadow-sm">
-                <div className="flex items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-purple-500 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                  </svg>
-                  <div>
-                    <h3 className="text-lg font-bold text-purple-800">Platinum Status Achieved!</h3>
-                    <p className="text-sm text-purple-600">Congratulations! You've reached our highest membership tier.</p>
-                  </div>
-                </div>
-              </div>
+          {ticketLoading ? (
+            <div className="text-center py-4">
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500 mx-auto"></div>
             </div>
-          )} */}
+          ) : ticketError ? (
+            <div className="bg-red-100 text-red-700 p-4 rounded-lg">
+              Error: {ticketError}
+            </div>
+          ) : tickets.length === 0 ? (
+            <div className="bg-yellow-100 text-yellow-700 p-4 rounded-lg">
+              You haven't booked any tickets yet.
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg border border-purple-100 shadow-sm overflow-hidden">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Ticket ID
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Flight Number
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Passengers
+                    </th>
+                    <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Total Amount
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {tickets.map((ticket) => (
+                    <tr 
+                      key={ticket.ticketNumber} 
+                      onClick={() => handleTicketSelect(ticket)}
+                      className="cursor-pointer hover:bg-purple-50 transition-colors"
+                    >
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {ticket.ticketNumber.substring(0, 8)}...
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {ticket.flightNumber}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {ticket.passengers.length} {ticket.passengers.length === 1 ? 'passenger' : 'passengers'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${ticket.totalAmount.toFixed(2)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
 
@@ -505,6 +581,241 @@ export default function UserProfileClient() {
               </div>
             </form>
           </div>
+        </div>
+      )}
+      {/* Passenger Details Modal */}
+      {/* Passenger Details Modal */}
+      {showPassengerDetails && selectedTicket && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-800">
+                Ticket Details - {selectedTicket.flightNumber}
+              </h2>
+              <button 
+                className="text-gray-500 hover:text-gray-700"
+                onClick={() => {
+                  setShowPassengerDetails(false);
+                  setSelectedTicket(null);
+                  setSelectedPassenger(null);
+                }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="mb-4">
+              <div className="flex space-x-4 mb-6">
+                <div className="bg-blue-50 p-3 rounded-lg flex-1">
+                  <p className="text-sm text-gray-500">Ticket ID</p>
+                  <p className="text-base font-medium text-gray-800">{selectedTicket.ticketNumber}</p>
+                </div>
+                <div className="bg-blue-50 p-3 rounded-lg flex-1">
+                  <p className="text-sm text-gray-500">Flight Number</p>
+                  <p className="text-base font-medium text-gray-800">{selectedTicket.flightNumber}</p>
+                </div>
+                <div className="bg-blue-50 p-3 rounded-lg flex-1">
+                  <p className="text-sm text-gray-500">Total Amount</p>
+                  <p className="text-base font-medium text-gray-800">${selectedTicket.totalAmount.toFixed(2)}</p>
+                </div>
+              </div>
+              
+              <h3 className="text-lg font-semibold mb-2">Passengers</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {selectedTicket.passengers.map((passenger) => (
+                  <div 
+                    key={passenger.id}
+                    className={`p-4 rounded-lg border cursor-pointer transition-all ${
+                      selectedPassenger?.id === passenger.id 
+                        ? 'border-purple-500 bg-purple-50 shadow' 
+                        : 'border-gray-200 hover:border-purple-300'
+                    }`}
+                    onClick={() => handlePassengerSelect(passenger)}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-2 rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <p className="font-medium text-gray-800">
+                          {passenger.title} {passenger.firstName} {passenger.lastName}
+                        </p>
+                        <p className="text-sm text-gray-500">{passenger.ageCategory}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              {selectedPassenger && (
+                <div className="border-t pt-4">
+                  <h3 className="text-lg font-semibold mb-4">Passenger Details</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <p className="text-sm text-gray-500">Full Name</p>
+                      <p className="text-base font-medium text-gray-800">
+                        {selectedPassenger.title} {selectedPassenger.firstName} {selectedPassenger.lastName}
+                      </p>
+                    </div>
+                    
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <p className="text-sm text-gray-500">Date of Birth</p>
+                      <p className="text-base font-medium text-gray-800">
+                        {format(new Date(selectedPassenger.dateOfBirth), 'MMMM d, yyyy')}
+                      </p>
+                    </div>
+                    
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <p className="text-sm text-gray-500">Nationality</p>
+                      <p className="text-base font-medium text-gray-800">{selectedPassenger.nationality}</p>
+                    </div>
+                    
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <p className="text-sm text-gray-500">Passport Number</p>
+                      <p className="text-base font-medium text-gray-800">{selectedPassenger.passportNumber}</p>
+                    </div>
+                    
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <p className="text-sm text-gray-500">Passport Expiry</p>
+                      <p className="text-base font-medium text-gray-800">
+                        {format(new Date(selectedPassenger.passportExpiryDate), 'MMMM d, yyyy')}
+                      </p>
+                    </div>
+                    
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <p className="text-sm text-gray-500">Age Category</p>
+                      <p className="text-base font-medium text-gray-800">{selectedPassenger.ageCategory}</p>
+                    </div>
+                    
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <p className="text-sm text-gray-500">Checked Baggage</p>
+                      <p className="text-base font-medium text-gray-800">{selectedPassenger.checkedBaggage} kg</p>
+                    </div>
+                    
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <p className="text-sm text-gray-500">Cabin Baggage</p>
+                      <p className="text-base font-medium text-gray-800">{selectedPassenger.cabinBaggage} kg</p>
+                    </div>
+                    
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <p className="text-sm text-gray-500">Meal Preference</p>
+                      <p className="text-base font-medium text-gray-800">{selectedPassenger.mealPreference}</p>
+                    </div>
+                    
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <p className="text-sm text-gray-500">Seat Preference</p>
+                      <p className="text-base font-medium text-gray-800">{selectedPassenger.seatPreference.replace('_', ' ')}</p>
+                    </div>
+                    
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <p className="text-sm text-gray-500">Emergency Contact</p>
+                      <p className="text-base font-medium text-gray-800">
+                        {selectedPassenger.emergencyContactName} ({selectedPassenger.emergencyContactPhone})
+                      </p>
+                    </div>
+                    
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <p className="text-sm text-gray-500">Insurance</p>
+                      <p className="text-base font-medium text-gray-800">{selectedPassenger.insurance ? 'Yes' : 'No'}</p>
+                    </div>
+                    
+                    {selectedPassenger.specialAssistance && selectedPassenger.specialAssistance.length > 0 && (
+                      <div className="bg-white p-3 rounded-lg border border-gray-200 md:col-span-2">
+                        <p className="text-sm text-gray-500">Special Assistance</p>
+                        <div className="flex flex-wrap gap-2 mt-1">
+                          {selectedPassenger.specialAssistance.map((assistance, index) => (
+                            <span key={index} className="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
+                              {assistance}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              <div className="border-t pt-4 mt-6">
+                <h3 className="text-lg font-semibold mb-4">Flight Information</h3>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="flex flex-col md:flex-row justify-between mb-4">
+                    <div className="mb-4 md:mb-0">
+                      <p className="text-sm text-gray-500">Departure</p>
+                      <div className="flex items-end">
+                        <p className="text-2xl font-bold text-gray-800">{selectedTicket. flightNumber}</p>    
+                      </div>
+                    </div>
+                    
+                    {/* <div className="flex flex-col items-center justify-center mb-4 md:mb-0">
+                      <p className="text-sm text-gray-500 mb-1">{selectedTicket.duration}</p>
+                      <div className="flex items-center">
+                        <div className="h-1 w-2 bg-gray-300 rounded-full"></div>
+                        <div className="h-1 w-16 md:w-24 bg-gray-300"></div>
+                        <div className="h-3 w-3 rounded-full bg-blue-500"></div>
+                        <div className="h-1 w-16 md:w-24 bg-gray-300"></div>
+                        <div className="h-1 w-2 bg-gray-300 rounded-full"></div>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">{selectedTicket.flightType}</p>
+                    </div>
+                    
+                    <div className="text-right">
+                      <p className="text-sm text-gray-500">Arrival</p>
+                      <div className="flex items-end justify-end">
+                        <p className="text-2xl font-bold text-gray-800">{selectedTicket.arrivalCode}</p>
+                        <p className="ml-2 text-sm text-gray-500">{selectedTicket.arrivalCity}</p>
+                      </div>
+                      <p className="text-sm text-gray-500">
+                        {format(new Date(selectedTicket.arrivalDateTime), 'MMMM d, yyyy h:mm a')}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <p className="text-sm text-gray-500">Airline</p>
+                      <p className="text-base font-medium text-gray-800">{selectedTicket.airline}</p>
+                    </div>
+                    
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <p className="text-sm text-gray-500">Class</p>
+                      <p className="text-base font-medium text-gray-800">{selectedTicket.travelClass}</p>
+                    </div>
+                    
+                    <div className="bg-white p-3 rounded-lg border border-gray-200">
+                      <p className="text-sm text-gray-500">Status</p>
+                      <span className={`px-2 py-1 rounded-full text-xs ${
+                        selectedTicket.status === 'Confirmed' 
+                          ? 'bg-green-100 text-green-800' 
+                          : selectedTicket.status === 'Pending' 
+                          ? 'bg-yellow-100 text-yellow-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {selectedTicket.status}
+                      </span>
+                    </div>
+                  </div> */}
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex justify-end space-x-4 mt-6">
+              <button 
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                onClick={() => {
+                  setShowPassengerDetails(false);
+                  setSelectedTicket(null);
+                  setSelectedPassenger(null);
+                }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
         </div>
       )}
     </div>
