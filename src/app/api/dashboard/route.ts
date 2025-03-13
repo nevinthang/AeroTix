@@ -7,7 +7,10 @@ import { authOptions } from "../auth/[...nextauth]/route";
 const prisma = new PrismaClient();
 
 // GET all flights
-export async function GET(_: Request, { params }: { params: { flightNumber?: string } }) {
+export async function GET(
+  _: Request,
+  { params }: { params: { flightNumber?: string } }
+) {
   try {
     // Check if we're requesting a specific flight by flightNumber
     const { flightNumber } = params || {};
@@ -30,14 +33,14 @@ export async function GET(_: Request, { params }: { params: { flightNumber?: str
       // Get all flights
       const flights = await prisma.flight.findMany({
         orderBy: {
-          departureDate: 'asc',
+          departureDate: "asc",
         },
       });
-      
+
       return NextResponse.json(flights);
     }
   } catch (error) {
-    console.error('Error fetching flights:', error);
+    console.error("Error fetching flights:", error);
     return NextResponse.json(
       { error: "Failed to fetch flights" },
       { status: 500 }
@@ -51,9 +54,13 @@ export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
 
     const flightData = await request.json();
-    
+
     // Validate flight data
-    if (!flightData.flightNumber || !flightData.departureTime || !flightData.arrivalTime) {
+    if (
+      !flightData.flightNumber ||
+      !flightData.departureTime ||
+      !flightData.arrivalTime
+    ) {
       return NextResponse.json(
         { error: "Missing required flight information" },
         { status: 400 }
@@ -79,7 +86,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(flight, { status: 201 });
   } catch (error) {
-    console.error('Error creating flight:', error);
+    console.error("Error creating flight:", error);
     return NextResponse.json(
       { error: "Failed to create flight", details: (error as any).message },
       { status: 500 }
@@ -88,7 +95,10 @@ export async function POST(request: Request) {
 }
 
 // UPDATE a flight
-export async function PUT(request: Request, { params }: { params: { flightNumber: string } }) {
+export async function PUT(
+  request: Request,
+  { params }: { params: { flightNumber: string } }
+) {
   try {
     const { flightNumber } = params;
     const session = await getServerSession(authOptions);
@@ -106,14 +116,11 @@ export async function PUT(request: Request, { params }: { params: { flightNumber
     });
 
     if (!existingFlight) {
-      return NextResponse.json(
-        { error: "Flight not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Flight not found" }, { status: 404 });
     }
 
     const flightData = await request.json();
-    
+
     // Update the flight
     const updatedFlight = await prisma.flight.update({
       where: { flightNumber },
@@ -131,7 +138,10 @@ export async function PUT(request: Request, { params }: { params: { flightNumber
 }
 
 // DELETE a flight
-export async function DELETE(_: Request, { params }: { params: { flightNumber: string } }) {
+export async function DELETE(
+  _: Request,
+  { params }: { params: { flightNumber: string } }
+) {
   try {
     const { flightNumber } = params;
     const session = await getServerSession(authOptions);
@@ -149,10 +159,7 @@ export async function DELETE(_: Request, { params }: { params: { flightNumber: s
     });
 
     if (!existingFlight) {
-      return NextResponse.json(
-        { error: "Flight not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Flight not found" }, { status: 404 });
     }
 
     // Check if there are tickets associated with this flight
@@ -162,9 +169,9 @@ export async function DELETE(_: Request, { params }: { params: { flightNumber: s
 
     if (ticketsCount > 0) {
       return NextResponse.json(
-        { 
-          error: "Cannot delete flight with existing tickets", 
-          ticketsCount 
+        {
+          error: "Cannot delete flight with existing tickets",
+          ticketsCount,
         },
         { status: 409 }
       );
@@ -175,8 +182,8 @@ export async function DELETE(_: Request, { params }: { params: { flightNumber: s
       where: { flightNumber },
     });
 
-    return NextResponse.json({ 
-      message: "Flight deleted successfully" 
+    return NextResponse.json({
+      message: "Flight deleted successfully",
     });
   } catch (error) {
     console.error("Error deleting flight:", error);
@@ -188,4 +195,4 @@ export async function DELETE(_: Request, { params }: { params: { flightNumber: s
 }
 
 // Add this to handle all methods for flight-specific operations
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";

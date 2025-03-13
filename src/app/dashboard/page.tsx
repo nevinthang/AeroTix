@@ -1,19 +1,27 @@
 // pages/dashboard.js
 "use client";
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { 
-  Plane, 
-  Edit, 
-  Trash2, 
-  Plus, 
-  Calendar, 
-  Clock, 
-  Users, 
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import {
+  Plane,
+  Edit,
+  Trash2,
+  Plus,
+  Calendar,
+  Clock,
+  Users,
   DollarSign,
   Map,
-  ArrowLeftRight
-} from 'lucide-react';
+  ArrowLeftRight,
+} from "lucide-react";
+import { log } from "console";
+
+// Define the Category enum to match the Prisma model
+enum Category {
+  ECONOMY = "ECONOMY",
+  BUSINESS = "BUSINESS",
+  FIRST_CLASS = "FIRST_CLASS",
+}
 
 interface Flight {
   flightNumber: string;
@@ -28,16 +36,18 @@ interface Flight {
   arrivalHour: Date;
   airline: string;
   aircraft: string;
-  category: string;
+  category: Category;
   price: number;
   seatCapacity: number;
   availableSeats: number;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 // Flight Form Modal Component
 interface FlightModalProps {
   flight: Flight;
-  mode: 'create' | 'edit';
+  mode: "create" | "edit";
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -48,64 +58,103 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Handle input changes
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: name === 'price' || name === 'availableSeats' || name === 'seatCapacity' || name === 'duration'
-        ? parseInt(value) 
-        : value
-    });
+
+    let parsedValue: string | number | Category = value;
+
+    if (
+      ["price", "availableSeats", "seatCapacity", "duration"].includes(name)
+    ) {
+      parsedValue = value === "" ? "" : parseFloat(value) || 0; // Use parseFloat for price
+    }
+
+    // Handle category as enum
+    if (name === "category") {
+      parsedValue = value as Category;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: parsedValue,
+    }));
   };
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
-    
-    if (!formData.flightNumber) newErrors.flightNumber = 'Flight number is required';
-    if (!formData.departure) newErrors.departure = 'Departure is required';
-    if (!formData.departureCode) newErrors.departureCode = 'Departure code is required';
-    if (!formData.arrival) newErrors.arrival = 'Arrival is required';
-    if (!formData.arrivalCode) newErrors.arrivalCode = 'Arrival code is required';
-    if (!formData.departureDate) newErrors.departureDate = 'Departure date is required';
-    if (!formData.departureHour) newErrors.departureHour = 'Departure hour is required';
-    if (!formData.duration) newErrors.duration = 'Duration is required';
-    if (!formData.arrivalDate) newErrors.arrivalDate = 'Arrival date is required';
-    if (!formData.arrivalHour) newErrors.arrivalHour = 'Arrival hour is required';
-    if (!formData.airline) newErrors.airline = 'Airline is required';
-    if (!formData.aircraft) newErrors.aircraft = 'Aircraft is required';
-    if (!formData.category) newErrors.category = 'Category is required';
-    if (!formData.price) newErrors.price = 'Price is required';
-    if (!formData.seatCapacity) newErrors.seatCapacity = 'Seat capacity is required';
-    if (!formData.availableSeats) newErrors.availableSeats = 'Available seats is required';
-    
+
+    if (!formData.flightNumber)
+      newErrors.flightNumber = "Flight number is required";
+    if (!formData.departure) newErrors.departure = "Departure is required";
+    if (!formData.departureCode)
+      newErrors.departureCode = "Departure code is required";
+    if (!formData.arrival) newErrors.arrival = "Arrival is required";
+    if (!formData.arrivalCode)
+      newErrors.arrivalCode = "Arrival code is required";
+    if (!formData.departureDate)
+      newErrors.departureDate = "Departure date is required";
+    if (!formData.departureHour)
+      newErrors.departureHour = "Departure hour is required";
+    if (!formData.duration) newErrors.duration = "Duration is required";
+    if (!formData.arrivalDate)
+      newErrors.arrivalDate = "Arrival date is required";
+    if (!formData.arrivalHour)
+      newErrors.arrivalHour = "Arrival hour is required";
+    if (!formData.airline) newErrors.airline = "Airline is required";
+    if (!formData.aircraft) newErrors.aircraft = "Aircraft is required";
+    if (!formData.category) newErrors.category = "Category is required";
+    if (!formData.price) newErrors.price = "Price is required";
+    if (!formData.seatCapacity)
+      newErrors.seatCapacity = "Seat capacity is required";
+    if (!formData.availableSeats)
+      newErrors.availableSeats = "Available seats is required";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
-  // Submit form
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setSubmitting(true);
     try {
-      const url = mode === 'create' 
-        ? '/api/flights' 
-        : `/api/flights/${flight.flightNumber}`;
-      
-      const method = mode === 'create' ? 'POST' : 'PUT';
-      
+      const url =
+        mode === "create"
+          ? "/api/flights"
+          : `/api/flights/${flight.flightNumber}`;
+
+      const method = mode === "create" ? "POST" : "PUT";
+
+      const departureDate = new Date(formData.departureDate);
+      const arrivalDate = new Date(formData.arrivalDate);
+      const departureHour = new Date(formData.departureHour);
+      const arrivalHour = new Date(formData.arrivalHour);
+
+      console.log(departureHour);
+      console.log(arrivalHour);
+
+      const requestData = {
+        ...formData,
+        departureDate,
+        arrivalDate,
+        departureHour,
+        arrivalHour,
+      };
+
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(requestData),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to save flight');
+        throw new Error(errorData.error || "Failed to save flight");
       }
 
       onSuccess();
@@ -113,7 +162,7 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
       if (err instanceof Error) {
         setErrors({ form: err.message });
       } else {
-        setErrors({ form: 'An unknown error occurred' });
+        setErrors({ form: "An unknown error occurred" });
       }
     } finally {
       setSubmitting(false);
@@ -121,10 +170,18 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
   };
 
   // Format date for datetime-local input
-  const formatDateForInput = (date: Date) => {
-    if (!date) return '';
+  const formatDateForInput = (date: string | Date | null) => {
+    if (!date) return "";
     const d = new Date(date);
-    return d.toISOString().slice(0, 16);
+    return d.toISOString().split("T")[0]; // Format ke YYYY-MM-DD
+  };
+
+  const formatTimeForInput = (timeStr: string | Date | null) => {
+    if (!timeStr) return "";
+    if (timeStr instanceof Date) {
+      return timeStr.toTimeString().substring(0, 5); // Format as HH:MM
+    }
+    return timeStr;
   };
 
   return (
@@ -132,9 +189,9 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
       <div className="bg-gradient-to-br from-gray-900 to-blue-900 rounded-xl shadow-2xl max-w-4xl w-full max-h-screen overflow-auto p-6">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-bold text-white">
-            {mode === 'create' ? 'Add New Flight' : 'Edit Flight'}
+            {mode === "create" ? "Add New Flight" : "Edit Flight"}
           </h3>
-          <button 
+          <button
             onClick={onClose}
             className="text-gray-400 hover:text-white transition-colors"
           >
@@ -152,8 +209,10 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Flight Details */}
             <div className="space-y-4">
-              <h4 className="text-lg font-medium text-blue-400">Flight Details</h4>
-              
+              <h4 className="text-lg font-medium text-blue-400">
+                Flight Details
+              </h4>
+
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">
                   Flight Number
@@ -163,13 +222,15 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                   name="flightNumber"
                   value={formData.flightNumber}
                   onChange={handleChange}
-                  disabled={mode === 'edit'}
+                  disabled={mode === "edit"}
                   className={`w-full bg-black/20 border ${
-                    errors.flightNumber ? 'border-red-500' : 'border-gray-700'
+                    errors.flightNumber ? "border-red-500" : "border-gray-700"
                   } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 />
                 {errors.flightNumber && (
-                  <p className="mt-1 text-sm text-red-500">{errors.flightNumber}</p>
+                  <p className="mt-1 text-sm text-red-500">
+                    {errors.flightNumber}
+                  </p>
                 )}
               </div>
 
@@ -183,7 +244,7 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                   value={formData.airline}
                   onChange={handleChange}
                   className={`w-full bg-black/20 border ${
-                    errors.airline ? 'border-red-500' : 'border-gray-700'
+                    errors.airline ? "border-red-500" : "border-gray-700"
                   } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 />
                 {errors.airline && (
@@ -201,7 +262,7 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                   value={formData.aircraft}
                   onChange={handleChange}
                   className={`w-full bg-black/20 border ${
-                    errors.aircraft ? 'border-red-500' : 'border-gray-700'
+                    errors.aircraft ? "border-red-500" : "border-gray-700"
                   } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 />
                 {errors.aircraft && (
@@ -213,15 +274,19 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                 <label className="block text-sm font-medium text-gray-300 mb-1">
                   Flight Category
                 </label>
-                <input
-                  type="text"
+                <select
                   name="category"
                   value={formData.category}
                   onChange={handleChange}
                   className={`w-full bg-black/20 border ${
-                    errors.category ? 'border-red-500' : 'border-gray-700'
+                    errors.category ? "border-red-500" : "border-gray-700"
                   } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                />
+                >
+                  <option value="">Select Category</option>
+                  <option value={Category.ECONOMY}>Economy</option>
+                  <option value={Category.BUSINESS}>Business</option>
+                  <option value={Category.FIRST_CLASS}>First Class</option>
+                </select>
                 {errors.category && (
                   <p className="mt-1 text-sm text-red-500">{errors.category}</p>
                 )}
@@ -239,7 +304,7 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                   min="0"
                   step="0.01"
                   className={`w-full bg-black/20 border ${
-                    errors.price ? 'border-red-500' : 'border-gray-700'
+                    errors.price ? "border-red-500" : "border-gray-700"
                   } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 />
                 {errors.price && (
@@ -259,11 +324,13 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                     onChange={handleChange}
                     min="0"
                     className={`w-full bg-black/20 border ${
-                      errors.seatCapacity ? 'border-red-500' : 'border-gray-700'
+                      errors.seatCapacity ? "border-red-500" : "border-gray-700"
                     } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   />
                   {errors.seatCapacity && (
-                    <p className="mt-1 text-sm text-red-500">{errors.seatCapacity}</p>
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.seatCapacity}
+                    </p>
                   )}
                 </div>
                 <div>
@@ -277,15 +344,19 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                     onChange={handleChange}
                     min="0"
                     className={`w-full bg-black/20 border ${
-                      errors.availableSeats ? 'border-red-500' : 'border-gray-700'
+                      errors.availableSeats
+                        ? "border-red-500"
+                        : "border-gray-700"
                     } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
                   />
                   {errors.availableSeats && (
-                    <p className="mt-1 text-sm text-red-500">{errors.availableSeats}</p>
+                    <p className="mt-1 text-sm text-red-500">
+                      {errors.availableSeats}
+                    </p>
                   )}
                 </div>
               </div>
-              
+
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1">
                   Flight Duration (minutes)
@@ -297,7 +368,7 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                   onChange={handleChange}
                   min="0"
                   className={`w-full bg-black/20 border ${
-                    errors.duration ? 'border-red-500' : 'border-gray-700'
+                    errors.duration ? "border-red-500" : "border-gray-700"
                   } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
                 />
                 {errors.duration && (
@@ -322,11 +393,15 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                         value={formData.departure}
                         onChange={handleChange}
                         className={`w-full bg-black/20 border ${
-                          errors.departure ? 'border-red-500' : 'border-gray-700'
+                          errors.departure
+                            ? "border-red-500"
+                            : "border-gray-700"
                         } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
                       />
                       {errors.departure && (
-                        <p className="mt-1 text-sm text-red-500">{errors.departure}</p>
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors.departure}
+                        </p>
                       )}
                     </div>
                     <div>
@@ -339,11 +414,15 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                         value={formData.departureCode}
                         onChange={handleChange}
                         className={`w-full bg-black/20 border ${
-                          errors.departureCode ? 'border-red-500' : 'border-gray-700'
+                          errors.departureCode
+                            ? "border-red-500"
+                            : "border-gray-700"
                         } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
                       />
                       {errors.departureCode && (
-                        <p className="mt-1 text-sm text-red-500">{errors.departureCode}</p>
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors.departureCode}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -357,11 +436,15 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                       value={formatDateForInput(formData.departureDate)}
                       onChange={handleChange}
                       className={`w-full bg-black/20 border ${
-                        errors.departureDate ? 'border-red-500' : 'border-gray-700'
+                        errors.departureDate
+                          ? "border-red-500"
+                          : "border-gray-700"
                       } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     />
                     {errors.departureDate && (
-                      <p className="mt-1 text-sm text-red-500">{errors.departureDate}</p>
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.departureDate}
+                      </p>
                     )}
                   </div>
                   <div>
@@ -371,16 +454,18 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                     <input
                       type="time"
                       name="departureHour"
-                      value={formData.departureHour instanceof Date ? 
-                        new Date(formData.departureHour).toTimeString().slice(0, 5) : 
-                        ''}
+                      value={formatTimeForInput(formData.departureHour) || ""}
                       onChange={handleChange}
                       className={`w-full bg-black/20 border ${
-                        errors.departureHour ? 'border-red-500' : 'border-gray-700'
-                      } rounded-lg p-3 text-white focus:outline-none focus:ring-2} rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                        errors.departureHour
+                          ? "border-red-500"
+                          : "border-gray-700"
+                      } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     />
                     {errors.departureHour && (
-                      <p className="mt-1 text-sm text-red-500">{errors.departureHour}</p>
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.departureHour}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -400,11 +485,13 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                         value={formData.arrival}
                         onChange={handleChange}
                         className={`w-full bg-black/20 border ${
-                          errors.arrival ? 'border-red-500' : 'border-gray-700'
+                          errors.arrival ? "border-red-500" : "border-gray-700"
                         } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
                       />
                       {errors.arrival && (
-                        <p className="mt-1 text-sm text-red-500">{errors.arrival}</p>
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors.arrival}
+                        </p>
                       )}
                     </div>
                     <div>
@@ -417,11 +504,15 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                         value={formData.arrivalCode}
                         onChange={handleChange}
                         className={`w-full bg-black/20 border ${
-                          errors.arrivalCode ? 'border-red-500' : 'border-gray-700'
+                          errors.arrivalCode
+                            ? "border-red-500"
+                            : "border-gray-700"
                         } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
                       />
                       {errors.arrivalCode && (
-                        <p className="mt-1 text-sm text-red-500">{errors.arrivalCode}</p>
+                        <p className="mt-1 text-sm text-red-500">
+                          {errors.arrivalCode}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -435,11 +526,15 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                       value={formatDateForInput(formData.arrivalDate)}
                       onChange={handleChange}
                       className={`w-full bg-black/20 border ${
-                        errors.arrivalDate ? 'border-red-500' : 'border-gray-700'
+                        errors.arrivalDate
+                          ? "border-red-500"
+                          : "border-gray-700"
                       } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     />
                     {errors.arrivalDate && (
-                      <p className="mt-1 text-sm text-red-500">{errors.arrivalDate}</p>
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.arrivalDate}
+                      </p>
                     )}
                   </div>
                   <div>
@@ -449,16 +544,18 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                     <input
                       type="time"
                       name="arrivalHour"
-                      value={formData.arrivalHour instanceof Date ? 
-                        new Date(formData.arrivalHour).toTimeString().slice(0, 5) : 
-                        ''}
+                      value={formatTimeForInput(formData.arrivalHour) || ""}
                       onChange={handleChange}
                       className={`w-full bg-black/20 border ${
-                        errors.arrivalHour ? 'border-red-500' : 'border-gray-700'
+                        errors.arrivalHour
+                          ? "border-red-500"
+                          : "border-gray-700"
                       } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     />
                     {errors.arrivalHour && (
-                      <p className="mt-1 text-sm text-red-500">{errors.arrivalHour}</p>
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.arrivalHour}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -482,10 +579,10 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
               {submitting ? (
                 <>
                   <div className="mr-2 h-4 w-4 border-t-2 border-b-2 border-white rounded-full animate-spin"></div>
-                  {mode === 'create' ? 'Creating...' : 'Updating...'}
+                  {mode === "create" ? "Creating..." : "Updating..."}
                 </>
               ) : (
-                <>{mode === 'create' ? 'Create Flight' : 'Update Flight'}</>
+                <>{mode === "create" ? "Create Flight" : "Update Flight"}</>
               )}
             </button>
           </div>
@@ -502,7 +599,7 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [currentFlight, setCurrentFlight] = useState<Flight | null>(null);
-  const [mode, setMode] = useState<'create' | 'edit'>('create');
+  const [mode, setMode] = useState<"create" | "edit">("create");
 
   // Fetch all flights on component mount
   useEffect(() => {
@@ -513,9 +610,9 @@ export default function Dashboard() {
   const fetchFlights = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/flights');
+      const response = await fetch("/api/flights");
       if (!response.ok) {
-        throw new Error('Failed to fetch flights');
+        throw new Error("Failed to fetch flights");
       }
       const data = await response.json();
       setFlights(data);
@@ -524,7 +621,7 @@ export default function Dashboard() {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('An unknown error occurred');
+        setError("An unknown error occurred");
       }
       setLoading(false);
     }
@@ -532,58 +629,72 @@ export default function Dashboard() {
 
   // Delete flight
   const deleteFlight = async (flightNumber: string) => {
-    if (confirm('Are you sure you want to delete this flight?')) {
+    if (confirm("Are you sure you want to delete this flight?")) {
       try {
         const response = await fetch(`/api/flights/${flightNumber}`, {
-          method: 'DELETE',
+          method: "DELETE",
         });
-        
+
         if (!response.ok) {
-          throw new Error('Failed to delete flight');
+          throw new Error("Failed to delete flight");
         }
-        
+
         // Refresh flights list
         fetchFlights();
       } catch (err) {
         if (err instanceof Error) {
           setError(err.message);
         } else {
-          setError('An unknown error occurred');
+          setError("An unknown error occurred");
         }
       }
     }
   };
 
- // Open modal for create or edit
-const openModal = (flight: Flight | null = null) => {
-  if (flight) {
-    setMode('edit');
-    setCurrentFlight(flight);
-  } else {
-    setMode('create');
-    // Create a new flight with all required fields properly initialized
-    const today = new Date();
-    setCurrentFlight({
-      flightNumber: '',
-      departure: '',
-      departureCode: '',
-      arrival: '',
-      arrivalCode: '',
-      departureDate: today,
-      departureHour: today,
-      duration: 0,
-      arrivalDate: today,
-      arrivalHour: today,
-      airline: '',
-      aircraft: '',
-      category: '',
-      price: 0,
-      seatCapacity: 0,
-      availableSeats: 0,
-    });
-  }
-  setShowModal(true);
-};
+  // Open modal for create or edit
+  const openModal = (flight: Flight | null = null) => {
+    if (flight) {
+      setMode("edit");
+      setCurrentFlight(flight);
+    } else {
+      setMode("create");
+      // Create a new flight with all required fields properly initialized
+      const today = new Date();
+      setCurrentFlight({
+        flightNumber: "",
+        departure: "",
+        departureCode: "",
+        arrival: "",
+        arrivalCode: "",
+        departureDate: today,
+        departureHour: today,
+        duration: 0,
+        arrivalDate: today,
+        arrivalHour: today,
+        airline: "",
+        aircraft: "",
+        category: Category.ECONOMY,
+        price: 0,
+        seatCapacity: 0,
+        availableSeats: 0,
+      });
+    }
+    setShowModal(true);
+  };
+
+  // Format category for display
+  const formatCategory = (category: Category): string => {
+    switch (category) {
+      case Category.ECONOMY:
+        return "Economy";
+      case Category.BUSINESS:
+        return "Business";
+      case Category.FIRST_CLASS:
+        return "First Class";
+      default:
+        return category;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 to-indigo-900">
@@ -592,10 +703,12 @@ const openModal = (flight: Flight | null = null) => {
         <div className="container mx-auto px-4 py-4 flex justify-between items-center">
           <div className="flex items-center space-x-2">
             <Plane className="text-blue-400 h-6 w-6" />
-            <h1 className="text-white text-xl font-bold">Flight Admin Dashboard</h1>
+            <h1 className="text-white text-xl font-bold">
+              Flight Admin Dashboard
+            </h1>
           </div>
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="text-white hover:text-blue-300 transition-colors duration-300"
           >
             Back to Home
@@ -640,6 +753,7 @@ const openModal = (flight: Flight | null = null) => {
                     <th className="px-6 py-3">Departure</th>
                     <th className="px-6 py-3">Arrival</th>
                     <th className="px-6 py-3">Price</th>
+                    <th className="px-6 py-3">Category</th>
                     <th className="px-6 py-3">Available Seats</th>
                     <th className="px-6 py-3">Actions</th>
                   </tr>
@@ -647,23 +761,43 @@ const openModal = (flight: Flight | null = null) => {
                 <tbody className="divide-y divide-gray-700/30">
                   {flights.length > 0 ? (
                     flights.map((flight) => (
-                      <tr key={flight.flightNumber} className="text-white hover:bg-white/5 transition-colors">
-                        <td className="px-6 py-4 font-medium">{flight.flightNumber}</td>
+                      <tr
+                        key={flight.flightNumber}
+                        className="text-white hover:bg-white/5 transition-colors"
+                      >
+                        <td className="px-6 py-4 font-medium">
+                          {flight.flightNumber}
+                        </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center space-x-2">
                             <Map className="h-4 w-4 text-blue-400" />
-                            <span>{flight.departure} - {flight.arrival}</span>
+                            <span>
+                              {flight.departure} - {flight.arrival}
+                            </span>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex flex-col">
                             <div className="flex items-center space-x-1 text-sm">
                               <Calendar className="h-3 w-3 text-blue-400" />
-                              <span>{new Date(flight.departureDate).toLocaleDateString()}</span>
+                              <span>
+                                {new Date(
+                                  flight.departureDate
+                                ).toLocaleDateString()}
+                              </span>
                             </div>
                             <div className="flex items-center space-x-1 text-sm text-gray-300 mt-1">
                               <Clock className="h-3 w-3 text-blue-400" />
-                              <span>{new Date(flight.departureHour).toLocaleTimeString()}</span>
+                              <span>
+                                {flight.departureHour
+                                  ? new Date(
+                                      flight.departureHour
+                                    ).toLocaleTimeString([], {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })
+                                  : "Invalid Time"}
+                              </span>
                             </div>
                           </div>
                         </td>
@@ -671,41 +805,67 @@ const openModal = (flight: Flight | null = null) => {
                           <div className="flex flex-col">
                             <div className="flex items-center space-x-1 text-sm">
                               <Calendar className="h-3 w-3 text-blue-400" />
-                              <span>{new Date(flight.arrivalDate).toLocaleDateString()}</span>
+                              <span>
+                                {new Date(
+                                  flight.arrivalDate
+                                ).toLocaleDateString()}
+                              </span>
                             </div>
                             <div className="flex items-center space-x-1 text-sm text-gray-300 mt-1">
                               <Clock className="h-3 w-3 text-blue-400" />
-                              <span>{new Date(flight.arrivalHour).toLocaleTimeString()}</span>
+                              <span>
+                                {new Date(
+                                  flight.arrivalHour
+                                ).toLocaleTimeString([], {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                })}
+                              </span>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center space-x-1">
                             <DollarSign className="h-4 w-4 text-green-400" />
-                            <span>{flight.price.toLocaleString()}</span>
+                            <span>${flight.price.toFixed(2)}</span>
                           </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span
+                            className={`px-2 py-1 text-xs font-medium rounded-full ${
+                              flight.category === Category.ECONOMY
+                                ? "bg-blue-500/20 text-blue-300"
+                                : flight.category === Category.BUSINESS
+                                ? "bg-purple-500/20 text-purple-300"
+                                : "bg-amber-500/20 text-amber-300"
+                            }`}
+                          >
+                            {formatCategory(flight.category)}
+                          </span>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-center space-x-1">
                             <Users className="h-4 w-4 text-blue-400" />
-                            <span>{flight.availableSeats}</span>
+                            <span>
+                              {flight.availableSeats}/{flight.seatCapacity}
+                            </span>
                           </div>
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex space-x-2">
                             <button
                               onClick={() => openModal(flight)}
-                              className="p-1 text-blue-400 hover:bg-blue-400/20 rounded transition-colors"
+                              className="text-blue-400 hover:text-blue-300 transition-colors"
                               title="Edit Flight"
                             >
-                              <Edit className="h-5 w-5" />
+                              <Edit className="h-4 w-4" />
                             </button>
                             <button
                               onClick={() => deleteFlight(flight.flightNumber)}
-                              className="p-1 text-red-400 hover:bg-red-400/20 rounded transition-colors"
+                              className="text-red-400 hover:text-red-300 transition-colors"
                               title="Delete Flight"
                             >
-                              <Trash2 className="h-5 w-5" />
+                              <Trash2 className="h-4 w-4" />
                             </button>
                           </div>
                         </td>
@@ -713,8 +873,11 @@ const openModal = (flight: Flight | null = null) => {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={7} className="px-6 py-8 text-center text-white">
-                        No flights found. Add a new flight to get started.
+                      <td
+                        colSpan={8}
+                        className="px-6 py-10 text-center text-gray-300"
+                      >
+                        No flights found. Click "Add New Flight" to create one.
                       </td>
                     </tr>
                   )}
@@ -725,7 +888,7 @@ const openModal = (flight: Flight | null = null) => {
         )}
       </main>
 
-      {/* Create/Edit Flight Modal */}
+      {/* Flight Modal */}
       {showModal && currentFlight && (
         <FlightModal
           flight={currentFlight}
@@ -737,6 +900,95 @@ const openModal = (flight: Flight | null = null) => {
           }}
         />
       )}
+
+      {/* Flight Stats */}
+      <section className="container mx-auto px-4 py-8">
+        <h2 className="text-xl font-bold text-white mb-4">Flight Statistics</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Total Flights */}
+          <div className="bg-gradient-to-br from-blue-900/50 to-indigo-900/50 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-blue-800/50">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-gray-300 text-sm">Total Flights</p>
+                <p className="text-3xl font-bold text-white mt-2">
+                  {flights.length}
+                </p>
+              </div>
+              <div className="bg-blue-500/20 p-2 rounded-lg">
+                <Plane className="h-6 w-6 text-blue-400" />
+              </div>
+            </div>
+          </div>
+
+          {/* Total Available Seats */}
+          <div className="bg-gradient-to-br from-purple-900/50 to-blue-900/50 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-purple-800/50">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-gray-300 text-sm">Available Seats</p>
+                <p className="text-3xl font-bold text-white mt-2">
+                  {flights.reduce(
+                    (acc, flight) => acc + flight.availableSeats,
+                    0
+                  )}
+                </p>
+              </div>
+              <div className="bg-purple-500/20 p-2 rounded-lg">
+                <Users className="h-6 w-6 text-purple-400" />
+              </div>
+            </div>
+          </div>
+
+          {/* Total Routes */}
+          <div className="bg-gradient-to-br from-indigo-900/50 to-blue-900/50 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-indigo-800/50">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-gray-300 text-sm">Unique Routes</p>
+                <p className="text-3xl font-bold text-white mt-2">
+                  {
+                    new Set(
+                      flights.map(
+                        (flight) =>
+                          `${flight.departureCode}-${flight.arrivalCode}`
+                      )
+                    ).size
+                  }
+                </p>
+              </div>
+              <div className="bg-indigo-500/20 p-2 rounded-lg">
+                <ArrowLeftRight className="h-6 w-6 text-indigo-400" />
+              </div>
+            </div>
+          </div>
+
+          {/* Average Price */}
+          <div className="bg-gradient-to-br from-blue-900/50 to-cyan-900/50 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-cyan-800/50">
+            <div className="flex justify-between items-start">
+              <div>
+                <p className="text-gray-300 text-sm">Average Price</p>
+                <p className="text-3xl font-bold text-white mt-2">
+                  $
+                  {flights.length
+                    ? (
+                        flights.reduce((acc, flight) => acc + flight.price, 0) /
+                        flights.length
+                      ).toFixed(2)
+                    : "0.00"}
+                </p>
+              </div>
+              <div className="bg-cyan-500/20 p-2 rounded-lg">
+                <DollarSign className="h-6 w-6 text-cyan-400" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-black/20 backdrop-blur-sm mt-10 py-6">
+        <div className="container mx-auto px-4 text-center text-gray-400">
+          <p>© 2025 Flight Management System. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 }

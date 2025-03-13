@@ -62,7 +62,8 @@ export async function PUT(
   context: { params: { flightNumber?: string } }
 ) {
   try {
-    const { flightNumber } = context.params;
+    console.log(Request)
+    const { flightNumber } = await context.params;
     const body = await request.json();
 
     if (!flightNumber) {
@@ -81,11 +82,15 @@ export async function PUT(
       return NextResponse.json({ error: "Flight not found" }, { status: 404 });
     }
 
+    console.log(body)
+
     // Update flight
     const updatedFlight = await prisma.flight.update({
       where: { flightNumber },
       data: body,
     });
+
+    console.log("stage3")
 
     return NextResponse.json(updatedFlight);
   } catch (error) {
