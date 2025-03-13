@@ -26,7 +26,12 @@ import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Flight {
   flightNumber: string;
@@ -145,7 +150,7 @@ const FlightHero = () => {
               </span>
             </div>
 
-            <h1 className="text-5xl md:text-6xl font-extrabold mb-6 leading-tight">
+            <h1 className="text-5xl md:text-6xl font-extrabold leading-tight mb-5">
               <span className="block overflow-hidden h-auto">
                 <span
                   className="block"
@@ -157,19 +162,6 @@ const FlightHero = () => {
                   }}
                 >
                   Explore the World
-                </span>
-              </span>
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-200 via-white to-purple-200 block overflow-hidden h-auto mt-1">
-                <span
-                  className="block"
-                  style={{
-                    transform: isLoaded ? "translateY(0)" : "translateY(100%)",
-                    opacity: isLoaded ? 1 : 0,
-                    transition:
-                      "transform 0.8s ease-out 0.4s, opacity 0.8s ease-out 0.4s",
-                  }}
-                >
-                  Without Limits
                 </span>
               </span>
             </h1>
@@ -186,7 +178,7 @@ const FlightHero = () => {
             ></div>
 
             <p
-              className="text-xl text-blue-100 mb-8 max-w-lg mx-auto md:mx-0"
+              className="text-xl text-blue-100 mb-8 max-w-lgf mx-auto md:mx-0"
               style={{
                 transform: isLoaded ? "translateY(0)" : "translateY(20px)",
                 opacity: isLoaded ? 1 : 0,
@@ -548,6 +540,8 @@ const FlightSearchForm: React.FC<HookProps> = ({
     }
   };
 
+  const today = new Date().toISOString().split("T")[0];
+
   return (
     <div className="container mx-auto px-4 -mt-6">
       <div
@@ -704,6 +698,7 @@ const FlightSearchForm: React.FC<HookProps> = ({
                   name="date"
                   value={searchParams.date}
                   onChange={handleInputChange}
+                  min={today}
                   className="w-full p-4 bg-transparent border-0 focus:ring-2 focus:ring-blue-300 z-10 relative"
                   required
                 />
@@ -845,11 +840,18 @@ interface HookProps {
   searched: boolean;
 }
 
-const FlightResults: React.FC<HookProps> = ({ flights, loading, error, searched }) => {
+const FlightResults: React.FC<HookProps> = ({
+  flights,
+  loading,
+  error,
+  searched,
+}) => {
   const { data: session } = useSession();
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
-  const [sortOption, setSortOption] = useState<'price' | 'duration' | 'departure'>('price');
+  const [sortOption, setSortOption] = useState<
+    "price" | "duration" | "departure"
+  >("price");
   const [selectedAirlines, setSelectedAirlines] = useState<string[]>([]);
 
   useEffect(() => {
@@ -882,16 +884,23 @@ const FlightResults: React.FC<HookProps> = ({ flights, loading, error, searched 
   };
 
   // Get unique airlines for filtering
-  const airlines = [...new Set(flights.map(flight => flight.airline))];
+  const airlines = [...new Set(flights.map((flight) => flight.airline))];
 
   // Filter and sort flights
   const filteredFlights = flights
-    .filter(flight => selectedAirlines.length === 0 || selectedAirlines.includes(flight.airline))
+    .filter(
+      (flight) =>
+        selectedAirlines.length === 0 ||
+        selectedAirlines.includes(flight.airline)
+    )
     .sort((a, b) => {
-      if (sortOption === 'price') return a.price - b.price;
-      if (sortOption === 'duration') return a.duration - b.duration;
-      if (sortOption === 'departure') {
-        return new Date(a.departureHour).getTime() - new Date(b.departureHour).getTime();
+      if (sortOption === "price") return a.price - b.price;
+      if (sortOption === "duration") return a.duration - b.duration;
+      if (sortOption === "departure") {
+        return (
+          new Date(a.departureHour).getTime() -
+          new Date(b.departureHour).getTime()
+        );
       }
       return 0;
     });
@@ -899,11 +908,16 @@ const FlightResults: React.FC<HookProps> = ({ flights, loading, error, searched 
   // Function to render amenity icons
   const renderAmenityIcon = (amenity: string) => {
     switch (amenity) {
-      case 'wifi': return <Wifi size={16} />;
-      case 'food': return <Coffee size={16} />;
-      case 'entertainment': return <MonitorSmartphone size={16} />;
-      case 'baggage': return <BaggageClaim size={16} />;
-      default: return null;
+      case "wifi":
+        return <Wifi size={16} />;
+      case "food":
+        return <Coffee size={16} />;
+      case "entertainment":
+        return <MonitorSmartphone size={16} />;
+      case "baggage":
+        return <BaggageClaim size={16} />;
+      default:
+        return null;
     }
   };
 
@@ -917,7 +931,8 @@ const FlightResults: React.FC<HookProps> = ({ flights, loading, error, searched 
 
       {searched && !loading && flights.length === 0 && !error && (
         <div className="bg-warning/10 border border-warning/20 text-warning-foreground p-4 rounded-lg mb-6 animate-in fade-in duration-300">
-          No flights found matching your criteria. Try adjusting your search parameters.
+          No flights found matching your criteria. Try adjusting your search
+          parameters.
         </div>
       )}
 
@@ -969,24 +984,31 @@ const FlightResults: React.FC<HookProps> = ({ flights, loading, error, searched 
             <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
               Available Flights
             </h2>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
               {/* Sort options */}
-          
-              
+
               {/* Filter by airline */}
               {airlines.length > 1 && (
                 <div className="flex items-center gap-2 ml-auto sm:ml-4">
-                  <span className="text-sm font-medium text-muted-foreground">Airlines:</span>
+                  <span className="text-sm font-medium text-muted-foreground">
+                    Airlines:
+                  </span>
                   <div className="flex flex-wrap gap-1">
                     {airlines.map((airline) => (
-                      <Badge 
+                      <Badge
                         key={airline}
-                        variant={selectedAirlines.includes(airline) ? "default" : "outline"}
+                        variant={
+                          selectedAirlines.includes(airline)
+                            ? "default"
+                            : "outline"
+                        }
                         className="cursor-pointer"
                         onClick={() => {
                           if (selectedAirlines.includes(airline)) {
-                            setSelectedAirlines(selectedAirlines.filter(a => a !== airline));
+                            setSelectedAirlines(
+                              selectedAirlines.filter((a) => a !== airline)
+                            );
                           } else {
                             setSelectedAirlines([...selectedAirlines, airline]);
                           }
@@ -996,7 +1018,7 @@ const FlightResults: React.FC<HookProps> = ({ flights, loading, error, searched 
                       </Badge>
                     ))}
                     {selectedAirlines.length > 0 && (
-                      <Badge 
+                      <Badge
                         variant="secondary"
                         className="cursor-pointer"
                         onClick={() => setSelectedAirlines([])}
@@ -1013,20 +1035,32 @@ const FlightResults: React.FC<HookProps> = ({ flights, loading, error, searched 
           <div className="space-y-4">
             <div className="flex justify-between items-center px-2">
               <span className="text-sm text-muted-foreground">
-                {filteredFlights.length} {filteredFlights.length === 1 ? 'flight' : 'flights'} found
+                {filteredFlights.length}{" "}
+                {filteredFlights.length === 1 ? "flight" : "flights"} found
               </span>
-              {sortOption === 'price' && filteredFlights.length > 0 && (
+              {sortOption === "price" && filteredFlights.length > 0 && (
                 <span className="text-sm font-medium text-primary">
-                  Best price: ${Math.min(...filteredFlights.map(f => f.price)).toFixed(2)}
+                  Best price: $
+                  {Math.min(...filteredFlights.map((f) => f.price)).toFixed(2)}
                 </span>
               )}
             </div>
 
             {filteredFlights.map((flight, index) => {
-              const departure = formatDateTime(flight.departureDate, flight.departureHour);
-              const arrival = formatDateTime(flight.arrivalDate, flight.arrivalHour);
-              const isLowestPrice = flight.price === Math.min(...filteredFlights.map(f => f.price));
-              const isShortestDuration = flight.duration === Math.min(...filteredFlights.map(f => f.duration));
+              const departure = formatDateTime(
+                flight.departureDate,
+                flight.departureHour
+              );
+              const arrival = formatDateTime(
+                flight.arrivalDate,
+                flight.arrivalHour
+              );
+              const isLowestPrice =
+                flight.price ===
+                Math.min(...filteredFlights.map((f) => f.price));
+              const isShortestDuration =
+                flight.duration ===
+                Math.min(...filteredFlights.map((f) => f.duration));
 
               return (
                 <Card
@@ -1048,7 +1082,7 @@ const FlightResults: React.FC<HookProps> = ({ flights, loading, error, searched 
                             Fastest
                           </Badge>
                         )}
-                        
+
                         <div>
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-lg font-bold text-primary">
@@ -1057,18 +1091,22 @@ const FlightResults: React.FC<HookProps> = ({ flights, loading, error, searched 
                             {flight.rating && (
                               <div className="flex items-center text-amber-500">
                                 <Star size={14} className="fill-current" />
-                                <span className="text-xs ml-0.5">{flight.rating}</span>
+                                <span className="text-xs ml-0.5">
+                                  {flight.rating}
+                                </span>
                               </div>
                             )}
                           </div>
-                          <p className="text-muted-foreground text-sm">{flight.flightNumber}</p>
+                          <p className="text-muted-foreground text-sm">
+                            {flight.flightNumber}
+                          </p>
                         </div>
-                        
+
                         <div className="mt-4 text-sm text-muted-foreground flex items-center">
                           <Plane size={14} className="mr-1 text-primary" />
                           {flight.aircraft}
                         </div>
-                        
+
                         {flight.amenities && flight.amenities.length > 0 && (
                           <div className="mt-3 flex gap-2">
                             <TooltipProvider>
@@ -1093,7 +1131,9 @@ const FlightResults: React.FC<HookProps> = ({ flights, loading, error, searched 
                       <div className="p-6 md:col-span-2 border-b md:border-b-0 md:border-r border-border">
                         <div className="flex items-center">
                           <div className="flex-1">
-                            <p className="text-2xl font-bold">{departure.time}</p>
+                            <p className="text-2xl font-bold">
+                              {departure.time}
+                            </p>
                             <p className="text-sm text-muted-foreground">
                               {departure.date}
                             </p>
@@ -1145,7 +1185,9 @@ const FlightResults: React.FC<HookProps> = ({ flights, loading, error, searched 
                           <p className="text-3xl font-bold text-primary">
                             ${flight.price.toFixed(2)}
                           </p>
-                          <p className="text-sm text-muted-foreground">per passenger</p>
+                          <p className="text-sm text-muted-foreground">
+                            per passenger
+                          </p>
                         </div>
 
                         <div className="mt-4">
@@ -1158,10 +1200,15 @@ const FlightResults: React.FC<HookProps> = ({ flights, loading, error, searched 
                           </div>
                           <Button
                             className="w-full group"
-                            onClick={() => handleSelectFlight(flight.flightNumber)}
+                            onClick={() =>
+                              handleSelectFlight(flight.flightNumber)
+                            }
                           >
                             Select Flight
-                            <ArrowRight size={16} className="ml-1 transition-transform group-hover:translate-x-1" />
+                            <ArrowRight
+                              size={16}
+                              className="ml-1 transition-transform group-hover:translate-x-1"
+                            />
                           </Button>
                         </div>
                       </div>
@@ -1176,7 +1223,6 @@ const FlightResults: React.FC<HookProps> = ({ flights, loading, error, searched 
     </div>
   );
 };
-
 
 export default function FlightBookingPage() {
   const [flights, setFlights] = useState<Flight[]>([]);
