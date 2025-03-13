@@ -283,10 +283,8 @@ const FlightBookingDetail: React.FC<FlightBookingDetailProps> = ({ flight }) => 
 
       console.log("Response:", response)
 
-      // Success
       toast.success("Booking successful! Redirecting to profile...")
 
-      // Redirect to confirmation page (in a real app)
       setTimeout(() => {
         router.push("/profile")
       }, 1500)

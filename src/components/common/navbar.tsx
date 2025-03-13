@@ -1,17 +1,21 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Menu, X, UserCircle, LogOut } from "lucide-react"
-import { signOut, useSession } from "next-auth/react"
-import Link from "next/link"
-import { cn } from "@/lib/utils"
+import { useState, useEffect } from "react";
+import { Menu, X, UserCircle, LogOut } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { useLocation } from "react-router-dom";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
-  const { data: session, status } = useSession()
-  const isLoggedIn = status === "authenticated"
-  const [isOpen, setIsOpen] = useState(false)
-  const [activePage, setActivePage] = useState<string | null>(null)
-  const [scrolled, setScrolled] = useState(false)
+  const { data: session, status } = useSession();
+  const isLoggedIn = status === "authenticated";
+  const [isOpen, setIsOpen] = useState(false);
+  const [activePage, setActivePage] = useState<string | null>(null);
+  const [scrolled, setScrolled] = useState(false);
+
+  const pathname = usePathname();
 
   const navItems = [
     { label: "Home", href: "/" },
@@ -19,47 +23,44 @@ const Navbar = () => {
     { label: "Check In", href: "/checkin" },
     { label: "Loyalty", href: "/loyalty" },
     { label: "Support", href: "/support" },
-  ]
+  ];
 
   // Detect active page based on pathname
   useEffect(() => {
-    // Get current pathname
-    const path = window.location.pathname
-
-    if (path === "/") {
-      setActivePage("Home")
+    if (pathname === "/") {
+      setActivePage("Home");
     } else {
-      // Find nav item that matches the current pathname
-      const activeItem = navItems.find((item) => path.startsWith(item.href) && item.href !== "/")
+      const activeItem = navItems.find(
+        (item) => pathname.startsWith(item.href) && item.href !== "/"
+      );
       if (activeItem) {
-        setActivePage(activeItem.label)
+        setActivePage(activeItem.label);
       }
     }
 
-    // Add scroll listener
     const handleScroll = () => {
-      if (window.scrollY > 20) {
-        setScrolled(true)
-      } else {
-        setScrolled(false)
-      }
-    }
+      setScrolled(window.scrollY > 20);
+    };
 
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [pathname]);
   // Handle logout
   const handleLogout = async () => {
-    await signOut({ callbackUrl: "/" })
-  }
+    await signOut({ callbackUrl: "/" });
+  };
 
   return (
-    <nav className={cn("absolute top-0 left-0 right-0 z-50 transition-all duration-300", scrolled ? "py-2" : "py-4")}>
+    <nav
+      className={cn(
+        "absolute top-0 left-0 right-0 z-50 transition-all duration-300",
+        scrolled ? "py-2" : "py-4"
+      )}
+    >
       <div
         className={cn(
           "backdrop-blur-xl border-b transition-all duration-300",
-          scrolled ? "shadow-lg border-white/10" : "border-transparent",
+          scrolled ? "shadow-lg border-white/10" : "border-transparent"
         )}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -88,14 +89,18 @@ const Navbar = () => {
                     href={item.href}
                     className={cn(
                       "relative px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 overflow-hidden group",
-                      activePage === item.label ? "text-white" : "text-gray-300 hover:text-white",
+                      activePage === item.label
+                        ? "text-white"
+                        : "text-gray-300 hover:text-white"
                     )}
                   >
                     <span className="relative z-10">{item.label}</span>
                     <span
                       className={cn(
                         "absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full -z-0 transition-all duration-300",
-                        activePage === item.label ? "opacity-100" : "opacity-0 group-hover:opacity-50",
+                        activePage === item.label
+                          ? "opacity-100"
+                          : "opacity-0 group-hover:opacity-50"
                       )}
                     ></span>
                   </Link>
@@ -138,7 +143,9 @@ const Navbar = () => {
                 className="inline-flex items-center justify-center p-2 rounded-full text-gray-300 hover:text-white hover:bg-white/10 focus:outline-none transition-all duration-300"
                 aria-expanded={isOpen}
               >
-                <span className="sr-only">{isOpen ? "Close menu" : "Open menu"}</span>
+                <span className="sr-only">
+                  {isOpen ? "Close menu" : "Open menu"}
+                </span>
                 {isOpen ? (
                   <X className="h-6 w-6 transition-transform duration-300 rotate-90" />
                 ) : (
@@ -155,7 +162,7 @@ const Navbar = () => {
             "md:hidden backdrop-blur-xl bg-white/5 transform transition-all duration-500 ease-in-out overflow-hidden",
             isOpen
               ? "max-h-[400px] opacity-100 border-t border-white/10"
-              : "max-h-0 opacity-0 border-t border-transparent",
+              : "max-h-0 opacity-0 border-t border-transparent"
           )}
         >
           <div className="px-4 py-2 space-y-">
@@ -167,7 +174,7 @@ const Navbar = () => {
                   "block text-gray-300 px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 relative overflow-hidden",
                   activePage === item.label
                     ? "text-white bg-gradient-to-r from-purple-600/20 to-blue-600/20"
-                    : "hover:bg-white/5 hover:text-white",
+                    : "hover:bg-white/5 hover:text-white"
                 )}
                 style={{
                   transitionDelay: `${index * 50}ms`,
@@ -204,8 +211,8 @@ const Navbar = () => {
                   </Link>
                   <button
                     onClick={() => {
-                      handleLogout()
-                      setIsOpen(false)
+                      handleLogout();
+                      setIsOpen(false);
                     }}
                     className="w-full flex items-center justify-center space-x-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 hover:shadow-glow"
                   >
@@ -227,8 +234,7 @@ const Navbar = () => {
         </div>
       </div>
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
-
+export default Navbar;
