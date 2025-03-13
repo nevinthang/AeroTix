@@ -512,22 +512,21 @@ const Homepage = () => {
                            <div className="w-4 h-4 bg-pink-400 rounded-full animate-ping-slow"></div>
                          </div>
                          <div className="absolute bottom-1/4 right-0 transform translate-x-1/2 translate-y-1/2">
-                           <div className="w-4 h-4 bg-blue-400 rounded-full animate-ping-slow" style={{ animationDelay: "1s" }}></div>
+                           <div className="w-4 h-4 bg-blue-400 rounded-full animate-ping-slow" style={{ animationDelay: "5s" }}></div>
                          </div>
                          <div className="absolute bottom-0 left-1/3 transform -translate-x-1/2 translate-y-1/2">
-                           <div className="w-4 h-4 bg-purple-400 rounded-full animate-ping-slow" style={{ animationDelay: "2s" }}></div>
+                           <div className="w-4 h-4 bg-purple-400 rounded-full animate-ping-slow" style={{ animationDelay: "5s" }}></div>
                          </div>
                        </div>
                        
                        {/* Floating destination cards */}
-                    
+                       
                        <DestinationHighlight 
                          city="New York" 
                          country="United States"
                          image="https://i.pinimg.com/736x/15/e0/15/15e015d2aec7f5c12529a6256597446d.jpg"
                          stats="Most popular"
-                         delay={1600}
-                         
+                         delay={1000}
                        />
                      </div>
                    </div>
