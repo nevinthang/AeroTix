@@ -1,12 +1,9 @@
-import NextAuth, { AuthOptions, NextAuthOptions } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { JWT } from "next-auth/jwt";
-import { Session } from "next-auth";
-
-const prisma = new PrismaClient();
+import NextAuth from "next-auth";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -15,56 +12,49 @@ export const authOptions: NextAuthOptions = {
       name: "Credentials",
       credentials: {
         username: { label: "Username", type: "text" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
           return null;
         }
 
-        try {
-          const user = await prisma.user.findUnique({
-            where: { username: credentials.username },
-          });
+        const user = await prisma.user.findUnique({
+          where: { username: credentials.username },
+        });
 
-          if (!user || !user.password) {
-            return null;
-          }
-
-          const isPasswordValid = await bcrypt.compare(
-            credentials.password,
-            user.password
-          );
-
-          if (!isPasswordValid) {
-            return null;
-          }
-
-          return {
-            id: user.id,
-            username: user.username,
-            email: user.email || null,
-            name: user.name || null
-          };
-        } catch (error) {
-          console.error("Auth error:", error);
+        if (!user || !user.password) {
           return null;
         }
+
+        const isPasswordValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
+
+        if (!isPasswordValid) {
+          return null;
+        }
+
+        return {
+          id: user.id,
+          username: user.username,
+          email: user.email || null,
+          name: user.name || null,
+        };
       },
     }),
   ],
-  session: {
-    strategy: "jwt" as const,
-  },
+  session: { strategy: "jwt" },
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: any }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.username = user.username;
       }
       return token;
     },
-    async session({ session, token }: { session: Session; token: JWT }) {
+    async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id;
         session.user.username = token.username;
@@ -72,12 +62,13 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
   },
-  pages: {
-    signIn: "/auth",
-  },
+  pages: { signIn: "/auth" },
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
 };
 
+// Create handler from authOptions
 const handler = NextAuth(authOptions);
+
+// Export the required API route handlers
 export { handler as GET, handler as POST };
