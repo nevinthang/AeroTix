@@ -9,11 +9,12 @@ import { useLocation } from "react-router-dom";
 import { usePathname } from "next/navigation";
 
 const Navbar = () => {
-  const { data: session, status } = useSession();
-  const isLoggedIn = status === "authenticated";
-  const [isOpen, setIsOpen] = useState(false);
-  const [activePage, setActivePage] = useState<string | null>(null);
-  const [scrolled, setScrolled] = useState(false);
+  const { data: session, status } = useSession()
+  const isLoggedIn = status === "authenticated"
+  const isAdmin = session?.user?.username === "Admin"
+  const [isOpen, setIsOpen] = useState(false)
+  const [activePage, setActivePage] = useState<string | null>(null)
+  const [scrolled, setScrolled] = useState(false)
 
   const pathname = usePathname();
 
@@ -23,7 +24,10 @@ const Navbar = () => {
     { label: "Check In", href: "/checkin" },
     { label: "Loyalty", href: "/loyalty" },
     { label: "Support", href: "/support" },
-  ];
+  ]
+
+  console.log(session?.user.username)
+  
 
   // Detect active page based on pathname
   useEffect(() => {
@@ -45,6 +49,7 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname]);
+
   // Handle logout
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/" });
@@ -110,13 +115,13 @@ const Navbar = () => {
               {/* Login Button or User Menu */}
               {isLoggedIn ? (
                 <div className="flex items-center space-x-4 text-white">
-                  <Link
-                    href="/profile"
-                    className="group relative flex items-center space-x-2 p-1 rounded-full overflow-hidden"
-                  >
-                    <UserCircle className="w-8 h-8 text-white transition-transform duration-300 group-hover:scale-110" />
-                    <span className="absolute inset-0 bg-white/10 scale-0 group-hover:scale-100 rounded-full transition-transform duration-300"></span>
-                  </Link>
+                    <Link
+                      href={isAdmin ? "/dashboard" : "/profile"}
+                      className="group relative flex items-center space-x-2 p-1 rounded-full overflow-hidden"
+                    >
+                      <UserCircle className="w-8 h-8 text-white transition-transform duration-300 group-hover:scale-110" />
+                      <span className="absolute inset-0 bg-white/10 scale-0 group-hover:scale-100 rounded-full transition-transform duration-300"></span>
+                    </Link>
                   <button
                     onClick={handleLogout}
                     className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:shadow-glow"
@@ -202,12 +207,12 @@ const Navbar = () => {
               {isLoggedIn ? (
                 <div className="space-y-3">
                   <Link
-                    href="/profile"
+                    href={isAdmin ? "/dashboard" : "/profile"}
                     className="flex items-center space-x-3 text-white px-4 py-3 rounded-lg hover:bg-white/5 transition-colors duration-300"
                     onClick={() => setIsOpen(false)}
                   >
                     <UserCircle className="w-5 h-5" />
-                    <span>Profile</span>
+                    <span>{isAdmin ? "Dashboard" : "Profile"}</span>
                   </Link>
                   <button
                     onClick={() => {
