@@ -7,7 +7,7 @@ import { FiMessageCircle, FiShare2 } from 'react-icons/fi';
 import { GrGoogle } from 'react-icons/gr';
 import { useEffect, useState } from 'react';
 
-export default function KoiArticlePage() {
+export default function ArticlePage() {
   // State for carousel
   const [currentSlide, setCurrentSlide] = useState(0);
   const carouselImages = [
@@ -50,9 +50,9 @@ export default function KoiArticlePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50 pt-10">
+    <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Hero Section with Dynamic Background */}
-      <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white pt-16 pb-24 relative overflow-hidden">
+      <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white pt-20 pb-24 relative overflow-hidden">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-20 right-10 w-64 h-64 rounded-full bg-purple-500/20 blur-3xl"></div>
@@ -67,14 +67,14 @@ export default function KoiArticlePage() {
 
         <div className="container mx-auto px-6 relative z-10">
           <div className="flex justify-between items-center mb-12">
-            <Link href="/">
+            {/* <Link href="/">
               <button className="bg-white/10 backdrop-blur-sm text-white px-5 py-2.5 rounded-full hover:bg-white/20 transition duration-300 shadow-md flex items-center gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-4 h-4">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
                 </svg>
                 Back
               </button>
-            </Link>
+            </Link> */}
           </div>
           
           <div className="text-center max-w-3xl mx-auto">

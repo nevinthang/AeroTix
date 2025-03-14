@@ -15,8 +15,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Next.js with Poppins",
-  description: "Using Poppins font in a Next.js project",
+  title: "Aerotix",
+  description: "Aerotix Website By Marla Marlena & Nevin Thang",
 };
 
 export default function RootLayout({

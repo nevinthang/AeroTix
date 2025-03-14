@@ -4,9 +4,10 @@ import Link from 'next/link';
 
 const CabinPage = () => {
   return (
-    <div className="min-h-screen bg-gray-50 pt-20">
+    <div className="min-h-screen bg-gray-50">
      {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-600 to-purple-700 text-white pt-20 pb-32 relative overflow-hidden">
+        <br/><br/>
         {/* Enhanced Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           {/* Original blur elements */}

@@ -109,13 +109,14 @@ const Navbar = () => {
               {/* Login Button or User Menu */}
               {isLoggedIn ? (
                 <div className="flex items-center space-x-4 text-white">
-                    <Link
-                      href={isAdmin ? "/dashboard" : "/profile"}
-                      className="group relative flex items-center space-x-2 p-1 rounded-full overflow-hidden"
-                    >
-                      <UserCircle className="w-8 h-8 text-white transition-transform duration-300 group-hover:scale-110" />
-                      <span className="absolute inset-0 bg-white/10 scale-0 group-hover:scale-100 rounded-full transition-transform duration-300"></span>
-                    </Link>
+                    <div
+                    onClick={() => (window.location.href = isAdmin ? "/dashboard" : "/profile")}
+                    className="group relative flex items-center space-x-2 p-1 rounded-full overflow-hidden cursor-pointer"
+                  >
+                    <UserCircle className="w-8 h-8 text-white transition-transform duration-300 group-hover:scale-110" />
+                    <span className="absolute inset-0 bg-white/10 scale-0 group-hover:scale-100 rounded-full transition-transform duration-300"></span>
+                  </div>
+
                   <button
                     onClick={handleLogout}
                     className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 hover:shadow-glow"
@@ -135,45 +136,45 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-full text-gray-300 hover:text-white hover:bg-white/10 focus:outline-none transition-all duration-300"
-                aria-expanded={isOpen}
-              >
-                <span className="sr-only">
-                  {isOpen ? "Close menu" : "Open menu"}
-                </span>
-                {isOpen ? (
-                  <X className="h-6 w-6 transition-transform duration-300 rotate-90" />
-                ) : (
-                  <Menu className="h-6 w-6 transition-transform duration-300" />
-                )}
-              </button>
-            </div>
-          </div>
+       {/* Mobile menu button */}
+        <div className="md:hidden">
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="inline-flex items-center justify-center p-2 rounded-full text-gray-300 hover:text-white hover:bg-gray-800 focus:outline-none transition-all duration-300"
+            aria-expanded={isOpen}
+          >
+            <span className="sr-only">
+              {isOpen ? "Close menu" : "Open menu"}
+            </span>
+            {isOpen ? (
+              <X className="h-6 w-6 transition-transform duration-300 rotate-90" />
+            ) : (
+              <Menu className="h-6 w-6 transition-transform duration-300" />
+            )}
+          </button>
+        </div>
+        </div>
         </div>
 
         {/* Mobile Navigation */}
         <div
           className={cn(
-            "md:hidden backdrop-blur-xl bg-white/5 transform transition-all duration-500 ease-in-out overflow-hidden",
+            "md:hidden bg-gray-900 border-t transform transition-all duration-500 ease-in-out overflow-hidden",
             isOpen
-              ? "max-h-[400px] opacity-100 border-t border-white/10"
-              : "max-h-0 opacity-0 border-t border-transparent"
+              ? "max-h-[400px] opacity-100 border-gray-800"
+              : "max-h-0 opacity-0 border-transparent"
           )}
         >
-          <div className="px-4 py-2 space-y-">
+          <div className="px-4 py-2 space-y-" style = {{ backgroundColor: "white" }}>
             {navItems.map((item, index) => (
               <Link
                 key={item.label}
                 href={item.href}
                 className={cn(
-                  "block text-gray-300 px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 relative overflow-hidden",
+                  "block text-gray-400 px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 relative overflow-hidden",
                   activePage === item.label
-                    ? "text-white bg-gradient-to-r from-purple-600/20 to-blue-600/20"
-                    : "hover:bg-white/5 hover:text-white"
+                    ? "text-white bg-gradient-to-r from-purple-700 to-blue-700"
+                    : "hover:bg-gray-800 hover:text-white"
                 )}
                 style={{
                   transitionDelay: `${index * 50}ms`,
@@ -191,7 +192,7 @@ const Navbar = () => {
 
             {/* Mobile Authentication */}
             <div
-              className="mt-4 pt-4 border-t border-white/10"
+              className="mt-4 pt-4 border-t border-gray-800"
               style={{
                 transitionDelay: `${navItems.length * 50}ms`,
                 transform: isOpen ? "translateY(0)" : "translateY(20px)",
@@ -200,14 +201,17 @@ const Navbar = () => {
             >
               {isLoggedIn ? (
                 <div className="space-y-3">
-                  <Link
-                    href={isAdmin ? "/dashboard" : "/profile"}
-                    className="flex items-center space-x-3 text-white px-4 py-3 rounded-lg hover:bg-white/5 transition-colors duration-300"
-                    onClick={() => setIsOpen(false)}
+                  <div
+                    onClick={() => {
+                      setIsOpen(false);
+                      window.location.href = isAdmin ? "/dashboard" : "/profile";
+                    }}
+                    className="flex items-center space-x-3 text-gray-400 px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors duration-300 cursor-pointer"
                   >
                     <UserCircle className="w-5 h-5" />
                     <span>{isAdmin ? "Dashboard" : "Profile"}</span>
-                  </Link>
+                  </div>
+
                   <button
                     onClick={() => {
                       handleLogout();
