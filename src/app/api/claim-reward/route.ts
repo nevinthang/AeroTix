@@ -4,12 +4,12 @@ import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function POST(req) {
+export async function POST(req: Request) {
   try {
     // Check authentication
     const session = await getServerSession(authOptions);
     
-    if (!session || !session.user) {
+    if (!session || !session.user || !session.user.email) {
       return NextResponse.json(
         { error: "You must be logged in to claim rewards" },
         { status: 401 }
