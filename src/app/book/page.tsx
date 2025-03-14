@@ -491,12 +491,11 @@ const FlightSearchForm: React.FC<HookProps> = ({
   ];
 
   const airlines = [
-    { code: "AA", name: "American Airlines" },
-    { code: "DL", name: "Delta Air Lines" },
-    { code: "UA", name: "United Airlines" },
-    { code: "BA", name: "British Airways" },
-    { code: "LH", name: "Lufthansa" },
-    { code: "EK", name: "Emirates" },
+    { code: "AirAsia", name: "AirAsia" },
+    { code: "Garuda Indonesia", name: "Garuda Indonesia" },
+    { code: "Singapore Airlines", name: "Singapore Airlines" },
+    { code: "Qatar Airways", name: "Qatar Airways" },
+    { code: "Emirates", name: "Emirates" },
   ];
 
   const handleInputChange = (
