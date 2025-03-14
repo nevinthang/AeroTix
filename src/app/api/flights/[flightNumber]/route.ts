@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
+import { NextRequest } from "next/server";
 
 const prisma = new PrismaClient();
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { flightNumber: string } }
 ) {
   try {
@@ -41,7 +42,7 @@ export async function POST(
 ) {
   try {
     const body = await request.json();
-    
+
     // Create a new flight
     const flight = await prisma.flight.create({
       data: body,
@@ -62,7 +63,7 @@ export async function PUT(
   context: { params: { flightNumber?: string } }
 ) {
   try {
-    console.log(Request)
+    console.log(Request);
     const { flightNumber } = await context.params;
     const body = await request.json();
 
@@ -82,7 +83,7 @@ export async function PUT(
       return NextResponse.json({ error: "Flight not found" }, { status: 404 });
     }
 
-    console.log(body)
+    console.log(body);
 
     // Update flight
     const updatedFlight = await prisma.flight.update({
@@ -90,7 +91,7 @@ export async function PUT(
       data: body,
     });
 
-    console.log("stage3")
+    console.log("stage3");
 
     return NextResponse.json(updatedFlight);
   } catch (error) {
