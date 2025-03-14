@@ -2,29 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma"; 
 
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { flightNumber: string } }
-) {
-  try {
-    const flightNumber = params.flightNumber;
-
-    const flight = await prisma.flight.findUnique({
-      where: { flightNumber },
-    });
-
-    if (!flight) {
-      return NextResponse.json({ error: "Flight not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(flight);
-  } catch (error) {
-    console.error("Error fetching flight:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch flight details" },
-      { status: 500 }
-    );
-  }
+export function GET() {
+  return NextResponse.json({ message: "Hello from flight route" });
 }
 
 export async function POST(
