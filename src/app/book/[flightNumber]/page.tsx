@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useState, useEffect } from "react";
 import FlightBookingDetail from "./flight_detail";
-import { Loader2 } from "lucide-react";
+import { AlertCircle, Loader2, PlaneTakeoff } from "lucide-react";
 import axios from "axios";
 
 // Pastikan tipe Flight sudah terdefinisi
@@ -34,9 +34,9 @@ export default function FlightBookingPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!params?.flightNumber) return; // Cegah fetch jika belum tersedia
+    if (!params?.flightNumber) return;
 
-    let isMounted = true; // Gunakan flag untuk menghindari state update setelah unmount
+    let isMounted = true;
 
     const fetchFlightData = async () => {
       try {
@@ -61,38 +61,82 @@ export default function FlightBookingPage() {
     fetchFlightData();
 
     return () => {
-      isMounted = false; // Cleanup effect jika komponen unmount
+      isMounted = false;
     };
   }, [params?.flightNumber]);
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <Loader2 className="h-12 w-12 animate-spin text-indigo-600 mb-4" />
-        <p className="text-lg text-indigo-800 animate-pulse">
-          Loading flight details...
-        </p>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 text-white">
+        <div className="p-8 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 shadow-xl flex flex-col items-center">
+          <Loader2 className="h-16 w-16 animate-spin text-indigo-300 mb-6" />
+          <p className="text-xl font-medium tracking-wide text-indigo-100">
+            Preparing Your Flight Details
+          </p>
+          <div className="mt-4 w-48 h-2 bg-white/20 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-indigo-400 rounded-full animate-pulse"
+              style={{ width: "70%" }}
+            ></div>
+          </div>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-red-500">
-        <h2 className="text-2xl font-bold mb-2">Error</h2>
-        <p>{error}</p>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 text-white">
+        <div className="p-8 rounded-lg bg-slate-100 backdrop-blur-md border shadow-xl max-w-lg mx-auto">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="p-3 bg-red-500/20 rounded-full">
+              <AlertCircle className="h-8 w-8 text-red-400" />
+            </div>
+            <h2 className="text-2xl font-bold text-red-500">
+              Unable to Load Flight
+            </h2>
+          </div>
+          <p className="text-red-500 mb-6">{error}</p>
+          <button className="w-full py-3 bg-red-600 hover:bg-red-700 rounded-lg font-medium transition-colors" onClick={() => window.location.reload()}>
+            Try Again
+          </button>
+        </div>
       </div>
     );
   }
 
-  // Pastikan flightData ada sebelum me-render FlightBookingDetail
   if (!flightData) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <p className="text-lg text-red-500">Flight details not found.</p>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 text-white">
+        <div className="p-8 rounded-lg bg-white/10 backdrop-blur-md border border-white/20 shadow-xl max-w-lg mx-auto text-center">
+          <div className="mb-6 p-4 bg-yellow-500/20 rounded-full inline-block">
+            <PlaneTakeoff className="h-10 w-10 text-yellow-300" />
+          </div>
+          <h2 className="text-2xl font-bold mb-4">Flight Not Found</h2>
+          <p className="text-gray-300 mb-6">
+            We couldn't locate the flight details you're looking for. The flight
+            may have been rescheduled or canceled.
+          </p>
+          <div className="flex gap-4">
+            <button className="flex-1 py-3 bg-transparent border border-white/30 hover:bg-white/10 rounded-lg font-medium transition-colors">
+              Go Back
+            </button>
+            <button className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 rounded-lg font-medium transition-colors">
+              Search Flights
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
 
-  return <FlightBookingDetail flight={flightData} />;
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 py-12 px-4">
+      <div className="max-w-6xl mx-auto pt-20">
+        <div className="p-6 lg:p-8 rounded-xl bg-white backdrop-blur-md border border-white/20 shadow-xl">
+          <FlightBookingDetail flight={flightData} />
+        </div>
+      </div>
+    </div>
+  );
 }

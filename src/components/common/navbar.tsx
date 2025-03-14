@@ -5,7 +5,6 @@ import { Menu, X, UserCircle, LogOut } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { useLocation } from "react-router-dom";
 import { usePathname } from "next/navigation";
 
 const Navbar = () => {
@@ -16,17 +15,15 @@ const Navbar = () => {
   const [activePage, setActivePage] = useState<string | null>(null)
   const [scrolled, setScrolled] = useState(false)
 
+  const pathname = usePathname();
+
   const navItems = [
     { label: "Home", href: "/" },
     { label: "Book", href: "/book" },
-    // { label: "Check In", href: "/checkin" },
     { label: "Loyalty", href: "/loyalty" },
     { label: "Support", href: "/support" },
-  ];
+  ]
 
-  const pathname = usePathname();
-
-  // Detect active page based on pathname
   useEffect(() => {
     if (pathname === "/") {
       setActivePage("Home");
@@ -46,6 +43,7 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname]);
+
   // Handle logout
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/" });

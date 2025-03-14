@@ -78,8 +78,8 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-white py-12">
-      <div className="w-full max-w-4xl p-8 rounded-3xl bg-white/90 backdrop-blur-md border border-purple-200 shadow-xl">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 py-12">
+      <div className="w-full max-w-4xl p-8 rounded-3xl bg-white/90 backdrop-blur-md border border-purple-200 shadow-xl mt-20">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Create Your Account</h1>

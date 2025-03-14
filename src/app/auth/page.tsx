@@ -50,12 +50,12 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-100 via-purple-50 to-white pt-20 pb-20">
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-600 via-indigo-700 to-purple-800 pt-20 pb-20">
       <div className="w-full max-w-md p-8 rounded-3xl bg-white/90 backdrop-blur-md border border-purple-200 shadow-xl transition-all duration-300 ease-in-out hover:shadow-2xl hover:shadow-purple-300/50">
         {/* Logo */}
         <div className="flex justify-center mb-8">
-          <div className="rounded-full bg-white p-5 shadow-lg">
-            <img src="/logo1.png" alt="Logo" className="w-16 h-16" />
+          <div className="rounded-full bg-gradient-to-br from-blue-500 to bg-purple-500 shadow-lg">
+            <img src="/logo1.png" alt="Logo" className="w-32 h-32" />
           </div>
         </div>
 

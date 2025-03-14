@@ -1,5 +1,5 @@
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // Sesuaikan dengan path NextAuth-mu
+import { authOptions } from "@/lib/auth"; 
 import { PrismaClient } from "@prisma/client";
 import { NextResponse } from "next/server";
 

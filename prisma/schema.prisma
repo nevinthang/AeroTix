@@ -17,7 +17,7 @@ model Flight {
   departureHour  DateTime
   duration       Int
   arrivalDate    DateTime
-  arrivalHour   DateTime
+  arrivalHour    DateTime
   airline        String
   aircraft       String
   category       Category
