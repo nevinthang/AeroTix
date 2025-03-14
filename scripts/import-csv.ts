@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parser');
-const { PrismaClient } = require('@prisma/client');
+const {prisma} = require('@/lib/prisma');
 
 interface Flight {
   flightNumber: string;
@@ -56,9 +56,6 @@ function mapCategory(category: string): 'ECONOMY' | 'PREMIUM_ECONOMY' | 'BUSINES
       throw new Error(`Invalid category: ${category}`);
   }
 }
-
-
-const prisma = new PrismaClient();
 
 async function importCSV(): Promise<void> {
   const flights: Flight[] = [];

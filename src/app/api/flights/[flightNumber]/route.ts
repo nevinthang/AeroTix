@@ -1,14 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma"; // Using singleton Prisma client
 
 export async function GET(
-  request: NextRequest,
+  request: Request,
   { params }: { params: { flightNumber: string } }
 ) {
   try {
-    const flightNumber = params.flightNumber;
+    const { flightNumber } = params;
 
     const flight = await prisma.flight.findUnique({
       where: { flightNumber },
