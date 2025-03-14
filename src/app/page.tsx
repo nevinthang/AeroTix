@@ -490,15 +490,6 @@ const Homepage = () => {
                           {/* Glowing effect */}
                           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-full opacity-60 blur-xl"></div>
 
-                          {/* Globe icon */}
-                          <Globe
-                            size={100}
-                            className="relative z-10 text-white"
-                            style={{
-                              filter:
-                                "drop-shadow(0 0 20px rgba(79, 70, 229, 0.5))",
-                            }}
-                          />
                         </div>
                       </div>
 
