@@ -63,7 +63,7 @@ export default function Support() {
           <p className="text-xl max-w-2xl mx-auto mb-8">Get the answers you need with our comprehensive support resources</p>
           
           {/* Search Bar */}
-          <div className="max-w-2xl mx-auto relative">
+          {/* <div className="max-w-2xl mx-auto relative">
             <input
               type="text"
               placeholder="Search for answers..."
@@ -76,7 +76,7 @@ export default function Support() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
               </svg>
             </button>
-          </div>
+          </div> */}
         </div>
         
         {/* Curved Bottom */}

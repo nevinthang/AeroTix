@@ -347,6 +347,7 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                     value={formData.availableSeats}
                     onChange={handleChange}
                     min="0"
+                    max={formData.seatCapacity}
                     className={`w-full bg-black/20 border ${
                       errors.availableSeats
                         ? "border-red-500"
@@ -387,12 +388,11 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                 <h4 className="text-lg font-medium text-blue-400">Departure</h4>
                 <div className="grid grid-cols-1 gap-4 mt-2">
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
+                  <div>
                       <label className="block text-sm font-medium text-gray-300 mb-1">
                         City
                       </label>
-                      <input
-                        type="text"
+                      <select
                         name="departure"
                         value={formData.departure}
                         onChange={handleChange}
@@ -401,7 +401,16 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                             ? "border-red-500"
                             : "border-gray-700"
                         } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                      />
+                      >
+                        <option value="">Select a city</option>
+                        <option value="Jakarta">Jakarta</option>
+                        <option value="New York">New York</option>
+                        <option value="Dubai">Dubai</option>
+                        <option value="Madrid">Madrid</option>
+                        <option value="Tokyo">Tokyo</option>
+                        <option value="London">London</option>
+                        <option value="Sydney">Sydney</option>
+                      </select>
                       {errors.departure && (
                         <p className="mt-1 text-sm text-red-500">
                           {errors.departure}
@@ -412,8 +421,7 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                       <label className="block text-sm font-medium text-gray-300 mb-1">
                         Airport Code
                       </label>
-                      <input
-                        type="text"
+                      <select
                         name="departureCode"
                         value={formData.departureCode}
                         onChange={handleChange}
@@ -422,7 +430,16 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                             ? "border-red-500"
                             : "border-gray-700"
                         } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                      />
+                      >
+                        <option value="">Select airport code</option>
+                        <option value="CGK">CGK</option>
+                        <option value="JFK">JFK</option>
+                        <option value="DXB">DXB</option>
+                        <option value="MAD">MAD</option>
+                        <option value="HND">HND</option>
+                        <option value="LHR">LHR</option>
+                        <option value="SYD">SYD</option>
+                      </select>
                       {errors.departureCode && (
                         <p className="mt-1 text-sm text-red-500">
                           {errors.departureCode}
@@ -479,19 +496,27 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                 <h4 className="text-lg font-medium text-blue-400">Arrival</h4>
                 <div className="grid grid-cols-1 gap-4 mt-2">
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
+                  <div>
                       <label className="block text-sm font-medium text-gray-300 mb-1">
                         City
                       </label>
-                      <input
-                        type="text"
+                      <select
                         name="arrival"
                         value={formData.arrival}
                         onChange={handleChange}
                         className={`w-full bg-black/20 border ${
                           errors.arrival ? "border-red-500" : "border-gray-700"
                         } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                      />
+                      >
+                        <option value="">Select a city</option>
+                        <option value="Jakarta">Jakarta</option>
+                        <option value="New York">New York</option>
+                        <option value="Dubai">Dubai</option>
+                        <option value="Madrid">Madrid</option>
+                        <option value="Tokyo">Tokyo</option>
+                        <option value="London">London</option>
+                        <option value="Sydney">Sydney</option>
+                      </select>
                       {errors.arrival && (
                         <p className="mt-1 text-sm text-red-500">
                           {errors.arrival}
@@ -502,8 +527,7 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                       <label className="block text-sm font-medium text-gray-300 mb-1">
                         Airport Code
                       </label>
-                      <input
-                        type="text"
+                      <select
                         name="arrivalCode"
                         value={formData.arrivalCode}
                         onChange={handleChange}
@@ -512,7 +536,16 @@ function FlightModal({ flight, mode, onClose, onSuccess }: FlightModalProps) {
                             ? "border-red-500"
                             : "border-gray-700"
                         } rounded-lg p-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500`}
-                      />
+                      >
+                        <option value="">Select airport code</option>
+                        <option value="CGK">CGK</option>
+                        <option value="JFK">JFK</option>
+                        <option value="DXB">DXB</option>
+                        <option value="MAD">MAD</option>
+                        <option value="HND">HND</option>
+                        <option value="LHR">LHR</option>
+                        <option value="SYD">SYD</option>
+                      </select>
                       {errors.arrivalCode && (
                         <p className="mt-1 text-sm text-red-500">
                           {errors.arrivalCode}

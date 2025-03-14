@@ -689,7 +689,7 @@ const FlightSearchForm: React.FC<HookProps> = ({
           {/* Additional fields with staggered layout and glass morphism effect */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-10">
             {/* Date with offset position */}
-            <div className="relative lg:translate-y-4 group">
+            <div className="relative group">
               <div className="absolute -top-6 left-0 bg-blue-100 px-3 py-1 rounded-t-md shadow-sm">
                 <label className="flex items-center gap-1 text-sm font-medium text-blue-500">
                   <Calendar size={14} className="text-blue-500" />
@@ -741,7 +741,7 @@ const FlightSearchForm: React.FC<HookProps> = ({
             </div>
 
             {/* Airline with offset position in opposite direction */}
-            <div className="relative lg:-translate-y-4 group">
+            <div className="relative group">
               <div className="absolute -top-6 left-0 bg-purple-100 px-3 py-1 rounded-t-md shadow-sm">
                 <label className="flex items-center gap-1 text-sm font-medium text-purple-500">
                   <Plane size={14} className="text-purple-500" />
