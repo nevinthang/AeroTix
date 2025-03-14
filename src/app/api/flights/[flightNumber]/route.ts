@@ -5,10 +5,10 @@ const prisma = new PrismaClient();
 
 export async function GET(
   request: Request,
-  context: { params: { flightNumber?: string } }
+  { params }: { params: { flightNumber: string } }
 ) {
   try {
-    const { flightNumber } = context.params; // No need for await here
+    const { flightNumber } = params;
 
     if (!flightNumber) {
       return NextResponse.json(
