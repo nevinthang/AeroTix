@@ -92,11 +92,14 @@ const FlightHero = () => {
   // Parallax effect calculation
   const parallaxOffset = scrollPosition * 0.3;
 
-  const handleClick = () => {
+   const handleClick = () => {
+    // Smooth scroll down by a specific amount
     window.scrollTo({
-      top: window.scrollY + 500, 
+      top: window.scrollY + 500, // Scroll down 500px
       behavior: 'smooth'
     });
+  }
+
 
   return (
     <div
@@ -224,8 +227,6 @@ const FlightHero = () => {
                 </span>
                 <span className="absolute top-0 left-0 w-full h-full bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
               </button>
-
-          
             </div>
 
             {/* Destination stats */}
