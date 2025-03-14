@@ -92,6 +92,12 @@ const FlightHero = () => {
   // Parallax effect calculation
   const parallaxOffset = scrollPosition * 0.3;
 
+  const handleClick = () => {
+    window.scrollTo({
+      top: window.scrollY + 500, 
+      behavior: 'smooth'
+    });
+
   return (
     <div
       ref={heroRef}
@@ -199,7 +205,7 @@ const FlightHero = () => {
                   "transform 0.8s ease-out 0.8s, opacity 0.8s ease-out 0.8s",
               }}
             >
-              <Button className="relative overflow-hidden group bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-full font-medium">
+              <button className="relative overflow-hidden group bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-6 py-3 rounded-full font-medium" onClick={handleClick}>
                 <span className="relative z-10 flex items-center">
                   Start Exploring
                   <svg
@@ -217,11 +223,9 @@ const FlightHero = () => {
                   </svg>
                 </span>
                 <span className="absolute top-0 left-0 w-full h-full bg-white/20 transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300"></span>
-              </Button>
-
-              <button className="text-white border border-white/30 hover:bg-white/10 backdrop-blur-sm px-6 py-3 rounded-full font-medium transition-colors">
-                View Destinations
               </button>
+
+          
             </div>
 
             {/* Destination stats */}
