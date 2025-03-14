@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma"; 
+import prisma from "@/lib/prisma";
 
+// Type for params (shared across all handlers)
+type RouteParams = { params: { flightNumber: string } };
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { flightNumber: string } }
-) {
+// GET: Fetch a flight by flightNumber
+export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const flightNumber = params.flightNumber;
+    const { flightNumber } = params;
 
     const flight = await prisma.flight.findUnique({
       where: { flightNumber },
@@ -27,45 +27,12 @@ export async function GET(
   }
 }
 
-export async function POST(
-  request: Request,
-  context: { params: { flightNumber?: string } }
-) {
+// PUT: Update an existing flight
+export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
+    const { flightNumber } = params;
     const body = await request.json();
 
-    // Create a new flight
-    const flight = await prisma.flight.create({
-      data: body,
-    });
-
-    return NextResponse.json(flight, { status: 201 });
-  } catch (error) {
-    console.error("Error creating flight:", error);
-    return NextResponse.json(
-      { error: "Failed to create flight" },
-      { status: 500 }
-    );
-  }
-}
-
-export async function PUT(
-  request: Request,
-  context: { params: { flightNumber?: string } }
-) {
-  try {
-    console.log(Request);
-    const { flightNumber } = await context.params;
-    const body = await request.json();
-
-    if (!flightNumber) {
-      return NextResponse.json(
-        { error: "Missing flight number" },
-        { status: 400 }
-      );
-    }
-
-    // Check if flight exists
     const existingFlight = await prisma.flight.findUnique({
       where: { flightNumber },
     });
@@ -74,15 +41,10 @@ export async function PUT(
       return NextResponse.json({ error: "Flight not found" }, { status: 404 });
     }
 
-    console.log(body);
-
-    // Update flight
     const updatedFlight = await prisma.flight.update({
       where: { flightNumber },
       data: body,
     });
-
-    console.log("stage3");
 
     return NextResponse.json(updatedFlight);
   } catch (error) {
@@ -94,21 +56,11 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  request: Request,
-  context: { params: { flightNumber?: string } }
-) {
+// DELETE: Delete a flight
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    const { flightNumber } = context.params;
+    const { flightNumber } = params;
 
-    if (!flightNumber) {
-      return NextResponse.json(
-        { error: "Missing flight number" },
-        { status: 400 }
-      );
-    }
-
-    // Check if flight exists
     const existingFlight = await prisma.flight.findUnique({
       where: { flightNumber },
     });
@@ -117,7 +69,6 @@ export async function DELETE(
       return NextResponse.json({ error: "Flight not found" }, { status: 404 });
     }
 
-    // Delete the flight
     await prisma.flight.delete({
       where: { flightNumber },
     });
