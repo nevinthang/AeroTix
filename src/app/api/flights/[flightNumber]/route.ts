@@ -1,14 +1,19 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma"; 
+import { PrismaClient } from "@prisma/client";
+import type { NextRequest } from "next/server";
 
-export async function GET(
-  request: Request,
-  context: { params: { flightNumber?: string } }
-) {
+const prisma = new PrismaClient();
+
+// Define the params type according to Next.js expectations
+type Props = {
+  params: {
+    flightNumber: string
+  }
+}
+
+export async function GET(request: NextRequest, { params }: Props) {
   try {
-
-    const { flightNumber } = await context.params;
-    console.log(flightNumber)
+    const flightNumber = params.flightNumber;
 
     const flight = await prisma.flight.findUnique({
       where: { flightNumber },
@@ -27,6 +32,7 @@ export async function GET(
     );
   }
 }
+
 export async function POST(
   request: Request,
   context: { params: { flightNumber?: string } }
