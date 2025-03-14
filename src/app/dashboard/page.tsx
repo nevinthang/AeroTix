@@ -13,6 +13,9 @@ import {
   DollarSign,
   Map,
   ArrowLeftRight,
+  Search,
+  Filter,
+  ChevronDown,
 } from "lucide-react";
 import { log } from "console";
 
@@ -21,6 +24,7 @@ enum Category {
   ECONOMY = "ECONOMY",
   BUSINESS = "BUSINESS",
   FIRST_CLASS = "FIRST_CLASS",
+  PREMIUM_ECONOMY = "PREMIUM_ECONOMY",
 }
 
 interface Flight {
@@ -600,6 +604,34 @@ export default function Dashboard() {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [currentFlight, setCurrentFlight] = useState<Flight | null>(null);
   const [mode, setMode] = useState<"create" | "edit">("create");
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [dateRange, setDateRange] = useState({ from: '', to: '' });
+  const [priceRange, setPriceRange] = useState({ min: '', max: '' });
+
+  const filteredFlights = flights.filter(flight => {
+    // Search term filter
+    const searchMatches = 
+      flight.flightNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      flight.departure.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      flight.arrival.toLowerCase().includes(searchTerm.toLowerCase());
+    
+    // Category filter
+    const categoryMatches = filterCategory === '' || flight.category === filterCategory;
+    
+    // Date range filter
+    const dateMatches = 
+      (dateRange.from === '' || new Date(flight.departureDate) >= new Date(dateRange.from)) &&
+      (dateRange.to === '' || new Date(flight.departureDate) <= new Date(dateRange.to));
+    
+    // Price range filter
+    const priceMatches = 
+      (priceRange.min === '' || flight.price >= Number(priceRange.min)) &&
+      (priceRange.max === '' || flight.price <= Number(priceRange.max));
+    
+    return searchMatches && categoryMatches && dateMatches && priceMatches;
+  });
 
   // Fetch all flights on component mount
   useEffect(() => {
@@ -696,6 +728,8 @@ export default function Dashboard() {
     }
   };
 
+
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 to-indigo-900">
       {/* Main Content */}
@@ -718,157 +752,263 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Flights Table */}
-        {loading ? (
-          <div className="text-center py-20">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
-            <p className="text-white mt-2">Loading flights...</p>
-          </div>
-        ) : (
-          <div className="bg-white/10 backdrop-blur-md rounded-xl shadow-xl overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="bg-black/20 text-white text-left">
-                    <th className="px-6 py-3">Flight Number</th>
-                    <th className="px-6 py-3">Route</th>
-                    <th className="px-6 py-3">Departure</th>
-                    <th className="px-6 py-3">Arrival</th>
-                    <th className="px-6 py-3">Price</th>
-                    <th className="px-6 py-3">Category</th>
-                    <th className="px-6 py-3">Available Seats</th>
-                    <th className="px-6 py-3">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-700/30">
-                  {flights.length > 0 ? (
-                    flights.map((flight) => (
-                      <tr
-                        key={flight.flightNumber}
-                        className="text-white hover:bg-white/5 transition-colors"
-                      >
-                        <td className="px-6 py-4 font-medium">
-                          {flight.flightNumber}
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center space-x-2">
-                            <Map className="h-4 w-4 text-blue-400" />
-                            <span>
-                              {flight.departure} - {flight.arrival}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex flex-col">
-                            <div className="flex items-center space-x-1 text-sm">
-                              <Calendar className="h-3 w-3 text-blue-400" />
-                              <span>
-                                {new Date(
-                                  flight.departureDate
-                                ).toLocaleDateString()}
-                              </span>
-                            </div>
-                            <div className="flex items-center space-x-1 text-sm text-gray-300 mt-1">
-                              <Clock className="h-3 w-3 text-blue-400" />
-                              <span>
-                                {flight.departureHour
-                                  ? new Date(
-                                      flight.departureHour
-                                    ).toLocaleTimeString([], {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    })
-                                  : "Invalid Time"}
-                              </span>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex flex-col">
-                            <div className="flex items-center space-x-1 text-sm">
-                              <Calendar className="h-3 w-3 text-blue-400" />
-                              <span>
-                                {new Date(
-                                  flight.arrivalDate
-                                ).toLocaleDateString()}
-                              </span>
-                            </div>
-                            <div className="flex items-center space-x-1 text-sm text-gray-300 mt-1">
-                              <Clock className="h-3 w-3 text-blue-400" />
-                              <span>
-                                {new Date(
-                                  flight.arrivalHour
-                                ).toLocaleTimeString([], {
-                                  hour: "2-digit",
-                                  minute: "2-digit",
-                                })}
-                              </span>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center space-x-1">
-                            <DollarSign className="h-4 w-4 text-green-400" />
-                            <span>${flight.price.toFixed(2)}</span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <span
-                            className={`px-2 py-1 text-xs font-medium rounded-full ${
-                              flight.category === Category.ECONOMY
-                                ? "bg-blue-500/20 text-blue-300"
-                                : flight.category === Category.BUSINESS
-                                ? "bg-purple-500/20 text-purple-300"
-                                : "bg-amber-500/20 text-amber-300"
-                            }`}
-                          >
-                            {formatCategory(flight.category)}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex items-center space-x-1">
-                            <Users className="h-4 w-4 text-blue-400" />
-                            <span>
-                              {flight.availableSeats}/{flight.seatCapacity}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => openModal(flight)}
-                              className="text-blue-400 hover:text-blue-300 transition-colors"
-                              title="Edit Flight"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </button>
-                            <button
-                              onClick={() => deleteFlight(flight.flightNumber)}
-                              className="text-red-400 hover:text-red-300 transition-colors"
-                              title="Delete Flight"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td
-                        colSpan={8}
-                        className="px-6 py-10 text-center text-gray-300"
-                      >
-                        No flights found. Click "Add New Flight" to create one.
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+<div className="space-y-4">
+      {/* Search and Filter Bar */}
+      <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 shadow-lg">
+        <div className="flex flex-col md:flex-row gap-4">
+          {/* Search */}
+          <div className="flex-1 relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-gray-300" />
             </div>
+            <input
+              type="text"
+              placeholder="Search flights by number, departure or arrival..."
+              className="block w-full pl-10 pr-3 py-2 border border-gray-600 rounded-lg bg-black/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          
+          {/* Filter Button */}
+          <button
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            onClick={() => setFilterOpen(!filterOpen)}
+          >
+            <Filter className="h-4 w-4" />
+            Filters
+            <ChevronDown className={`h-4 w-4 transition-transform ${filterOpen ? 'rotate-180' : ''}`} />
+          </button>
+        </div>
+        
+        {/* Extended Filter Options */}
+        {filterOpen && (
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-black/20 rounded-lg border border-gray-700">
+            {/* Category Filter */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-300">Category</label>
+              <select
+                className="w-full px-3 py-2 bg-black/30 border border-gray-600 rounded-lg text-white"
+                value={filterCategory}
+                onChange={(e) => setFilterCategory(e.target.value)}
+              >
+                <option value="">All Categories</option>
+                <option value={Category.ECONOMY}>Economy</option>
+                <option value={Category.PREMIUM_ECONOMY}>Premium  Economy</option>
+                <option value={Category.BUSINESS}>Business</option>
+                <option value={Category.FIRST_CLASS}>First Class</option>
+              </select>
+            </div>
+            
+            {/* Date Range Filter */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-300">Departure Date Range</label>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="relative">
+                  <input
+                    type="date"
+                    className="w-full px-3 py-2 bg-black/30 border border-gray-600 rounded-lg text-white"
+                    value={dateRange.from}
+                    onChange={(e) => setDateRange({...dateRange, from: e.target.value})}
+                  />
+                </div>
+                <div className="relative">
+                  <input
+                    type="date"
+                    className="w-full px-3 py-2 bg-black/30 border border-gray-600 rounded-lg text-white"
+                    value={dateRange.to}
+                    onChange={(e) => setDateRange({...dateRange, to: e.target.value})}
+                  />
+                </div>
+              </div>
+            </div>
+            
+            {/* Price Range Filter */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-300">Price Range</label>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">$</span>
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    className="w-full pl-8 pr-3 py-2 bg-black/30 border border-gray-600 rounded-lg text-white placeholder-gray-500"
+                    value={priceRange.min}
+                    onChange={(e) => setPriceRange({...priceRange, min: e.target.value})}
+                  />
+                </div>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">$</span>
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    className="w-full pl-8 pr-3 py-2 bg-black/30 border border-gray-600 rounded-lg text-white placeholder-gray-500"
+                    value={priceRange.max}
+                    onChange={(e) => setPriceRange({...priceRange, max: e.target.value})}
+                  />
+                </div>
+              </div>
+            </div>
+            
+        
           </div>
         )}
-      </main>
+      </div>
+      </div>
+
+         {/* Flights Table */}
+      {loading ? (
+        <div className="text-center py-20">
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+          <p className="text-white mt-2">Loading flights...</p>
+        </div>
+      ) : (
+        <div className="bg-white/10 backdrop-blur-md rounded-xl shadow-xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="bg-black/20 text-white text-left">
+                  <th className="px-6 py-3">Flight Number</th>
+                  <th className="px-6 py-3">Route</th>
+                  <th className="px-6 py-3">Departure</th>
+                  <th className="px-6 py-3">Arrival</th>
+                  <th className="px-6 py-3">Price</th>
+                  <th className="px-6 py-3">Category</th>
+                  <th className="px-6 py-3">Available Seats</th>
+                  <th className="px-6 py-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-700/30">
+                {filteredFlights.length > 0 ? (
+                  filteredFlights.map((flight) => (
+                    <tr
+                      key={flight.flightNumber}
+                      className="text-white hover:bg-white/5 transition-colors"
+                    >
+                      <td className="px-6 py-4 font-medium">
+                        {flight.flightNumber}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center space-x-2">
+                          <Map className="h-4 w-4 text-blue-400" />
+                          <span>
+                            {flight.departure} - {flight.arrival}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <div className="flex items-center space-x-1 text-sm">
+                            <Calendar className="h-3 w-3 text-blue-400" />
+                            <span>
+                              {new Date(
+                                flight.departureDate
+                              ).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-1 text-sm text-gray-300 mt-1">
+                            <Clock className="h-3 w-3 text-blue-400" />
+                            <span>
+                              {flight.departureHour
+                                ? new Date(
+                                    flight.departureHour
+                                  ).toLocaleTimeString([], {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                  })
+                                : "Invalid Time"}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <div className="flex items-center space-x-1 text-sm">
+                            <Calendar className="h-3 w-3 text-blue-400" />
+                            <span>
+                              {new Date(
+                                flight.arrivalDate
+                              ).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <div className="flex items-center space-x-1 text-sm text-gray-300 mt-1">
+                            <Clock className="h-3 w-3 text-blue-400" />
+                            <span>
+                              {new Date(
+                                flight.arrivalHour
+                              ).toLocaleTimeString([], {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              })}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center space-x-1">
+                          <DollarSign className="h-4 w-4 text-green-400" />
+                          <span>${flight.price.toFixed(2)}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span
+                          className={`px-2 py-1 text-xs font-medium rounded-full ${
+                            flight.category === Category.ECONOMY
+                              ? "bg-blue-500/20 text-blue-300"
+                              : flight.category === Category.BUSINESS
+                              ? "bg-purple-500/20 text-purple-300"
+                              : "bg-amber-500/20 text-amber-300"
+                          }`}
+                        >
+                          {formatCategory(flight.category)}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center space-x-1">
+                          <Users className="h-4 w-4 text-blue-400" />
+                          <span>
+                            {flight.availableSeats}/{flight.seatCapacity}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => openModal(flight)}
+                            className="text-blue-400 hover:text-blue-300 transition-colors"
+                            title="Edit Flight"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </button>
+                          <button
+                            onClick={() => deleteFlight(flight.flightNumber)}
+                            className="text-red-400 hover:text-red-300 transition-colors"
+                            title="Delete Flight"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={8}
+                      className="px-6 py-10 text-center text-gray-300"
+                    >
+                      {searchTerm || filterCategory || dateRange.from || dateRange.to || priceRange.min || priceRange.max
+                        ? "No flights match your search criteria. Try adjusting your filters."
+                        : "No flights found. Click \"Add New Flight\" to create one."}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </main>
 
       {/* Flight Modal */}
       {showModal && currentFlight && (
