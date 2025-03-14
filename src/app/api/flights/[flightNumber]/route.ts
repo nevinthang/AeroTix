@@ -5,7 +5,7 @@ import { useParams } from 'next/navigation'
 // GET: Fetch a flight by flightNumber
 export async function GET(
   request: NextRequest,
-  { params }: { params: { flightNumber: string } }
+  { params }: { params: any }
 ) {
   try {
     const { flightNumber } = params;
