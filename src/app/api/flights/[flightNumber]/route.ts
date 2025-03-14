@@ -1,17 +1,11 @@
-import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-import type { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma"; 
 
-const prisma = new PrismaClient();
 
-// Define the params type according to Next.js expectations
-type Props = {
-  params: {
-    flightNumber: string
-  }
-}
-
-export async function GET(request: NextRequest, { params }: Props) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { flightNumber: string } }
+) {
   try {
     const flightNumber = params.flightNumber;
 
