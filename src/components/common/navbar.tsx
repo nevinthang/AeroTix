@@ -27,7 +27,6 @@ const Navbar = () => {
   console.log(session?.user.username)
   
 
-  // Detect active page based on pathname
   useEffect(() => {
     if (pathname === "/") {
       setActivePage("Home");
