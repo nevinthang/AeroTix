@@ -72,6 +72,22 @@ export async function POST(req: Request) {
         },
       });
 
+      const user = await tx.user.findUnique({
+        where: { id: userId },
+        select: { loyaltyPoints: true },
+      });
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      await tx.user.update({
+        where: { id: userId },
+        data: {
+          loyaltyPoints: (user.loyaltyPoints || 0) + Math.floor(totalPrice),
+        },
+      });
+
       const ticket = await tx.ticket.create({
         data: {
           flightNumber,
