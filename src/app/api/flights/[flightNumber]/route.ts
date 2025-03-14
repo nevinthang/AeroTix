@@ -6,7 +6,9 @@ export async function GET(
   context: { params: { flightNumber?: string } }
 ) {
   try {
-    const { flightNumber } = context.params;
+
+    const { flightNumber } = await context.params;
+    console.log(flightNumber)
 
     const flight = await prisma.flight.findUnique({
       where: { flightNumber },
