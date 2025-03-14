@@ -16,37 +16,36 @@ const LoginPage = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
       const result = await signIn("credentials", {
         username,
         password,
         redirect: false,
       });
-  
+
       if (result?.error) {
         if (result.status === 401) {
           setIsLoading(false);
-          toast.error("Data tidak ditemukan silakan coba lagi");
+          toast.error("Data Not Found");
         } else {
           toast.error("Login failed");
         }
-      }else {
+      } else {
         toast.success("Login successful");
         router.push("/book");
       }
     } catch (error: unknown) {
       setIsLoading(false);
-    
-      let errorMessage = "Data tidak ditemukan silakan coba lagi";
+
+      let errorMessage = "Data not Found";
       if (error instanceof Error) {
         errorMessage = error.message;
       }
-    
+
       toast.error(errorMessage);
       console.error(error);
     }
-    
   };
 
   return (
@@ -61,10 +60,10 @@ const LoginPage = () => {
 
         {/* Title */}
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Welcome Back</h1>
-          <p className="text-gray-500 mt-2">
-            Please sign in to continue
-          </p>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Welcome Back
+          </h1>
+          <p className="text-gray-500 mt-2">Please sign in to continue</p>
         </div>
 
         {/* Form */}
@@ -83,7 +82,7 @@ const LoginPage = () => {
               disabled={isLoading}
             />
           </div>
-          
+
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Lock size={18} className="text-gray-400" />
@@ -97,8 +96,8 @@ const LoginPage = () => {
               required
               disabled={isLoading}
             />
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => setShowPassword(!showPassword)}
               className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
               disabled={isLoading}
@@ -121,7 +120,10 @@ const LoginPage = () => {
         <div className="text-center mt-8">
           <p className="text-gray-600">
             Don't have an account?{" "}
-            <Link href="/auth/register" className="text-purple-600 font-semibold hover:text-purple-800 hover:underline transition-colors">
+            <Link
+              href="/auth/register"
+              className="text-purple-600 font-semibold hover:text-purple-800 hover:underline transition-colors"
+            >
               Create Account
             </Link>
           </p>
