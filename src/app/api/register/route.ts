@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -20,6 +20,7 @@ export async function POST(req: Request) {
       title,
     } = body;
 
+    // Validate required fields
     if (
       !username ||
       !password ||
@@ -31,11 +32,16 @@ export async function POST(req: Request) {
       !phoneNumber ||
       !title
     ) {
-      return NextResponse.json({ message: "Invalid data" }, { status: 400 });
+      return NextResponse.json(
+        { message: "All fields are required" },
+        { status: 400 }
+      );
     }
 
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Create the user
     const user = await prisma.user.create({
       data: {
         username,
@@ -50,9 +56,34 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({ message: "User registered successfully", user }, { status: 200 });
-  } catch (err) {
-    console.error("Server error:", err);
-    return NextResponse.json({ message: "Server error" }, { status: 500 });
+    return NextResponse.json(
+      { message: "User registered successfully", user },
+      { status: 201 }
+    );
+  } catch (error) {
+    // Handle Prisma unique constraint violations
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2002") {
+        const field = error.meta?.target as string[];
+
+        if (field) {
+          const fieldName = field[0];
+          return NextResponse.json(
+            {
+              message: `This ${fieldName} is already registered. Please use a different ${fieldName}.`,
+            },
+            { status: 409 }
+          );
+        }
+      }
+    }
+
+    console.error("Registration error:", error);
+    return NextResponse.json(
+      { message: "Failed to register user" },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
   }
 }

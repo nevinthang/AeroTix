@@ -3,6 +3,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { Eye, EyeOff, User, Mail, Phone, Calendar, CreditCard, FileText , ChevronDown} from "lucide-react";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState({
@@ -56,10 +57,11 @@ const RegisterPage = () => {
         router.push("/auth");
       } else {
         const error = await response.json();
-        setMessage(error.message || "Failed to register, please try again");
+        toast.error(error.message || "Failed to register, please try again");
       }
     } catch (error) {
       setMessage("An error occurred");
+      toast.error("Already Registered")
     }
   };
 
