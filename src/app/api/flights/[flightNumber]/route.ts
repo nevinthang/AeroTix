@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-// Type for params (shared across all handlers)
-type RouteParams = { params: { flightNumber: string } };
-
 // GET: Fetch a flight by flightNumber
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { flightNumber: string } }
+) {
   try {
     const { flightNumber } = params;
 
@@ -28,7 +28,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 }
 
 // PUT: Update an existing flight
-export async function PUT(request: NextRequest, { params }: RouteParams) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { flightNumber: string } }
+) {
   try {
     const { flightNumber } = params;
     const body = await request.json();
@@ -57,7 +60,10 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 }
 
 // DELETE: Delete a flight
-export async function DELETE(request: NextRequest, { params }: RouteParams) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { flightNumber: string } }
+) {
   try {
     const { flightNumber } = params;
 
