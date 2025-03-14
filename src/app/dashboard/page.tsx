@@ -698,26 +698,8 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 to-indigo-900">
-      {/* Header */}
-      <header className="bg-black/20 backdrop-blur-sm shadow-lg">
-        <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Plane className="text-blue-400 h-6 w-6" />
-            <h1 className="text-white text-xl font-bold">
-              Flight Admin Dashboard
-            </h1>
-          </div>
-          <Link
-            href="/"
-            className="text-white hover:text-blue-300 transition-colors duration-300"
-          >
-            Back to Home
-          </Link>
-        </div>
-      </header>
-
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-24">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-white">Manage Flights</h2>
           <button
