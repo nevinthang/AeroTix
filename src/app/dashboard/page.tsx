@@ -748,9 +748,6 @@ export default function Dashboard() {
 
         {/* Flight Stats */}
         <section className="container mx-auto px-4 py-8">
-          <h2 className="text-xl font-bold text-white mb-4">
-            Flight Statistics
-          </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Total Flights */}
             <div className="bg-gradient-to-br from-blue-900/50 to-indigo-900/50 backdrop-blur-sm p-4 rounded-xl shadow-lg border border-blue-800/50">
