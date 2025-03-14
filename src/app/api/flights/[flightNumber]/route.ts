@@ -31,7 +31,7 @@ export async function GET(
 // PUT: Update an existing flight
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { flightNumber: string } }
+  { params }: { params: any }
 ) {
   try {
     const { flightNumber } = params;
@@ -63,7 +63,7 @@ export async function PUT(
 // DELETE: Delete a flight
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { flightNumber: string } }
+  { params }: { params: any }
 ) {
   try {
     const { flightNumber } = params;
