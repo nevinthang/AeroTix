@@ -24,9 +24,6 @@ const Navbar = () => {
     { label: "Support", href: "/support" },
   ]
 
-  console.log(session?.user.username)
-  
-
   useEffect(() => {
     if (pathname === "/") {
       setActivePage("Home");

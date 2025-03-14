@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";// Pastikan Anda memiliki fungsi untuk JWT
+import bcrypt from "bcryptjs";
 import { signJwt } from "@/lib/jwt"; 
 
 const prisma = new PrismaClient();
