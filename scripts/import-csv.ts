@@ -1,7 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parser');
-const {prisma} = require('@/lib/prisma');
+const { PrismaClient } = require('@prisma/client');
+
+const prisma = new PrismaClient();
 
 interface Flight {
   flightNumber: string;
