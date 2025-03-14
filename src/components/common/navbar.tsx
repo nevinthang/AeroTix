@@ -5,7 +5,6 @@ import { Menu, X, UserCircle, LogOut } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { useLocation } from "react-router-dom";
 import { usePathname } from "next/navigation";
 
 const Navbar = () => {
@@ -21,7 +20,6 @@ const Navbar = () => {
   const navItems = [
     { label: "Home", href: "/" },
     { label: "Book", href: "/book" },
-    { label: "Check In", href: "/checkin" },
     { label: "Loyalty", href: "/loyalty" },
     { label: "Support", href: "/support" },
   ]

@@ -1,6 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { NextRequest } from "next/server";
 
 const prisma = new PrismaClient();
 
@@ -9,14 +8,7 @@ export async function GET(
   { params }: { params: { flightNumber: string } }
 ) {
   try {
-    const { flightNumber } = params;
-
-    if (!flightNumber) {
-      return NextResponse.json(
-        { error: "Missing flight number" },
-        { status: 400 }
-      );
-    }
+    const flightNumber = params.flightNumber;
 
     const flight = await prisma.flight.findUnique({
       where: { flightNumber },
@@ -35,7 +27,6 @@ export async function GET(
     );
   }
 }
-
 export async function POST(
   request: Request,
   context: { params: { flightNumber?: string } }
