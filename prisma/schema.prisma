@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Flight {
+  flightNumber   String    @id 
+  departure      String
+  departureCode  String
+  arrival        String
+  arrivalCode    String
+  departureDate  DateTime
+  departureHour  DateTime
+  duration       Int
+  arrivalDate    DateTime
+  arrivalHour    DateTime
+  airline        String
+  aircraft       String
+  category       Category
+  price          Float
+  seatCapacity   Int
+  availableSeats Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  tickets        Ticket[]
+}
+
+enum Category {
+  ECONOMY
+  PREMIUM_ECONOMY
+  BUSINESS
+  FIRST_CLASS
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  email     String @unique
+  password  String
+  name      String
+  title     Title
+  phoneNumber String
+  birthdate  DateTime
+  passport  String?   @unique
+  passport_exp DateTime? 
+  loyaltyPoints Int  @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  tickets   Ticket[]
+  isAdmin   Boolean  @default(false)
+  membershipTier MembershipTier @default(SILVER) 
+}
+
+enum Title {
+  MR
+  MS
+  MRS
+}
+
+enum MembershipTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+}
+
+model Ticket {
+  ticketNumber String @id @default(uuid())
+  flight         Flight   @relation(fields: [flightNumber], references: [flightNumber])
+  flightNumber   String
+  user           User     @relation(fields: [userId], references: [id])
+  userId         String  
+  passengers     Passenger[]
+  totalAmount    Int
+}
+
+model Passenger {
+  id                  String    @id @default(uuid())
+  title               String
+  firstName           String
+  lastName            String
+  dateOfBirth         DateTime
+  nationality         String
+  passportNumber      String  
+  passportExpiryDate  DateTime
+  ageCategory        AgeCategory
+  checkedBaggage      Int
+  cabinBaggage        Int
+  mealPreference      String
+  seatPreference     SeatPreference
+  specialAssistance   String[]
+  emergencyContactName  String
+  emergencyContactPhone String
+  insurance          Boolean
+  ticket         Ticket   @relation(fields: [ticketNumber], references: [ticketNumber])
+  ticketNumber       String
+}
+
+enum AgeCategory {
+  ADULT
+  CHILD
+  INFANT
+}
+
+enum SeatPreference {
+  WINDOW
+  MIDDLE
+  AISLE
+  NO_PREFERENCE
+}

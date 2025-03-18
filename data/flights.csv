@@ -1,0 +1,37 @@
+airline,date,source,destination,route,depTime,arrivalTime,duration,totalStops,additionalInfo,price
+IndiGo,24/03/2025,Banglore,New Delhi,BLR ? DEL,22:20,1:10,2h 50m,non-stop,No info,174
+Air India,1/5/2025,Kolkata,Banglore,CCU ? IXR ? BBI ? BLR,5:50,13:15,7h 25m,2 stops,No info,83
+Jet Airways,9/6/2025,Delhi,Cochin,DEL ? LKO ? BOM ? COK,9:25,4:25,19h,2 stops,No info,90
+SpiceJet,12/5/2025,Kolkata,Banglore,CCU ? NAG ? BLR,18:05,23:30,5h 25m,1 stop,No info,92
+Multiple carriers,1/3/2025,Banglore,New Delhi,BLR ? NAG ? DEL,16:50,21:35,4h 45m,1 stop,No info,193
+GoAir,24/06/2025,Kolkata,Banglore,CCU ? BLR,9:00,11:25,2h 25m,non-stop,No info,176
+Vistara,12/3/2025,Banglore,New Delhi,BLR ? BOM ? DEL,18:55,10:25,15h 30m,1 stop,In-flight meal not included,157
+Air Asia,1/3/2025,Banglore,New Delhi,BLR ? BOM ? DEL,8:00,5:05,21h 5m,1 stop,No info,197
+Vistara,12/3/2025,Banglore,New Delhi,BLR ? BOM ? DEL,8:55,10:25,25h 30m,1 stop,In-flight meal not included,100
+Jet Airways Business,27/05/2025,Delhi,Cochin,DEL ? BOM ? COK,11:25,19:15,7h 50m,1 stop,No info,95
+Multiple carriers,1/6/2025,Delhi,Cochin,DEL ? BLR ? COK,9:45,23:00,13h 15m,1 stop,No info,76
+Trujet,18/04/2025,Kolkata,Banglore,CCU ? BLR,20:20,22:55,2h 35m,non-stop,No info,173
+IndiGo,24/06/2025,Chennai,Kolkata,MAA ? CCU,11:40,13:55,2h 15m,non-stop,No info,186
+Air India,9/5/2025,Kolkata,Banglore,CCU ? BOM ? BLR,21:10,9:20,12h 10m,1 stop,In-flight meal not included,142
+Jet Airways,24/04/2025,Kolkata,Banglore,CCU ? BLR,17:15,19:50,2h 35m,non-stop,No info,135
+SpiceJet,3/3/2025,Delhi,Cochin,DEL ? AMD ? BOM ? COK,16:40,19:15,26h 35m,2 stops,No info,176
+Multiple carriers,15/04/2025,Delhi,Cochin,DEL ? PNQ ? COK,8:45,13:15,4h 30m,1 stop,No info,97
+GoAir,12/6/2025,Delhi,Cochin,DEL ? BOM ? COK,14:00,12:35,22h 35m,1 stop,In-flight meal not included,87
+Vistara,12/6/2025,Delhi,Cochin,DEL ? CCU ? BOM ? COK,20:15,19:15,23h,2 stops,No info,90
+Air Asia,27/05/2025,Delhi,Cochin,DEL ? BOM ? COK,16:00,12:35,20h 35m,1 stop,In-flight meal not included,50
+Vistara,6/3/2025,Delhi,Cochin,DEL ? BOM ? COK,14:10,19:20,5h 10m,1 stop,No info,195
+Jet Airways Business,21/03/2025,Banglore,New Delhi,BLR ? COK ? DEL,22:00,13:20,15h 20m,1 stop,No info,131
+Multiple carriers,3/4/2025,Banglore,Delhi,BLR ? DEL,4:00,6:50,2h 50m,non-stop,No info,93
+Trujet,1/5/2025,Banglore,Delhi,BLR ? DEL,18:55,21:50,2h 55m,non-stop,No info,147
+IndiGo,6/5/2025,Kolkata,Banglore,CCU ? BOM ? BLR,18:55,8:15,13h 20m,1 stop,In-flight meal not included,139
+Air India,9/6/2025,Delhi,Cochin,DEL ? IDR ? BOM ? COK,21:25,12:35,15h 10m,2 stops,No info,104
+Jet Airways,1/6/2025,Delhi,Cochin,DEL ? LKO ? COK,21:50,3:35,5h 45m,1 stop,No info,101
+SpiceJet,15/05/2025,Delhi,Cochin,DEL ? BOM ? COK,7:00,12:55,5h 55m,1 stop,No info,89
+Multiple carriers,18/06/2025,Banglore,Delhi,BLR ? DEL,9:45,12:35,2h 50m,non-stop,No info,116
+GoAir,15/06/2025,Chennai,Kolkata,MAA ? CCU,7:05,9:20,2h 15m,non-stop,No info,116
+Vistara,18/06/2025,Chennai,Kolkata,MAA ? CCU,7:05,9:20,2h 15m,non-stop,No info,111
+Air Asia,1/5/2025,Kolkata,Banglore,CCU ? GAU ? DEL ? BLR,9:50,23:15,13h 25m,2 stops,No info,180
+Vistara,6/4/2025,Banglore,Delhi,BLR ? DEL,4:00,6:50,2h 50m,non-stop,No info,84
+Jet Airways Business,15/06/2025,Delhi,Cochin,DEL ? NAG ? BOM ? COK,14:35,12:35,22h,2 stops,In-flight meal not included,152
+Multiple carriers,18/05/2025,Delhi,Cochin,DEL ? BOM ? COK,7:05,12:35,5h 30m,1 stop,In-flight meal not included,158
+Trujet,27/06/2025,Delhi,Cochin,DEL ? BOM ? COK,10:35,21:00,10h 25m,1 stop,No info,191
